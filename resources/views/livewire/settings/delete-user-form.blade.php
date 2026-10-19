@@ -4,6 +4,7 @@ use App\Livewire\Actions\Logout;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Volt\Component;
 
 new class extends Component {
@@ -14,12 +15,20 @@ new class extends Component {
      */
     public function deleteUser(Logout $logout): void
     {
+        abort_unless(Auth::check(), 403);
+
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
         ]);
 
         DB::transaction(function (): void {
             $user = User::query()->lockForUpdate()->findOrFail(Auth::id());
+            if ($user->projects()->exists()) {
+                throw ValidationException::withMessages([
+                    'password' => __('Your account cannot be deleted because it has projects. Project history must be preserved.'),
+                ]);
+            }
+
             if (! $user->delete()) {
                 throw new RuntimeException('The account could not be deleted.');
             }

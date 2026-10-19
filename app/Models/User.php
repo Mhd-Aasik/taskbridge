@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\AccountPhotos;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -46,6 +47,12 @@ class User extends Authenticatable
     public function freelancerProfile(): HasOne
     {
         return $this->hasOne(FreelancerProfile::class);
+    }
+
+    /** @return HasMany<Project, $this> */
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class, 'client_id');
     }
 
     public function isClient(): bool
