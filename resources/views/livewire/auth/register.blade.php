@@ -4,6 +4,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -11,80 +12,133 @@ use Livewire\Volt\Component;
 new #[Layout('components.layouts.auth')] class extends Component {
     public string $name = '';
     public string $email = '';
+    public string $role = User::ROLE_CLIENT;
     public string $password = '';
     public string $password_confirmation = '';
 
-    /**
-     * Handle an incoming registration request.
-     */
     public function register(): void
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                'unique:' . User::class,
+            ],
+            'role' => [
+                'required',
+                'string',
+                Rule::in([
+                    User::ROLE_CLIENT,
+                    User::ROLE_FREELANCER,
+                ]),
+            ],
+            'password' => [
+                'required',
+                'string',
+                'confirmed',
+                Rules\Password::defaults(),
+            ],
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
+        $user = new User();
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->password = Hash::make($validated['password']);
+        $user->role = $validated['role'];
+        $user->save();
 
-        event(new Registered(($user = User::create($validated))));
+        event(new Registered($user));
 
         Auth::login($user);
+        session()->regenerate();
 
-        $this->redirect(route('dashboard', absolute: false), navigate: true);
+        $this->redirect(
+            route('dashboard', absolute: false),
+            navigate: true,
+        );
     }
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header title="Create an account" description="Enter your details below to create your account" />
+    <x-auth-header
+        title="Join TaskBridge"
+        description="Create your client or freelancer account"
+    />
 
-    <!-- Session Status -->
-    <x-auth-session-status class="text-center" :status="session('status')" />
+    <x-auth-session-status
+        class="text-center"
+        :status="session('status')"
+    />
 
     <form wire:submit="register" class="flex flex-col gap-6">
-        <!-- Name -->
-        <div class="grid gap-2">
-            <flux:input wire:model="name" id="name" label="{{ __('Name') }}" type="text" name="name" required autofocus autocomplete="name" placeholder="Full name" />
-        </div>
+        <flux:input
+            wire:model="name"
+            id="name"
+            label="Name"
+            type="text"
+            name="name"
+            required
+            autofocus
+            autocomplete="name"
+            placeholder="Full name"
+        />
 
-        <!-- Email Address -->
-        <div class="grid gap-2">
-            <flux:input wire:model="email" id="email" label="{{ __('Email address') }}" type="email" name="email" required autocomplete="email" placeholder="email@example.com" />
-        </div>
+        <flux:input
+            wire:model="email"
+            id="email"
+            label="Email address"
+            type="email"
+            name="email"
+            required
+            autocomplete="email"
+            placeholder="email@example.com"
+        />
 
-        <!-- Password -->
-        <div class="grid gap-2">
-            <flux:input
-                wire:model="password"
-                id="password"
-                label="{{ __('Password') }}"
-                type="password"
-                name="password"
-                required
-                autocomplete="new-password"
-                placeholder="Password"
-            />
-        </div>
+        <flux:select
+            wire:model="role"
+            id="role"
+            name="role"
+            label="Account type"
+            required
+        >
+            <flux:select.option value="client">
+                Client — I want to hire freelancers
+            </flux:select.option>
 
-        <!-- Confirm Password -->
-        <div class="grid gap-2">
-            <flux:input
-                wire:model="password_confirmation"
-                id="password_confirmation"
-                label="{{ __('Confirm password') }}"
-                type="password"
-                name="password_confirmation"
-                required
-                autocomplete="new-password"
-                placeholder="Confirm password"
-            />
-        </div>
+            <flux:select.option value="freelancer">
+                Freelancer — I want to find projects
+            </flux:select.option>
+        </flux:select>
 
-        <div class="flex items-center justify-end">
-            <flux:button type="submit" variant="primary" class="w-full">
-                {{ __('Create account') }}
-            </flux:button>
-        </div>
+        <flux:input
+            wire:model="password"
+            id="password"
+            label="Password"
+            type="password"
+            name="password"
+            required
+            autocomplete="new-password"
+            placeholder="Password"
+        />
+
+        <flux:input
+            wire:model="password_confirmation"
+            id="password_confirmation"
+            label="Confirm password"
+            type="password"
+            name="password_confirmation"
+            required
+            autocomplete="new-password"
+            placeholder="Confirm password"
+        />
+
+        <flux:button type="submit" variant="primary" class="w-full">
+            Create account
+        </flux:button>
     </form>
 
     <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
