@@ -22,7 +22,7 @@
 
             <div class="shrink-0 border-t border-slate-700/70 px-1 pt-5">
                 <a href="{{ route('settings.profile') }}" class="flex min-w-0 items-center gap-3 rounded-lg p-1" aria-label="Your profile settings" wire:navigate>
-                    <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-700 text-sm font-semibold text-teal-200">{{ auth()->user()->initials() }}</span>
+                    <x-avatar :user="auth()->user()" class="size-10 rounded-xl bg-slate-700 text-sm font-semibold text-teal-200" />
                     <span class="min-w-0 flex-1">
                         <span class="block truncate text-sm font-semibold text-white">{{ auth()->user()->name }}</span>
                         <span class="block truncate text-xs text-slate-400">{{ auth()->user()->email }}</span>
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <x-theme-dropdown />
-            <a href="{{ route('settings.profile') }}" class="flex size-9 shrink-0 items-center justify-center rounded-full border border-teal-200 bg-teal-50 text-xs font-bold text-teal-800 dark:border-teal-800 dark:bg-teal-950 dark:text-teal-200" aria-label="Profile settings" wire:navigate>{{ auth()->user()->initials() }}</a>
+            <a href="{{ route('settings.profile') }}" class="flex size-9 shrink-0 items-center justify-center rounded-full border border-teal-200 bg-teal-50 text-xs font-bold text-teal-800 dark:border-teal-800 dark:bg-teal-950 dark:text-teal-200" aria-label="Profile settings" wire:navigate><x-avatar :user="auth()->user()" class="size-full rounded-full" /></a>
         </flux:header>
 
         {{ $slot }}

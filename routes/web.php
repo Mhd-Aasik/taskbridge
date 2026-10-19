@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountPhotoController;
 use App\Http\Controllers\DashboardController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -38,6 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('account/{user}/photo', AccountPhotoController::class)->name('account.photo');
+
     Route::redirect('settings', 'settings/profile');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

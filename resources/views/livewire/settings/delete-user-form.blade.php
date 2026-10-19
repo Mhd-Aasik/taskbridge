@@ -1,7 +1,9 @@
 <?php
 
 use App\Livewire\Actions\Logout;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Volt\Component;
 
 new class extends Component {
@@ -16,7 +18,13 @@ new class extends Component {
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        DB::transaction(function (): void {
+            $user = User::query()->lockForUpdate()->findOrFail(Auth::id());
+            if (! $user->delete()) {
+                throw new RuntimeException('The account could not be deleted.');
+            }
+        });
+        $logout();
 
         $this->redirect('/', navigate: true);
     }

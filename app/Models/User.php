@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\AccountPhotos;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -29,6 +30,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'avatar_path',
     ];
 
     protected function casts(): array
@@ -36,6 +38,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'avatar_path' => 'string',
         ];
     }
 
@@ -58,6 +61,13 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function avatarUrl(): ?string
+    {
+        return AccountPhotos::ownsPath($this, $this->avatar_path)
+            ? route('account.photo', ['user' => $this->getKey(), 'v' => hash('sha256', $this->avatar_path)])
+            : null;
     }
 
     public function initials(): string

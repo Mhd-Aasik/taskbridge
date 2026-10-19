@@ -3,7 +3,7 @@
 <x-dashboard.panel title="Your account" description="The details behind your workspace.">
     <div class="p-6">
         <div class="mb-6 flex min-w-0 items-center gap-3">
-            <span class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-teal-50 font-semibold text-teal-800 dark:bg-teal-950 dark:text-teal-200">{{ $user->initials() }}</span>
+            <x-avatar :user="$user" class="size-12 rounded-2xl bg-teal-50 font-semibold text-teal-800 dark:bg-teal-950 dark:text-teal-200" />
             <div class="min-w-0">
                 <p class="truncate text-sm font-semibold">{{ $user->name }}</p>
                 <p class="tb-muted mt-1 text-xs">{{ ucfirst($user->role) }} account</p>

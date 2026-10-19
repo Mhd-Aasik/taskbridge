@@ -73,6 +73,8 @@ new class extends Component {
     @include('partials.settings-heading')
 
     <x-settings.layout heading="Profile" subheading="Update your name and email address">
+        <livewire:settings.photo />
+
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
             <flux:input wire:model="name" label="{{ __('Name') }}" type="text" name="name" required autofocus autocomplete="name" />
 

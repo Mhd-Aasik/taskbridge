@@ -30,6 +30,14 @@ return [
 
     'disks' => [
 
+        'avatars' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/avatars'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => true,
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
