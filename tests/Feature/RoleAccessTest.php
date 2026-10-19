@@ -32,7 +32,7 @@ class RoleAccessTest extends TestCase
         $response = $this->actingAs($user)->get(route($route));
 
         if ($allowed) {
-            $response->assertOk()->assertViewIs('dashboard');
+            $response->assertOk()->assertViewIs('dashboards.'.$role);
         } else {
             $response->assertForbidden();
         }

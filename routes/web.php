@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,15 +24,15 @@ Route::get('dashboard', function (Request $request) {
     ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('client/dashboard', 'dashboard')
+    Route::get('client/dashboard', [DashboardController::class, 'client'])
         ->middleware('role:'.User::ROLE_CLIENT)
         ->name('client.dashboard');
 
-    Route::view('freelancer/dashboard', 'dashboard')
+    Route::get('freelancer/dashboard', [DashboardController::class, 'freelancer'])
         ->middleware('role:'.User::ROLE_FREELANCER)
         ->name('freelancer.dashboard');
 
-    Route::view('admin/dashboard', 'dashboard')
+    Route::get('admin/dashboard', [DashboardController::class, 'admin'])
         ->middleware('role:'.User::ROLE_ADMIN)
         ->name('admin.dashboard');
 });

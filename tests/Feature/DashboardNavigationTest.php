@@ -32,6 +32,11 @@ class DashboardNavigationTest extends TestCase
         $xpath = new DOMXPath($document);
 
         $this->assertStringContainsString('Role: '.ucfirst($role), $document->textContent);
+        $this->assertSame(1, $xpath->query('//*[@data-flux-badge]')->length);
+        $this->assertSame(1, $xpath->query('//header//*[@data-flux-badge]')->length);
+        $this->assertSame(0, $xpath->query('//*[@data-flux-sidebar]//*[@data-flux-badge]')->length);
+        $this->assertStringNotContainsString('A little clarity. Better work.', $document->textContent);
+        $this->assertStringNotContainsString('Your people, your ideas, your next chapter.', $document->textContent);
 
         $links = $xpath->query('//a[normalize-space(.)="Dashboard"]');
         $this->assertGreaterThan(0, $links->length);

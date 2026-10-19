@@ -1,6 +1,7 @@
-<div class="flex aspect-square size-8 items-center justify-center rounded-md bg-accent-content text-accent-foreground">
-    <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
-</div>
-<div class="ml-1 grid flex-1 text-left text-sm">
-    <span class="mb-0.5 truncate leading-none font-semibold">Laravel Starter Kit</span>
-</div>
+<span class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-teal-300 text-slate-950">
+    <x-app-logo-icon class="size-6" />
+</span>
+<span class="min-w-0 text-left">
+    <span class="block text-lg font-bold tracking-tight">TaskBridge<span class="text-teal-300">.</span></span>
+    <span class="block text-[10px] font-medium uppercase tracking-[0.2em] text-slate-400">Better work, together</span>
+</span>

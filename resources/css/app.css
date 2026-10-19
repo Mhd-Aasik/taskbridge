@@ -23,16 +23,16 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
+    --color-accent: #0f766e;
+    --color-accent-content: #0f766e;
     --color-accent-foreground: var(--color-white);
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        --color-accent: #5eead4;
+        --color-accent-content: #5eead4;
+        --color-accent-foreground: #082f2c;
     }
 }
 
@@ -61,6 +61,47 @@ select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */
+@layer components {
+    .tb-panel {
+        @apply min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs dark:border-slate-700/60 dark:bg-[#142033];
+    }
+
+    .tb-muted {
+        @apply text-slate-600 dark:text-slate-400;
+    }
+
+    .tb-eyebrow {
+        @apply text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400;
+    }
+
+    .tb-text-link {
+        @apply rounded-sm font-semibold text-teal-700 underline-offset-4 hover:underline dark:text-teal-300;
+    }
+
+    .tb-skip-link {
+        @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:p-3 focus:text-slate-950;
+    }
+}
+
+@layer base {
+    a:focus-visible, button:focus-visible, [role='radio']:focus-visible {
+        outline: 2px solid var(--color-teal-600);
+        outline-offset: 4px;
+    }
+
+    .dark a:focus-visible, .dark button:focus-visible, .dark [role='radio']:focus-visible {
+        outline-color: var(--color-teal-300);
+    }
+}
+
+.tb-sidebar [data-flux-navlist-item] {
+    color: #cbd5e1;
+    min-height: 44px;
+    border-radius: 10px;
+}
+
+.tb-sidebar [data-flux-navlist-item][data-current] {
+    color: #99f6e4;
+    background: #1c3b4c;
+    box-shadow: inset 3px 0 #5eead4;
+}
