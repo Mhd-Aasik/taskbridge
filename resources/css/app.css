@@ -106,8 +106,8 @@ select:focus[data-flux-control] {
     box-shadow: inset 3px 0 #5eead4;
 }
 
-/* Scope typography and opaque contrast pairs to the freelancer profile editor. */
-.tb-profile-editor {
+/* Share readable form styles without changing the surrounding workspace. */
+:is(.tb-profile-editor, .tb-form-editor) {
     --tb-editor-text: #0f172a;
     --tb-editor-muted: #334155;
     --tb-editor-placeholder: #475569;
@@ -125,7 +125,7 @@ select:focus[data-flux-control] {
     line-height: 1.625;
 }
 
-.dark .tb-profile-editor {
+.dark :is(.tb-profile-editor, .tb-form-editor) {
     --tb-editor-text: #e2e8f0;
     --tb-editor-muted: #cbd5e1;
     --tb-editor-placeholder: #94a3b8;
@@ -139,29 +139,29 @@ select:focus[data-flux-control] {
     --tb-editor-notice-bg: #15332f;
 }
 
-.tb-profile-editor p {
+:is(.tb-profile-editor, .tb-form-editor) p {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.625;
 }
 
-.tb-profile-editor .tb-muted,
-.tb-profile-editor .tb-eyebrow,
-.tb-profile-editor [data-flux-description] {
+:is(.tb-profile-editor, .tb-form-editor) .tb-muted,
+:is(.tb-profile-editor, .tb-form-editor) .tb-eyebrow,
+:is(.tb-profile-editor, .tb-form-editor) [data-flux-description] {
     color: var(--tb-editor-muted);
     font-size: 0.875rem;
     line-height: 1.625;
 }
 
-.tb-profile-editor [data-flux-description] {
+:is(.tb-profile-editor, .tb-form-editor) [data-flux-description] {
     font-weight: 400;
 }
 
-.tb-profile-editor .tb-eyebrow {
+:is(.tb-profile-editor, .tb-form-editor) .tb-eyebrow {
     font-weight: 600;
 }
 
-.tb-profile-editor [data-flux-label] {
+:is(.tb-profile-editor, .tb-form-editor) [data-flux-label] {
     color: var(--tb-editor-text);
     font-size: 1rem;
     font-weight: 500;
@@ -169,7 +169,7 @@ select:focus[data-flux-control] {
     line-height: 1.5 !important;
 }
 
-.tb-profile-editor [data-flux-label] > span {
+:is(.tb-profile-editor, .tb-form-editor) [data-flux-label] > span {
     background-color: var(--tb-editor-soft-bg);
     color: var(--tb-editor-muted);
     font-size: 0.875rem;
@@ -177,7 +177,7 @@ select:focus[data-flux-control] {
     line-height: 1.5;
 }
 
-.tb-profile-editor :is(input, textarea)[data-flux-control] {
+:is(.tb-profile-editor, .tb-form-editor) :is(input, textarea, select)[data-flux-control] {
     background-color: var(--tb-editor-input-bg);
     border-color: var(--tb-editor-border);
     color: var(--tb-editor-text);
@@ -188,47 +188,51 @@ select:focus[data-flux-control] {
     padding: 0.625rem 0.875rem;
 }
 
-.tb-profile-editor :is(input, textarea)[data-flux-control]::placeholder {
+.tb-form-editor select[data-flux-control] {
+    padding-right: 2.5rem;
+}
+
+:is(.tb-profile-editor, .tb-form-editor) :is(input, textarea)[data-flux-control]::placeholder {
     color: var(--tb-editor-placeholder);
     opacity: 1;
 }
 
-.tb-profile-editor :is(input, textarea)[data-flux-control][data-invalid] {
+:is(.tb-profile-editor, .tb-form-editor) :is(input, textarea, select)[data-flux-control][data-invalid] {
     border-color: var(--tb-editor-error);
 }
 
-.tb-profile-editor [data-flux-error] {
+:is(.tb-profile-editor, .tb-form-editor) [data-flux-error] {
     color: var(--tb-editor-error);
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.625;
 }
 
-.tb-profile-editor [data-flux-checkbox]:not([data-checked]):not([data-indeterminate]) [data-flux-checkbox-indicator] {
+:is(.tb-profile-editor, .tb-form-editor) [data-flux-checkbox]:not([data-checked]):not([data-indeterminate]) [data-flux-checkbox-indicator] {
     background-color: var(--tb-editor-input-bg);
     border-color: var(--tb-editor-border);
 }
 
-.tb-profile-editor [data-flux-button] {
+:is(.tb-profile-editor, .tb-form-editor) [data-flux-button] {
     font-size: 1rem;
     min-height: 3rem;
 }
 
-.tb-profile-editor :is(input, textarea, [data-flux-checkbox], [data-flux-button]):focus-visible {
+:is(.tb-profile-editor, .tb-form-editor) :is(input, textarea, select, [data-flux-checkbox], [data-flux-button]):focus-visible {
     outline: 3px solid var(--tb-editor-focus);
     outline-offset: 3px;
 }
 
-.tb-profile-editor .tb-profile-preview {
+:is(.tb-profile-editor, .tb-form-editor) :is(.tb-profile-preview, .tb-editor-preview) {
     background-color: var(--tb-editor-soft-bg);
 }
 
-.tb-profile-editor .tb-profile-notice {
+:is(.tb-profile-editor, .tb-form-editor) :is(.tb-profile-notice, .tb-editor-notice) {
     background-color: var(--tb-editor-notice-bg);
     color: var(--tb-editor-notice-text);
 }
 
-.tb-profile-editor .tb-profile-confirmation {
+:is(.tb-profile-editor, .tb-form-editor) :is(.tb-profile-confirmation, .tb-editor-confirmation) {
     color: var(--tb-editor-success);
     font-weight: 500;
 }
@@ -254,4 +258,123 @@ select:focus[data-flux-control] {
 
 .tb-theme-menu [data-flux-menu-radio][data-checked] [data-flux-menu-item-icon] {
     color: inherit;
+}
+
+/* Light workspace palette only; keep the existing dark and navy shell rules. */
+html:not(.dark) .tb-workspace {
+    --tb-light-page: #f1f3f5;
+    --tb-light-surface: #ffffff;
+    --tb-light-input: #f7f8fa;
+    --tb-light-soft: #eef1f4;
+    --tb-light-text: #1e293b;
+    --tb-light-muted: #475569;
+    --tb-light-placeholder: #59697d;
+    --tb-light-border: #d6dce3;
+    --tb-light-input-border: #7c899a;
+    --tb-light-accent: #0f766e;
+    --tb-light-accent-hover: #115e59;
+    --tb-light-error: #b91c1c;
+    --tb-light-error-hover: #991b1b;
+    --tb-light-notice-bg: #f0fdfa;
+    --tb-light-notice-text: #134e4a;
+    --tb-light-notice-border: #99d9cf;
+    --color-accent: var(--tb-light-accent);
+    background-color: var(--tb-light-page);
+    color: var(--tb-light-text);
+}
+
+html:not(.dark) .tb-workspace :is(.tb-panel, .tb-photo-panel, [data-flux-header]) {
+    background-color: var(--tb-light-surface);
+    border-color: var(--tb-light-border);
+}
+
+/* Bridge the existing editor overrides to the same palette as account fields. */
+html:not(.dark) .tb-workspace :is(.tb-profile-editor, .tb-form-editor) {
+    --tb-editor-text: var(--tb-light-text);
+    --tb-editor-muted: var(--tb-light-muted);
+    --tb-editor-placeholder: var(--tb-light-placeholder);
+    --tb-editor-input-bg: var(--tb-light-input);
+    --tb-editor-soft-bg: var(--tb-light-soft);
+    --tb-editor-border: var(--tb-light-input-border);
+    --tb-editor-error: var(--tb-light-error);
+    --tb-editor-success: var(--tb-light-accent-hover);
+    --tb-editor-focus: var(--tb-light-accent);
+    --tb-editor-notice-text: var(--tb-light-notice-text);
+    --tb-editor-notice-bg: var(--tb-light-notice-bg);
+}
+
+/* Main-content scoping leaves the intentionally dark sidebar and welcome alone. */
+html:not(.dark) .tb-workspace [data-flux-main] :is([data-flux-heading], [data-flux-label]) {
+    color: var(--tb-light-text);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] :is(.tb-muted, .tb-eyebrow, [data-flux-description], [data-flux-subheading]) {
+    color: var(--tb-light-muted);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] :is(input, textarea, select)[data-flux-control] {
+    background-color: var(--tb-light-input);
+    border-color: var(--tb-light-input-border);
+    color: var(--tb-light-text);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] :is(input, textarea)[data-flux-control]::placeholder {
+    color: var(--tb-light-placeholder);
+    opacity: 1;
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] select[data-flux-control] option {
+    background-color: var(--tb-light-surface);
+    color: var(--tb-light-text);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] :is(input, textarea, select)[data-flux-control]:is([data-invalid], [aria-invalid='true']) {
+    border-color: var(--tb-light-error);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] [data-flux-error] {
+    color: var(--tb-light-error);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] :is(input, textarea, select)[data-flux-control]:focus-visible {
+    outline: 3px solid var(--tb-light-accent);
+    outline-offset: 3px;
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] [data-flux-navlist-item] {
+    color: var(--tb-light-muted);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] [data-flux-navlist-item][data-current] {
+    background-color: var(--tb-light-notice-bg);
+    color: var(--tb-light-accent);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] :is(.tb-info-notice, .tb-profile-notice, .tb-editor-notice) {
+    background-color: var(--tb-light-notice-bg);
+    border-color: var(--tb-light-notice-border);
+    color: var(--tb-light-notice-text);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] .tb-info-notice :is(h2, p, svg) {
+    color: inherit;
+}
+
+/* Flux's primary hover mixes in transparency; a darker base keeps white legible. */
+html:not(.dark) .tb-workspace [data-flux-main] [data-flux-button]:hover {
+    --color-accent: var(--tb-light-accent-hover);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] input[type='file']::file-selector-button {
+    background-color: var(--tb-light-accent);
+    color: var(--tb-light-surface);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] .tb-danger-action {
+    background-color: var(--tb-light-error);
+    color: var(--tb-light-surface);
+}
+
+html:not(.dark) .tb-workspace [data-flux-main] .tb-danger-action:hover {
+    background-color: var(--tb-light-error-hover);
 }

@@ -54,4 +54,10 @@ Volt::route('freelancer/profile', 'freelancer.profile')
     ->middleware(['auth', 'role:'.User::ROLE_FREELANCER])
     ->name('freelancer.profile.edit');
 
+Route::middleware(['auth', 'role:'.User::ROLE_CLIENT])->prefix('client/projects')->name('client.projects.')->group(function () {
+    Volt::route('/', 'client.projects.index')->name('index');
+    Volt::route('create', 'client.projects.editor')->name('create');
+    Volt::route('{project}/edit', 'client.projects.editor')->name('edit');
+});
+
 require __DIR__.'/auth.php';

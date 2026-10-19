@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     public function client(Request $request): View
     {
-        return view('dashboards.client', ['user' => $request->user()]);
+        Gate::authorize('viewAny', Project::class);
+        $user = $request->user();
+
+        return view('dashboards.client', [
+            'user' => $user,
+            'projectCount' => $user->projects()->count(),
+            'recentProjects' => $user->projects()->with('category')->latest('updated_at')->latest('id')->limit(3)->get(),
+        ]);
     }
 
     public function freelancer(Request $request): View

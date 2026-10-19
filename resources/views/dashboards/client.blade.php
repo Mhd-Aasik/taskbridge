@@ -4,9 +4,21 @@
 
     <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div class="min-w-0 space-y-6">
-            <x-dashboard.panel title="Your project workspace" description="From the first brief to the final handover.">
-                <x-dashboard.empty-state icon="folder-plus" title="Your projects will appear here." description="Project posting is not available yet. Keep your account details current while you prepare for your next collaboration." />
-            </x-dashboard.panel>
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold">Your project workspace</h2>
+                    <p class="tb-muted mt-1 text-sm">{{ $projectCount }} {{ Str::plural('project', $projectCount) }}. Drafts are private.</p>
+                </div>
+                <flux:button :href="route('client.projects.create')" variant="primary" icon="plus" class="self-start" wire:navigate>Create project</flux:button>
+            </div>
+            @forelse ($recentProjects as $project)
+                <x-projects.card :project="$project" />
+            @empty
+                <x-dashboard.panel title="Start your next project" description="Capture the details at your own pace.">
+                    <x-dashboard.empty-state icon="folder-plus" title="Your projects will appear here." description="Create a private draft with your brief, budget, and deadline. Publishing will be available separately." />
+                </x-dashboard.panel>
+            @endforelse
+            <flux:button :href="route('client.projects.index')" wire:navigate>View all projects</flux:button>
 
             <x-dashboard.panel title="Before your next collaboration" description="A good brief makes room for great work.">
                 <ol class="divide-y divide-slate-100 px-6 dark:divide-slate-700/60">

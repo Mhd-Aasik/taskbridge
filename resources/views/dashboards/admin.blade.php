@@ -17,7 +17,7 @@
             <x-dashboard.panel title="Workspace administration" description="A foundation for a well-run community.">
                 <x-dashboard.empty-state icon="shield-check" title="Clarity before complexity" description="Account management and moderation tools are not available yet. This overview currently provides read-only account totals, so you can understand who is joining the platform." />
             </x-dashboard.panel>
-            <div class="rounded-xl border border-teal-200 bg-teal-50 p-5 dark:border-teal-900 dark:bg-teal-950/40">
+            <div class="tb-info-notice rounded-xl border border-teal-200 bg-teal-50 p-5 dark:border-teal-900 dark:bg-teal-950/40">
                 <div class="flex items-start gap-3"><flux:icon.lock-closed class="mt-0.5 size-5 shrink-0 text-teal-800 dark:text-teal-300" /><div><h2 class="text-sm font-semibold text-teal-950 dark:text-teal-200">An administrator-only overview</h2><p class="mt-1 text-sm leading-6 text-teal-900 dark:text-teal-200/80">Account totals are available only to administrators. Client and freelancer workspaces remain separate and protected.</p></div></div>
             </div>
         </div>

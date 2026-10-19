@@ -94,6 +94,10 @@ class DashboardRenderingTest extends TestCase
                 if ($role === User::ROLE_FREELANCER) {
                     $allowed[] = route('freelancer.profile.edit');
                 }
+                if ($role === User::ROLE_CLIENT) {
+                    $allowed[] = route('client.projects.index');
+                    $allowed[] = route('client.projects.create');
+                }
                 $this->assertContains($href, $allowed);
                 $destinations[$href] = $href;
             }

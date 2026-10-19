@@ -102,7 +102,7 @@ new class extends Component {
 }; ?>
 
 <section
-    class="my-6 space-y-5 rounded-xl border border-slate-200 p-5 dark:border-slate-700"
+    class="tb-photo-panel my-6 space-y-5 rounded-xl border border-slate-200 p-5 dark:border-slate-700"
     aria-labelledby="photo-heading"
     x-data="{ preview: null, uploading: false, progress: 0, uploadError: '' }"
     x-on:account-photo-updated.window="if (preview) URL.revokeObjectURL(preview); preview = null; $refs.photo.value = ''"

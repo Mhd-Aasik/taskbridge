@@ -46,7 +46,7 @@ new class extends Component {
     </div>
 
     <flux:modal.trigger name="confirm-user-deletion">
-        <flux:button variant="danger" x-data="" x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')">
+        <flux:button variant="danger" class="tb-danger-action" x-data="" x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')">
             {{ __('Delete Account') }}
         </flux:button>
     </flux:modal.trigger>
@@ -68,7 +68,7 @@ new class extends Component {
                     <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
                 </flux:modal.close>
 
-                <flux:button variant="danger" type="submit">{{ __('Delete Account') }}</flux:button>
+                <flux:button variant="danger" type="submit" class="tb-danger-action">{{ __('Delete Account') }}</flux:button>
             </div>
         </form>
     </flux:modal>

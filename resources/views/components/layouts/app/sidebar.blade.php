@@ -5,7 +5,7 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-slate-50 text-slate-900 antialiased dark:bg-[#0c1422] dark:text-slate-100">
+    <body class="tb-workspace min-h-screen bg-slate-50 text-slate-900 antialiased dark:bg-[#0c1422] dark:text-slate-100">
         <a href="#main-content" class="tb-skip-link">Skip to content</a>
 
         <flux:sidebar sticky collapsible="mobile" class="tb-sidebar dark h-dvh border-r border-slate-800 bg-[#101f35] text-white lg:w-64">
