@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     public const ROLE_CLIENT = 'client';
+
     public const ROLE_FREELANCER = 'freelancer';
+
     public const ROLE_ADMIN = 'admin';
 
     protected $fillable = [
@@ -33,6 +37,12 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /** @return HasOne<FreelancerProfile, $this> */
+    public function freelancerProfile(): HasOne
+    {
+        return $this->hasOne(FreelancerProfile::class);
     }
 
     public function isClient(): bool
