@@ -90,7 +90,11 @@ class DashboardRenderingTest extends TestCase
             if ($href === '#main-content') {
                 $this->assertSame(1, $xpath->query('//*[@id="main-content"]')->length);
             } else {
-                $this->assertContains($href, [route('dashboard'), route('settings.profile'), route('settings.password'), route('settings.appearance')]);
+                $allowed = [route('dashboard'), route('settings.profile'), route('settings.password'), route('settings.appearance')];
+                if ($role === User::ROLE_FREELANCER) {
+                    $allowed[] = route('freelancer.profile.edit');
+                }
+                $this->assertContains($href, $allowed);
                 $destinations[$href] = $href;
             }
         }

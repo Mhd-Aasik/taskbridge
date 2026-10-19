@@ -1,4 +1,4 @@
-@props(['user', 'action' => 'Review your profile'])
+@props(['user', 'action' => 'Review your profile', 'profileUrl' => null])
 
 <section aria-label="Welcome" class="relative mb-7 overflow-hidden rounded-2xl border border-slate-700 bg-[#152b43] p-6 text-white sm:p-8">
     <div class="pointer-events-none absolute -right-8 -top-16 size-64 rounded-full border-[40px] border-white/[0.025]" aria-hidden="true"></div>
@@ -8,6 +8,6 @@
             <h2 class="text-2xl font-semibold leading-tight tracking-tight [overflow-wrap:anywhere] sm:text-3xl">Welcome back, {{ $user->name }}.</h2>
             <p class="mt-3 max-w-xl text-sm leading-6 text-slate-300">Keep your profile up to date so collaborators know who they’re working with.</p>
         </div>
-        <flux:button :href="route('settings.profile')" variant="primary" icon:trailing="arrow-up-right" class="shrink-0 self-start md:self-center" wire:navigate>{{ $action }}</flux:button>
+        <flux:button :href="$profileUrl ?? route('settings.profile')" variant="primary" icon:trailing="arrow-up-right" class="shrink-0 self-start md:self-center" wire:navigate>{{ $action }}</flux:button>
     </div>
 </section>

@@ -45,4 +45,8 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
+Volt::route('freelancer/profile', 'freelancer.profile')
+    ->middleware(['auth', 'role:'.User::ROLE_FREELANCER])
+    ->name('freelancer.profile.edit');
+
 require __DIR__.'/auth.php';

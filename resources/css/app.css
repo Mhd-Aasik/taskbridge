@@ -105,3 +105,130 @@ select:focus[data-flux-control] {
     background: #1c3b4c;
     box-shadow: inset 3px 0 #5eead4;
 }
+
+/* Scope typography and opaque contrast pairs to the freelancer profile editor. */
+.tb-profile-editor {
+    --tb-editor-text: #0f172a;
+    --tb-editor-muted: #334155;
+    --tb-editor-placeholder: #475569;
+    --tb-editor-input-bg: #ffffff;
+    --tb-editor-soft-bg: #f1f5f9;
+    --tb-editor-border: #64748b;
+    --tb-editor-error: #b91c1c;
+    --tb-editor-success: #115e59;
+    --tb-editor-focus: #0f766e;
+    --tb-editor-notice-text: #134e4a;
+    --tb-editor-notice-bg: #f0fdfa;
+    color: var(--tb-editor-text);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.625;
+}
+
+.dark .tb-profile-editor {
+    --tb-editor-text: #e2e8f0;
+    --tb-editor-muted: #cbd5e1;
+    --tb-editor-placeholder: #94a3b8;
+    --tb-editor-input-bg: #0f1b2c;
+    --tb-editor-soft-bg: #1e293b;
+    --tb-editor-border: #94a3b8;
+    --tb-editor-error: #fca5a5;
+    --tb-editor-success: #99f6e4;
+    --tb-editor-focus: #5eead4;
+    --tb-editor-notice-text: #ccfbf1;
+    --tb-editor-notice-bg: #15332f;
+}
+
+.tb-profile-editor p {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.625;
+}
+
+.tb-profile-editor .tb-muted,
+.tb-profile-editor .tb-eyebrow,
+.tb-profile-editor [data-flux-description] {
+    color: var(--tb-editor-muted);
+    font-size: 0.875rem;
+    line-height: 1.625;
+}
+
+.tb-profile-editor [data-flux-description] {
+    font-weight: 400;
+}
+
+.tb-profile-editor .tb-eyebrow {
+    font-weight: 600;
+}
+
+.tb-profile-editor [data-flux-label] {
+    color: var(--tb-editor-text);
+    font-size: 1rem;
+    font-weight: 500;
+    /* The shared Flux label rule sets its line height with !important. */
+    line-height: 1.5 !important;
+}
+
+.tb-profile-editor [data-flux-label] > span {
+    background-color: var(--tb-editor-soft-bg);
+    color: var(--tb-editor-muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.tb-profile-editor :is(input, textarea)[data-flux-control] {
+    background-color: var(--tb-editor-input-bg);
+    border-color: var(--tb-editor-border);
+    color: var(--tb-editor-text);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    min-height: 3rem;
+    padding: 0.625rem 0.875rem;
+}
+
+.tb-profile-editor :is(input, textarea)[data-flux-control]::placeholder {
+    color: var(--tb-editor-placeholder);
+    opacity: 1;
+}
+
+.tb-profile-editor :is(input, textarea)[data-flux-control][data-invalid] {
+    border-color: var(--tb-editor-error);
+}
+
+.tb-profile-editor [data-flux-error] {
+    color: var(--tb-editor-error);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.625;
+}
+
+.tb-profile-editor [data-flux-checkbox]:not([data-checked]):not([data-indeterminate]) [data-flux-checkbox-indicator] {
+    background-color: var(--tb-editor-input-bg);
+    border-color: var(--tb-editor-border);
+}
+
+.tb-profile-editor [data-flux-button] {
+    font-size: 1rem;
+    min-height: 3rem;
+}
+
+.tb-profile-editor :is(input, textarea, [data-flux-checkbox], [data-flux-button]):focus-visible {
+    outline: 3px solid var(--tb-editor-focus);
+    outline-offset: 3px;
+}
+
+.tb-profile-editor .tb-profile-preview {
+    background-color: var(--tb-editor-soft-bg);
+}
+
+.tb-profile-editor .tb-profile-notice {
+    background-color: var(--tb-editor-notice-bg);
+    color: var(--tb-editor-notice-text);
+}
+
+.tb-profile-editor .tb-profile-confirmation {
+    color: var(--tb-editor-success);
+    font-weight: 500;
+}

@@ -1,6 +1,6 @@
 <x-layouts.app title="Freelancer dashboard">
     <x-dashboard.heading title="Freelancer dashboard" description="Your space to get ready for what comes next." />
-    <x-dashboard.welcome :user="$user" action="Update your profile" />
+    <x-dashboard.welcome :user="$user" action="Update your profile" :profile-url="route('freelancer.profile.edit')" />
 
     <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div class="min-w-0 space-y-6">
@@ -13,8 +13,8 @@
                     <div>
                         <flux:icon.user-circle class="mb-3 size-6 text-teal-700 dark:text-teal-300" />
                         <h3 class="text-sm font-semibold">Keep your introduction current</h3>
-                        <p class="tb-muted mt-2 text-sm leading-6">Check your name and email so your account represents you clearly.</p>
-                        <a class="tb-text-link mt-4 inline-flex items-center gap-2 text-sm" href="{{ route('settings.profile') }}" wire:navigate>Review profile <flux:icon.arrow-up-right class="size-4" /></a>
+                        <p class="tb-muted mt-2 text-sm leading-6">Introduce your work, choose your skills, and keep your freelancer profile current.</p>
+                        <a class="tb-text-link mt-4 inline-flex items-center gap-2 text-sm" href="{{ route('freelancer.profile.edit') }}" wire:navigate>Review profile <flux:icon.arrow-up-right class="size-4" /></a>
                     </div>
                     <div>
                         <flux:icon.shield-check class="mb-3 size-6 text-teal-700 dark:text-teal-300" />
