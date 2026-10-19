@@ -232,3 +232,26 @@ select:focus[data-flux-control] {
     color: var(--tb-editor-success);
     font-weight: 500;
 }
+
+.tb-theme-trigger [x-cloak] {
+    display: none !important;
+}
+
+.tb-theme-trigger:focus-visible,
+.tb-theme-menu [data-flux-menu-radio][data-active] {
+    outline: 2px solid #0f766e;
+    outline-offset: 2px;
+}
+
+.dark .tb-theme-trigger:focus-visible,
+.dark .tb-theme-menu [data-flux-menu-radio][data-active] {
+    outline-color: #5eead4;
+}
+
+.tb-theme-menu [data-flux-menu-radio][data-checked] {
+    @apply bg-teal-50 font-semibold text-teal-900 dark:bg-teal-950 dark:text-teal-100;
+}
+
+.tb-theme-menu [data-flux-menu-radio][data-checked] [data-flux-menu-item-icon] {
+    color: inherit;
+}

@@ -90,7 +90,7 @@ class DashboardRenderingTest extends TestCase
             if ($href === '#main-content') {
                 $this->assertSame(1, $xpath->query('//*[@id="main-content"]')->length);
             } else {
-                $allowed = [route('dashboard'), route('settings.profile'), route('settings.password'), route('settings.appearance')];
+                $allowed = [route('dashboard'), route('settings.profile'), route('settings.password')];
                 if ($role === User::ROLE_FREELANCER) {
                     $allowed[] = route('freelancer.profile.edit');
                 }

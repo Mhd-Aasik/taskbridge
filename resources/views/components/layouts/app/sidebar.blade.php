@@ -11,7 +11,7 @@
         <flux:sidebar sticky collapsible="mobile" class="tb-sidebar dark h-dvh border-r border-slate-800 bg-[#101f35] text-white lg:w-64">
             <div class="flex shrink-0 items-center justify-between gap-3 px-1 pb-4 pt-3">
                 <a href="{{ route('dashboard') }}" class="flex min-w-0 items-center gap-3 rounded-lg" aria-label="TaskBridge dashboard" wire:navigate>
-                    <x-app-logo />
+                    <x-app-logo sidebar />
                 </a>
                 <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
             </div>
@@ -45,7 +45,7 @@
                     <p class="hidden text-xs text-slate-500 md:block dark:text-slate-400">Your TaskBridge workspace</p>
                 </div>
             </div>
-            <flux:button :href="route('settings.appearance')" variant="subtle" icon="swatch" square aria-label="Appearance settings" wire:navigate />
+            <x-theme-dropdown />
             <a href="{{ route('settings.profile') }}" class="flex size-9 shrink-0 items-center justify-center rounded-full border border-teal-200 bg-teal-50 text-xs font-bold text-teal-800 dark:border-teal-800 dark:bg-teal-950 dark:text-teal-200" aria-label="Profile settings" wire:navigate>{{ auth()->user()->initials() }}</a>
         </flux:header>
 
