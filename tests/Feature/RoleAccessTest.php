@@ -39,13 +39,13 @@ class RoleAccessTest extends TestCase
     }
 
     #[DataProvider('roles')]
-    public function test_all_roles_can_still_access_the_shared_dashboard(string $role): void
+    public function test_all_roles_can_access_the_dashboard_redirect(string $role): void
     {
         $user = User::factory()->create(['role' => $role]);
 
         $this->actingAs($user)
             ->get(route('dashboard'))
-            ->assertOk();
+            ->assertRedirect(route($role.'.dashboard'));
     }
 
     #[DataProvider('roles')]

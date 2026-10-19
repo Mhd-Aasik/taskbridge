@@ -12,7 +12,7 @@
             </a>
 
             <flux:navbar class="-mb-px max-lg:hidden">
-                <flux:navbar.item icon="layout-grid" href="{{ route('dashboard') }}" :current="request()->routeIs('dashboard')" wire:navigate>
+                <flux:navbar.item icon="layout-grid" href="{{ route('dashboard') }}" :current="request()->routeIs('dashboard', '*.dashboard')" wire:navigate>
                     Dashboard
                 </flux:navbar.item>
             </flux:navbar>
@@ -44,6 +44,8 @@
             </flux:navbar>
 
             <!-- Desktop User Menu -->
+            <x-user-role class="mr-2" />
+
             <flux:dropdown position="top" align="end">
                 <flux:profile
                     class="cursor-pointer"
@@ -73,7 +75,7 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
-                        <flux:menu.item href="/settings/profile" icon="cog" wire:navigate>Settings</flux:menu.item>
+                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>Settings</flux:menu.item>
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />
@@ -98,7 +100,7 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group heading="Platform">
-                    <flux:navlist.item icon="layout-grid" href="{{ route('dashboard') }}" :current="request()->routeIs('dashboard')" wire:navigate>
+                    <flux:navlist.item icon="layout-grid" href="{{ route('dashboard') }}" :current="request()->routeIs('dashboard', '*.dashboard')" wire:navigate>
                         Dashboard
                     </flux:navlist.item>
                 </flux:navlist.group>

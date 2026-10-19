@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -8,7 +9,16 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+Route::get('dashboard', function (Request $request) {
+    $dashboard = match ($request->user()->role) {
+        User::ROLE_CLIENT => 'client.dashboard',
+        User::ROLE_FREELANCER => 'freelancer.dashboard',
+        User::ROLE_ADMIN => 'admin.dashboard',
+        default => abort(403),
+    };
+
+    return to_route($dashboard);
+})
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 

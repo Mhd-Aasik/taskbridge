@@ -13,9 +13,13 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group heading="Platform" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard', '*.dashboard')" wire:navigate>Dashboard</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
+
+            <div class="px-2">
+                <x-user-role />
+            </div>
 
             <flux:spacer />
 
@@ -60,7 +64,7 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
-                        <flux:menu.item href="/settings/profile" icon="cog" wire:navigate>Settings</flux:menu.item>
+                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>Settings</flux:menu.item>
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />
@@ -80,6 +84,8 @@
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:spacer />
+
+            <x-user-role class="mr-2" />
 
             <flux:dropdown position="top" align="end">
                 <flux:profile
@@ -110,7 +116,7 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
-                        <flux:menu.item href="/settings/profile" icon="cog" wire:navigate>Settings</flux:menu.item>
+                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>Settings</flux:menu.item>
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />

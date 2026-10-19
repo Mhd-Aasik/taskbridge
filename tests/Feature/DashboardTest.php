@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
@@ -12,16 +13,39 @@ class DashboardTest extends TestCase
 
     public function test_guests_are_redirected_to_the_login_page(): void
     {
-        $response = $this->get('/dashboard');
+        $response = $this->get(route('dashboard'));
         $response->assertRedirect('/login');
     }
 
-    public function test_authenticated_users_can_visit_the_dashboard(): void
+    #[DataProvider('dashboardRoles')]
+    public function test_authenticated_users_are_redirected_to_their_role_dashboard(string $role, string $dashboard): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $user = User::factory()->create(['role' => $role]);
 
-        $response = $this->get('/dashboard');
-        $response->assertStatus(200);
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertRedirect($dashboard);
+
+        $this->get($dashboard)->assertOk();
+    }
+
+    public function test_unknown_roles_are_forbidden(): void
+    {
+        $user = User::factory()->make(['role' => 'unknown']);
+
+        $this->actingAs($user)->get(route('dashboard'))->assertForbidden();
+
+        foreach (self::dashboardRoles() as [$role, $dashboard]) {
+            $this->get($dashboard)->assertForbidden();
+        }
+    }
+
+    public static function dashboardRoles(): array
+    {
+        return [
+            'client' => [User::ROLE_CLIENT, '/client/dashboard'],
+            'freelancer' => [User::ROLE_FREELANCER, '/freelancer/dashboard'],
+            'admin' => [User::ROLE_ADMIN, '/admin/dashboard'],
+        ];
     }
 }
