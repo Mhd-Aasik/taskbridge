@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountPhotoController;
 use App\Http\Controllers\ClientProposalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FreelancerAssignmentController;
+use App\Http\Controllers\ProjectCoverController;
 use App\Http\Controllers\ProjectDiscoveryController;
 use App\Http\Controllers\ProjectPublicationController;
 use App\Http\Controllers\ProposalAcceptanceController;
@@ -60,6 +61,7 @@ Volt::route('freelancer/profile', 'freelancer.profile')
     ->name('freelancer.profile.edit');
 
 Volt::route('projects/{project}/plan', 'projects.plan')->middleware('auth')->whereNumber('project')->name('projects.plan');
+Route::get('projects/{project}/cover', ProjectCoverController::class)->middleware('auth')->whereNumber('project')->name('projects.cover');
 
 Route::middleware(['auth', 'role:'.User::ROLE_CLIENT])->prefix('client/projects')->name('client.projects.')->group(function () {
     Volt::route('/', 'client.projects.index')->name('index');

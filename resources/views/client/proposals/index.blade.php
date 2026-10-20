@@ -4,8 +4,13 @@
             <div class="min-w-0">
                 <p class="tb-eyebrow mb-2">Client workspace</p>
                 <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Project proposals</h1>
-                <p class="mt-2 break-words font-medium">{{ $project->title }}</p>
-                <p class="tb-muted mt-1 text-sm">{{ $project->proposals_count }} {{ Str::plural('proposal', $project->proposals_count) }} received for this project.</p>
+                <div class="mt-4 flex items-start gap-4">
+                    <x-projects.cover :project="$project" compact />
+                    <div class="min-w-0">
+                        <p class="break-words font-medium">{{ $project->title }}</p>
+                        <p class="tb-muted mt-1 text-sm">{{ $project->proposals_count }} {{ Str::plural('proposal', $project->proposals_count) }} received for this project.</p>
+                    </div>
+                </div>
             </div>
             <flux:button :href="route('client.projects.show', $project)" class="self-start shrink-0" icon="arrow-left" wire:navigate>Project review</flux:button>
         </div>

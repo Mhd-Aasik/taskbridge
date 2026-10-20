@@ -9,6 +9,8 @@
             <flux:button :href="route('freelancer.projects.index')" icon="arrow-left" class="self-start shrink-0" wire:navigate>Browse projects</flux:button>
         </div>
 
+        <x-projects.cover :project="$project" />
+
         <x-dashboard.panel title="Project details">
             <dl class="grid gap-6 p-5 sm:grid-cols-2 sm:p-6">
                 <div><dt class="tb-muted text-sm">Fixed budget</dt><dd class="mt-1 font-medium tabular-nums">{{ $project->formattedBudget() }}</dd></div>

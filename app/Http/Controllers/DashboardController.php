@@ -40,7 +40,7 @@ class DashboardController extends Controller
         return view('dashboards.freelancer', [
             'user' => $user,
             'assignmentCount' => $user->projectAssignments()->count(),
-            'recentAssignments' => $user->projectAssignments()->with('project:id,title,status')->orderByDesc('assigned_at')->orderByDesc('id')->limit(3)->get(),
+            'recentAssignments' => $user->projectAssignments()->with('project:id,title,status,cover_path')->orderByDesc('assigned_at')->orderByDesc('id')->limit(3)->get(),
         ]);
     }
 

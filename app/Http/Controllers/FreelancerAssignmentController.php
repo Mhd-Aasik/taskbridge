@@ -19,7 +19,7 @@ class FreelancerAssignmentController extends Controller
         $page = Validator::make($request->query(), ['page' => ['nullable', 'integer', 'min:1', 'max:10000']])->validate();
 
         return view('freelancer.assignments.index', [
-            'assignments' => $user->projectAssignments()->with(['project:id,title,client_id,status', 'project.client:id,name'])
+            'assignments' => $user->projectAssignments()->with(['project:id,title,client_id,status,cover_path', 'project.client:id,name'])
                 ->orderByDesc('assigned_at')->orderByDesc('id')->paginate(10, ['*'], 'page', (int) ($page['page'] ?? 1)),
         ]);
     }

@@ -54,6 +54,8 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
         <flux:button :href="route('client.projects.index')" icon="arrow-left" class="self-start shrink-0" wire:navigate>All projects</flux:button>
     </div>
 
+    <x-projects.cover :project="$project" />
+
     <p role="status" aria-live="polite" aria-atomic="true" class="tb-editor-confirmation">{{ session('project-publication') }}</p>
 
     @if ($errors->getBag('publication')->any())

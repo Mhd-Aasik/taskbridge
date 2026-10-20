@@ -18,7 +18,7 @@ new #[Layout('components.layouts.app'), Title('My proposals')] class extends Com
         abort_unless($user, 403);
         Gate::forUser($user)->authorize('viewAny', Proposal::class);
 
-        return ['proposals' => $user->submittedProposals()->with('project:id,title')->latest('submitted_at')->latest('id')->paginate(10)];
+        return ['proposals' => $user->submittedProposals()->with('project:id,title,cover_path')->latest('submitted_at')->latest('id')->paginate(10)];
     }
 }; ?>
 
@@ -37,8 +37,13 @@ new #[Layout('components.layouts.app'), Title('My proposals')] class extends Com
         <div class="space-y-4" aria-label="Your proposal list">
             @foreach ($proposals as $proposal)
                 <article class="tb-panel p-5 sm:p-6" wire:key="proposal-{{ $proposal->id }}">
-                    <h2 class="break-words text-lg font-semibold"><a class="tb-text-link" href="{{ route('freelancer.proposals.show', $proposal) }}" wire:navigate>{{ $proposal->project->title }}</a></h2>
-                    <p class="tb-muted mt-2 text-sm">Status: {{ Str::headline($proposal->status->value) }}</p>
+                    <div class="flex items-start gap-4">
+                        <x-projects.cover :project="$proposal->project" compact />
+                        <div class="min-w-0">
+                            <h2 class="break-words text-lg font-semibold"><a class="tb-text-link" href="{{ route('freelancer.proposals.show', $proposal) }}" wire:navigate>{{ $proposal->project->title }}</a></h2>
+                            <p class="tb-muted mt-2 text-sm">Status: {{ Str::headline($proposal->status->value) }}</p>
+                        </div>
+                    </div>
                     <p class="tb-muted mt-3 whitespace-pre-wrap break-words leading-7">{{ Str::limit($proposal->cover_letter, 220) }}</p>
                     <dl class="mt-5 grid gap-5 sm:grid-cols-3">
                         <div><dt class="tb-muted text-sm">Your offered budget</dt><dd class="mt-1 font-medium tabular-nums">{{ $proposal->formattedBudget() }}</dd></div>

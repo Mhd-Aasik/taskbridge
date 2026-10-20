@@ -1,20 +1,32 @@
 <?php
 
+use App\Actions\Projects\SaveProjectDraft;
 use App\Livewire\Forms\ProjectDraftForm;
 use App\Models\Category;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\ProjectCoverImages;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 
 new #[Layout('components.layouts.app'), Title('Project draft')] class extends Component {
+    use WithFileUploads;
+
     public ProjectDraftForm $form;
+
+    public $cover = null;
+
+    public bool $removeCover = false;
+
+    #[Locked]
+    public bool $previewReady = false;
 
     #[Locked]
     public ?int $projectId = null;
@@ -29,29 +41,67 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
         }
     }
 
-    public function save(): void
+    public function updatedCover(): void
     {
-        $id = DB::transaction(function (): int {
-            // Re-read and lock the persisted account and draft, never a submitted model.
-            [$user, $project] = $this->authorisedContext(lock: true);
-            $details = $this->form->validatedDetails();
-            $category = Category::query()->whereKey($details['category_id'])->where('is_active', true)->lockForUpdate()->first();
-            if (! $category) {
-                throw ValidationException::withMessages(['form.category_id' => 'Choose an active project category.']);
-            }
+        $this->authorisedContext();
+        $this->previewReady = false;
+        $this->removeCover = false;
+        $this->resetValidation('cover');
+        if ($this->cover !== null) {
+            app(ProjectCoverImages::class)->prepare($this->cover);
+            $this->previewReady = true;
+        }
+    }
 
-            if ($project) {
-                $project->fill($details)->saveOrFail();
-            } else {
-                $project = $user->projects()->create($details);
-            }
+    public function clearCover(): void
+    {
+        $this->authorisedContext();
+        $this->reset('cover', 'previewReady');
+        $this->resetValidation('cover');
+        $this->dispatch('project-cover-reset');
+    }
 
-            return $project->id;
-        });
+    public function updatedRemoveCover(): void
+    {
+        $this->authorisedContext();
+        if ($this->removeCover) {
+            $this->clearCover();
+        }
+    }
+
+    public function save(SaveProjectDraft $drafts): void
+    {
+        $this->authorisedContext();
+        $details = $this->form->validatedDetails();
+        $this->resetValidation('cover');
+        try {
+            $project = $drafts->save($this->projectId, $details, $this->cover, $this->removeCover);
+        } catch (ValidationException $exception) {
+            $errors = [];
+            foreach ($exception->errors() as $field => $messages) {
+                $errors[array_key_exists($field, $this->form->all()) ? 'form.'.$field : $field] = $messages;
+            }
+            throw ValidationException::withMessages($errors);
+        } catch (\Illuminate\Auth\Access\AuthorizationException|\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            report($exception);
+            $this->addError('cover', 'We could not save your draft. Your saved details and cover have been kept. Please try again.');
+
+            return;
+        }
 
         session()->flash('project-saved', $this->projectId ? 'Project changes saved.' : 'Project draft saved.');
-        $this->projectId = $id;
-        $this->redirectRoute('client.projects.edit', ['project' => $id], navigate: true);
+        $this->projectId = $project->id;
+        if ($this->cover instanceof TemporaryUploadedFile) {
+            try {
+                $this->cover->delete();
+            } catch (Throwable $exception) {
+                report($exception);
+            }
+        }
+        $this->reset('cover', 'previewReady', 'removeCover');
+        $this->redirectRoute('client.projects.edit', ['project' => $project->id], navigate: true);
     }
 
     protected function authorisedContext(bool $lock = false): array
@@ -86,6 +136,7 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
             'categories' => Category::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'inactiveCategory' => $category && ! $category->is_active ? $category : null,
             'earliestDeadline' => ProjectDraftForm::earliestDeadline(),
+            'savedProject' => $project,
         ];
     }
 }; ?>
@@ -113,9 +164,56 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
 
     <p role="status" aria-live="polite" aria-atomic="true" class="tb-editor-confirmation">{{ session('project-saved') }}</p>
 
-    <form wire:submit="save" class="space-y-6">
-        <fieldset wire:loading.attr="disabled" wire:target="save" class="min-w-0">
+    <form wire:submit="save" class="space-y-6"
+        x-data="{ preview: null, uploading: false, progress: 0, uploadError: '' }"
+        x-on:project-cover-reset.window="if (preview) URL.revokeObjectURL(preview); preview = null; $refs.cover.value = ''"
+        x-on:livewire-upload-start="uploading = true; progress = 0; uploadError = ''"
+        x-on:livewire-upload-finish="uploading = false"
+        x-on:livewire-upload-error="uploading = false; uploadError = 'The upload failed. Please choose the image again.'"
+        x-on:livewire-upload-cancel="uploading = false"
+        x-on:livewire-upload-progress="progress = $event.detail.progress"
+    >
+        <fieldset wire:loading.attr="disabled" wire:target="save,cover" class="min-w-0 space-y-6">
             <legend class="sr-only">Project draft details</legend>
+            <x-dashboard.panel title="Project cover (optional)" description="Add an image that supports your brief, or keep the simple category illustration.">
+                <div class="space-y-4 p-5 sm:p-6">
+                    @if ($savedProject?->coverUrl())
+                        <div class="max-w-md" x-show="! $wire.removeCover">
+                            <x-projects.cover :project="$savedProject" />
+                            <p class="tb-muted mt-2 text-sm">Saved cover</p>
+                        </div>
+                    @else
+                        <p class="tb-muted text-sm">No cover saved. Your project works just as well without an image.</p>
+                    @endif
+                    <template x-if="preview && $wire.previewReady && !uploading">
+                        <div class="max-w-md space-y-2">
+                            <img x-bind:src="preview" alt="Selected project cover preview" width="1600" height="700" class="aspect-[16/7] w-full rounded-xl border border-slate-300 object-cover dark:border-slate-600" />
+                            <p class="tb-muted text-sm">Private preview. This image is applied when you save the draft.</p>
+                        </div>
+                    </template>
+                    <flux:field>
+                        <flux:label for="project-cover-upload">Choose a cover image</flux:label>
+                        <input id="project-cover-upload" x-ref="cover" wire:model="cover" type="file" accept="image/jpeg,image/png,image/webp"
+                            aria-describedby="project-cover-help project-cover-error" @error('cover') aria-invalid="true" @enderror
+                            data-flux-control class="block w-full rounded-lg border border-slate-400 bg-slate-50 p-3 text-base text-slate-900 file:me-3 file:rounded-md file:border-0 file:bg-teal-700 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white dark:border-slate-500 dark:bg-[#142033] dark:text-slate-100 dark:file:bg-teal-300 dark:file:text-teal-950"
+                            x-on:change="if (preview) URL.revokeObjectURL(preview); preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null" />
+                        <flux:description id="project-cover-help">JPEG, PNG, or WebP. Up to 2 MiB and 4096 × 4096 pixels. Images are resized and metadata is removed.</flux:description>
+                        <flux:error name="cover" id="project-cover-error" />
+                    </flux:field>
+                    @if ($cover !== null)
+                        <flux:button type="button" wire:click="clearCover" wire:loading.attr="disabled" wire:target="cover,save,clearCover">Discard selected image</flux:button>
+                    @endif
+                    @if ($savedProject?->coverUrl())
+                        <flux:checkbox wire:model.live="removeCover" label="Remove the saved cover when saving this draft" />
+                    @endif
+                    @if ($removeCover)
+                        <p role="status" class="tb-muted text-sm">The saved cover will be removed when you save. Other project details will be kept.</p>
+                    @endif
+                    <p x-show="uploadError" x-cloak role="alert" class="text-sm font-medium text-red-700 dark:text-red-300" x-text="uploadError"></p>
+                    <p x-show="uploading" x-cloak role="status" class="tb-muted text-sm" x-text="'Uploading cover… ' + progress + '%'"></p>
+                    <p wire:loading wire:target="cover" role="status" class="tb-muted text-sm">Checking image…</p>
+                </div>
+            </x-dashboard.panel>
             <x-dashboard.panel title="Your project brief" description="A clear outcome, a realistic budget, and enough time to do good work.">
                 <div class="space-y-6 p-5 sm:p-6">
                     <flux:input wire:model="form.title" label="Project title" description="Up to 150 characters." maxlength="150" required />
@@ -146,7 +244,7 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
             </x-dashboard.panel>
         </fieldset>
         <div class="flex flex-wrap items-center gap-4">
-            <flux:button type="submit" variant="primary" wire:loading.attr="disabled" wire:target="save" :disabled="$categories->isEmpty()">
+            <flux:button type="submit" variant="primary" wire:loading.attr="disabled" wire:target="save,cover" x-bind:disabled="uploading || @js($categories->isEmpty())" :disabled="$categories->isEmpty()">
                 <span wire:loading.remove wire:target="save">{{ $projectId ? 'Save changes' : 'Save draft' }}</span>
                 <span wire:loading wire:target="save" role="status">Saving draft...</span>
             </flux:button>

@@ -9,6 +9,7 @@
             </div>
             <flux:button :href="route('freelancer.assignments.index')" class="self-start shrink-0" wire:navigate>Assigned projects</flux:button>
         </div>
+        <x-projects.cover :project="$assignment->project" />
         <x-dashboard.panel title="Agreed terms">
             <x-assignments.terms :assignment="$assignment" class="p-5 sm:p-6" />
         </x-dashboard.panel>

@@ -74,8 +74,13 @@ new #[Layout('components.layouts.app'), Title('Submit a proposal')] class extend
         <div class="min-w-0">
             <p class="tb-eyebrow mb-2">Freelancer workspace</p>
             <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Submit a proposal</h1>
-            <p class="mt-2 break-words font-medium">{{ $project->title }}</p>
-            <p class="tb-muted mt-1">{{ $project->category->name }}</p>
+            <div class="mt-4 flex items-start gap-4">
+                <x-projects.cover :project="$project" compact />
+                <div class="min-w-0">
+                    <p class="break-words font-medium">{{ $project->title }}</p>
+                    <p class="tb-muted mt-1">{{ $project->category->name }}</p>
+                </div>
+            </div>
         </div>
         <flux:button :href="route('freelancer.projects.index')" class="self-start shrink-0" wire:navigate>Browse projects</flux:button>
     </div>

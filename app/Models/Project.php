@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ProjectStatus;
+use App\Services\ProjectCovers;
 use Carbon\CarbonImmutable;
 use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,6 +20,8 @@ class Project extends Model
 
     protected $fillable = ['title', 'description', 'category_id', 'budget', 'deadline'];
 
+    protected $hidden = ['cover_path'];
+
     protected $attributes = ['status' => ProjectStatus::Draft->value];
 
     protected function casts(): array
@@ -28,6 +31,7 @@ class Project extends Model
             'category_id' => 'integer',
             'title' => 'string',
             'description' => 'string',
+            'cover_path' => 'string',
             // Fixed budget in LKR; keep the decimal value as a string.
             'budget' => 'decimal:2',
             'deadline' => 'immutable_date:Y-m-d',
@@ -69,6 +73,15 @@ class Project extends Model
             ->where('published_at', '<=', $now)
             ->whereHas('category', fn (Builder $category) => $category->where('is_active', true))
             ->whereDate('deadline', '>=', $now->setTimezone('Asia/Colombo')->toDateString());
+    }
+
+    public function coverUrl(): ?string
+    {
+        if (! ProjectCovers::ownsPath($this, $this->cover_path)) {
+            return null;
+        }
+
+        return route('projects.cover', ['project' => $this->getKey(), 'v' => substr(hash('sha256', $this->cover_path), 0, 16)]);
     }
 
     public function formattedBudget(): ?string

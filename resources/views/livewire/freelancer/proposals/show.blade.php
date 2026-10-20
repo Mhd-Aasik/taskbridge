@@ -27,7 +27,7 @@ new #[Layout('components.layouts.app'), Title('Your proposal')] class extends Co
         Gate::forUser($user)->authorize('view', $proposal);
 
         return [
-            'proposal' => $proposal->load(['project:id,title,budget', 'assignment']),
+            'proposal' => $proposal->load(['project:id,title,budget,cover_path', 'assignment']),
             'projectDiscoverable' => Project::query()->discoverable()->whereKey($proposal->project_id)->exists(),
             'submissionTime' => $proposal->submitted_at->setTimezone('Asia/Colombo'),
         ];
@@ -38,8 +38,13 @@ new #[Layout('components.layouts.app'), Title('Your proposal')] class extends Co
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="min-w-0">
             <p class="tb-eyebrow mb-2">Your proposal</p>
-            <h1 class="break-words text-2xl font-bold tracking-tight sm:text-3xl">{{ $proposal->project->title }}</h1>
-            <p class="tb-muted mt-2">Status: {{ Str::headline($proposal->status->value) }}</p>
+            <div class="flex items-start gap-4">
+                <x-projects.cover :project="$proposal->project" compact />
+                <div class="min-w-0">
+                    <h1 class="break-words text-2xl font-bold tracking-tight sm:text-3xl">{{ $proposal->project->title }}</h1>
+                    <p class="tb-muted mt-2">Status: {{ Str::headline($proposal->status->value) }}</p>
+                </div>
+            </div>
         </div>
         <flux:button :href="route('freelancer.proposals.index')" class="self-start shrink-0" wire:navigate>My proposals</flux:button>
     </div>

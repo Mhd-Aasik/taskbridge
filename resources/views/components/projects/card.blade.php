@@ -2,10 +2,13 @@
 
 <article {{ $attributes->class('tb-panel p-5 sm:p-6') }}>
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div class="min-w-0 space-y-2">
-            <p class="tb-muted text-sm">{{ $project->category->name }}{{ $project->category->is_active ? '' : ' (inactive)' }}</p>
-            <h2 class="break-words text-lg font-semibold tracking-tight"><a href="{{ route('client.projects.show', $project) }}" class="rounded-sm hover:text-teal-700 dark:hover:text-teal-300" wire:navigate>{{ $project->title }}</a></h2>
-            <span class="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">{{ Str::headline($project->status->value) }}</span>
+        <div class="flex min-w-0 items-start gap-4">
+            <x-projects.cover :project="$project" compact />
+            <div class="min-w-0 space-y-2">
+                <p class="tb-muted text-sm">{{ $project->category->name }}{{ $project->category->is_active ? '' : ' (inactive)' }}</p>
+                <h2 class="break-words text-lg font-semibold tracking-tight"><a href="{{ route('client.projects.show', $project) }}" class="rounded-sm hover:text-teal-700 dark:hover:text-teal-300" wire:navigate>{{ $project->title }}</a></h2>
+                <span class="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">{{ Str::headline($project->status->value) }}</span>
+            </div>
         </div>
         @can('update', $project)
             <flux:button :href="route('client.projects.edit', $project)" icon="pencil-square" class="self-start shrink-0" wire:navigate :aria-label="'Edit draft: '.$project->title">Edit draft</flux:button>

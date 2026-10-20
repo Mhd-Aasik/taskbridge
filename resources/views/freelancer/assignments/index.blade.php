@@ -23,10 +23,13 @@
                 @foreach ($assignments as $assignment)
                     <article class="tb-panel p-5 sm:p-6">
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                            <div class="min-w-0">
-                                <h2 class="break-words text-lg font-semibold">{{ $assignment->project->title }}</h2>
-                                <p class="tb-muted mt-1 break-words">Client: {{ $assignment->project->client->name }}</p>
-                                <p class="tb-muted mt-1 text-sm">Status: {{ Str::headline($assignment->project->status->value) }}</p>
+                            <div class="flex min-w-0 items-start gap-4">
+                                <x-projects.cover :project="$assignment->project" compact />
+                                <div class="min-w-0">
+                                    <h2 class="break-words text-lg font-semibold">{{ $assignment->project->title }}</h2>
+                                    <p class="tb-muted mt-1 break-words">Client: {{ $assignment->project->client->name }}</p>
+                                    <p class="tb-muted mt-1 text-sm">Status: {{ Str::headline($assignment->project->status->value) }}</p>
+                                </div>
                             </div>
                             <flux:button :href="route('freelancer.assignments.show', $assignment)" :aria-label="'View assigned project '.$assignment->project->title" class="self-start shrink-0" wire:navigate>View assigned project</flux:button>
                         </div>
