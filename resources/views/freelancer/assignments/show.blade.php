@@ -13,6 +13,9 @@
             <x-assignments.terms :assignment="$assignment" class="p-5 sm:p-6" />
         </x-dashboard.panel>
         <flux:button :href="route('projects.plan', $assignment->project_id)" icon="calendar-days" wire:navigate>Project plan</flux:button>
+        <x-dashboard.panel title="Project task progress" description="Task completion does not represent Client approval or project acceptance.">
+            <x-tasks.progress :progress="$taskProgress" class="p-5 sm:p-6" />
+        </x-dashboard.panel>
         <x-dashboard.panel title="Project brief">
             <p class="whitespace-pre-wrap break-words p-5 leading-7 sm:p-6">{{ $assignment->project->description }}</p>
         </x-dashboard.panel>

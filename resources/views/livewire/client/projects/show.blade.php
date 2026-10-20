@@ -3,6 +3,7 @@
 use App\Enums\ProjectStatus;
 use App\Models\Project;
 use App\Models\User;
+use App\Support\TaskProgress;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Layout;
@@ -25,9 +26,11 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
         abort_unless($user, 403);
         $project = Project::query()->findOrFail($this->projectId);
         Gate::forUser($user)->authorize('view', $project);
+        $project->load(['category', 'assignment.freelancer:id,name'])->loadCount('proposals');
 
         return [
-            'project' => $project->load(['category', 'assignment.freelancer:id,name'])->loadCount('proposals'),
+            'project' => $project,
+            'taskProgress' => $project->assignment ? TaskProgress::forAssignment($project->assignment) : null,
             'deadline' => $project->calendarDeadline(),
             'publicationTime' => $project->published_at?->toImmutable()->setTimezone('Asia/Colombo'),
             'statusDescription' => match ($project->status) {
@@ -80,6 +83,9 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
 
     @if ($project->assignment)
         <x-assignments.client-summary :assignment="$project->assignment" />
+        <x-dashboard.panel title="Project task progress" description="Task completion does not represent Client approval or project acceptance.">
+            <x-tasks.progress :progress="$taskProgress" class="p-5 sm:p-6" />
+        </x-dashboard.panel>
     @endif
 
     <x-dashboard.panel title="Project description">

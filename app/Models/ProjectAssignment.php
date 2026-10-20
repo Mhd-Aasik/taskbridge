@@ -67,4 +67,10 @@ class ProjectAssignment extends Model
     {
         return $this->hasMany(Milestone::class)->orderBy('position')->orderBy('id');
     }
+
+    /** @return HasMany<ProjectTask, $this> */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(ProjectTask::class);
+    }
 }

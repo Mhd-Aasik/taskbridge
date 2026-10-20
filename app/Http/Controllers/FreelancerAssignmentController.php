@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProjectAssignment;
 use App\Models\User;
+use App\Support\TaskProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -31,6 +32,7 @@ class FreelancerAssignmentController extends Controller
 
         return view('freelancer.assignments.show', [
             'assignment' => $assignment->load(['project', 'project.client:id,name', 'project.category:id,name']),
+            'taskProgress' => TaskProgress::forAssignment($assignment),
         ]);
     }
 

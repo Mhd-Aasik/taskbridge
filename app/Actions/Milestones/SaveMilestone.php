@@ -27,6 +27,11 @@ class SaveMilestone
                 ? [$milestone, $assignment, $project] : [Milestone::class, $assignment, $project]);
             $details = MilestoneRules::validatedDetails($assignment, $input);
             if ($milestone) {
+                // The shared assignment lock serializes this check with task saves/moves.
+                if ($milestone->tasks()->where('project_assignment_id', $assignment->id)
+                    ->whereDate('due_date', '>', $details['due_date'])->lockForUpdate()->first(['id'])) {
+                    throw ValidationException::withMessages(['due_date' => 'This date would put an attached task after its milestone. Change the affected task dates or membership first.']);
+                }
                 $milestone->fill($details);
             } else {
                 $position = ((int) $assignment->milestones()->reorder()->orderByDesc('position')->lockForUpdate()->value('position')) + 1;

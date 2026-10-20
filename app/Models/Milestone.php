@@ -7,6 +7,7 @@ use Database\Factories\MilestoneFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Milestone extends Model
 {
@@ -37,6 +38,12 @@ class Milestone extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /** @return HasMany<ProjectTask, $this> */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(ProjectTask::class);
     }
 
     public function isOverdue(): bool
