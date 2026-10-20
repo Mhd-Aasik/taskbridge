@@ -30,6 +30,14 @@ return [
 
     'disks' => [
 
+        'deliverables' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/deliverables'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => true,
+        ],
+
         'project_covers' => [
             'driver' => 'local',
             'root' => storage_path('app/private/project-covers'),

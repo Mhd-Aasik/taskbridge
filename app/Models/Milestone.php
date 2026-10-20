@@ -46,6 +46,12 @@ class Milestone extends Model
         return $this->hasMany(ProjectTask::class);
     }
 
+    /** @return HasMany<Deliverable, $this> */
+    public function deliverables(): HasMany
+    {
+        return $this->hasMany(Deliverable::class)->orderBy('id');
+    }
+
     public function isOverdue(): bool
     {
         return $this->due_date->toDateString() < CarbonImmutable::today('Asia/Colombo')->toDateString();

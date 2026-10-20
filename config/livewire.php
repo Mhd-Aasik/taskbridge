@@ -5,6 +5,7 @@ return [
 
     'temporary_file_upload' => [
         'disk' => 'local',
+        'rules' => ['required', 'file', 'max:10240'],
         'preview_mimes' => ['jpg', 'jpeg', 'png', 'webp'],
     ],
 ];

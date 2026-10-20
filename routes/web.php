@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountPhotoController;
 use App\Http\Controllers\ClientProposalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeliverableDownloadController;
 use App\Http\Controllers\FreelancerAssignmentController;
 use App\Http\Controllers\ProjectCoverController;
 use App\Http\Controllers\ProjectDiscoveryController;
@@ -62,6 +63,12 @@ Volt::route('freelancer/profile', 'freelancer.profile')
 
 Volt::route('projects/{project}/plan', 'projects.plan')->middleware('auth')->whereNumber('project')->name('projects.plan');
 Route::get('projects/{project}/cover', ProjectCoverController::class)->middleware('auth')->whereNumber('project')->name('projects.cover');
+Route::middleware('auth')->prefix('projects/{project}/deliverables')->whereNumber('project')->name('projects.deliverables.')->group(function () {
+    Volt::route('/', 'projects.deliverables.index')->name('index');
+    Volt::route('{deliverable}', 'projects.deliverables.show')->whereNumber('deliverable')->name('show');
+    Route::get('{deliverable}/versions/{version}/download', DeliverableDownloadController::class)
+        ->whereNumber(['deliverable', 'version'])->name('download');
+});
 
 Route::middleware(['auth', 'role:'.User::ROLE_CLIENT])->prefix('client/projects')->name('client.projects.')->group(function () {
     Volt::route('/', 'client.projects.index')->name('index');

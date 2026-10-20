@@ -73,4 +73,10 @@ class ProjectAssignment extends Model
     {
         return $this->hasMany(ProjectTask::class);
     }
+
+    /** @return HasMany<Deliverable, $this> */
+    public function deliverables(): HasMany
+    {
+        return $this->hasMany(Deliverable::class)->orderBy('id');
+    }
 }

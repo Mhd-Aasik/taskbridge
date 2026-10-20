@@ -83,6 +83,18 @@ class User extends Authenticatable
         return $this->hasMany(ProjectTask::class, 'created_by');
     }
 
+    /** @return HasMany<Deliverable, $this> */
+    public function createdDeliverables(): HasMany
+    {
+        return $this->hasMany(Deliverable::class, 'created_by');
+    }
+
+    /** @return HasMany<DeliverableVersion, $this> */
+    public function uploadedDeliverableVersions(): HasMany
+    {
+        return $this->hasMany(DeliverableVersion::class, 'uploaded_by');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;

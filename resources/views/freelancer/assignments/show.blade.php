@@ -13,7 +13,10 @@
         <x-dashboard.panel title="Agreed terms">
             <x-assignments.terms :assignment="$assignment" class="p-5 sm:p-6" />
         </x-dashboard.panel>
-        <flux:button :href="route('projects.plan', $assignment->project_id)" icon="calendar-days" wire:navigate>Project plan</flux:button>
+        <div class="flex flex-wrap gap-3">
+            <flux:button :href="route('projects.plan', $assignment->project_id)" icon="calendar-days" wire:navigate>Project plan</flux:button>
+            <flux:button :href="route('projects.deliverables.index', $assignment->project_id)" icon="document-text" wire:navigate>Deliverables</flux:button>
+        </div>
         <x-dashboard.panel title="Project task progress" description="Task completion does not represent Client approval or project acceptance.">
             <x-tasks.progress :progress="$taskProgress" class="p-5 sm:p-6" />
         </x-dashboard.panel>

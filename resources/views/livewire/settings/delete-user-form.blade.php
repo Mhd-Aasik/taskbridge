@@ -43,6 +43,11 @@ new class extends Component {
                     'password' => __('Your account cannot be deleted because it has task history. Project history must be preserved.'),
                 ]);
             }
+            if ($user->createdDeliverables()->exists() || $user->uploadedDeliverableVersions()->exists()) {
+                throw ValidationException::withMessages([
+                    'password' => __('Your account cannot be deleted because it has deliverable history. Submitted files and project history must be preserved.'),
+                ]);
+            }
 
             if (! $user->delete()) {
                 throw new RuntimeException('The account could not be deleted.');
