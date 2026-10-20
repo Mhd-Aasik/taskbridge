@@ -8,6 +8,11 @@ use App\Models\User;
 
 class ProjectPolicy
 {
+    public function browse(User $user): bool
+    {
+        return $user->isFreelancer();
+    }
+
     public function viewAny(User $user): bool
     {
         return $user->isClient();

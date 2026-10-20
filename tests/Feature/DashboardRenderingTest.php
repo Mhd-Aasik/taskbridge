@@ -93,6 +93,7 @@ class DashboardRenderingTest extends TestCase
                 $allowed = [route('dashboard'), route('settings.profile'), route('settings.password')];
                 if ($role === User::ROLE_FREELANCER) {
                     $allowed[] = route('freelancer.profile.edit');
+                    $allowed[] = route('freelancer.projects.index');
                 }
                 if ($role === User::ROLE_CLIENT) {
                     $allowed[] = route('client.projects.index');
@@ -116,7 +117,7 @@ class DashboardRenderingTest extends TestCase
     {
         return [
             'client' => [User::ROLE_CLIENT, 'Your projects will appear here.'],
-            'freelancer' => [User::ROLE_FREELANCER, 'Your projects will appear here.'],
+            'freelancer' => [User::ROLE_FREELANCER, 'Find your next collaboration'],
             'admin' => [User::ROLE_ADMIN, 'Account management and moderation tools are not available yet.'],
         ];
     }

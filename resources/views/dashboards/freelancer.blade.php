@@ -1,11 +1,15 @@
 <x-layouts.app title="Freelancer dashboard">
-    <x-dashboard.heading title="Freelancer dashboard" description="Your space to get ready for what comes next." />
-    <x-dashboard.welcome :user="$user" action="Update your profile" :profile-url="route('freelancer.profile.edit')" />
+    <x-dashboard.heading title="Freelancer dashboard" description="Find your next collaboration and keep your profile current." />
+    <x-dashboard.welcome :user="$user" action="Browse projects" :profile-url="route('freelancer.projects.index')" />
 
     <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div class="min-w-0 space-y-6">
-            <x-dashboard.panel title="Your work, in one place" description="A home for the opportunities ahead.">
-                <x-dashboard.empty-state icon="briefcase" title="Your projects will appear here." description="Project discovery and proposals are not available yet. Keep your account details current while you prepare for your next collaboration." />
+            <x-dashboard.panel title="Find your next collaboration" description="Explore open projects from TaskBridge clients.">
+                <div class="space-y-4 p-6">
+                    <p class="tb-muted leading-7">Browse published briefs by category, budget, and deadline. Read the project details to find work that fits your skills.</p>
+                    <p class="tb-muted text-sm leading-6">Proposals will be available in a later step.</p>
+                    <flux:button :href="route('freelancer.projects.index')" variant="primary" icon="magnifying-glass" wire:navigate>Browse projects</flux:button>
+                </div>
             </x-dashboard.panel>
 
             <x-dashboard.panel title="Build a strong foundation" description="Small steps that make a difference.">

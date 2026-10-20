@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountPhotoController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProjectDiscoveryController;
 use App\Http\Controllers\ProjectPublicationController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -61,6 +62,11 @@ Route::middleware(['auth', 'role:'.User::ROLE_CLIENT])->prefix('client/projects'
     Volt::route('{project}/edit', 'client.projects.editor')->name('edit');
     Volt::route('{project}', 'client.projects.show')->name('show');
     Route::post('{project}/publish', ProjectPublicationController::class)->name('publish');
+});
+
+Route::middleware(['auth', 'role:'.User::ROLE_FREELANCER])->prefix('freelancer/projects')->name('freelancer.projects.')->group(function () {
+    Route::get('/', [ProjectDiscoveryController::class, 'index'])->name('index');
+    Route::get('{project}', [ProjectDiscoveryController::class, 'show'])->whereNumber('project')->name('show');
 });
 
 require __DIR__.'/auth.php';

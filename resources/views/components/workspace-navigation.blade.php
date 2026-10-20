@@ -7,6 +7,7 @@
                 <flux:navlist.item icon="folder" :href="route('client.projects.index')" :current="request()->routeIs('client.projects.*')" wire:navigate>Projects</flux:navlist.item>
             @endif
             @if (auth()->user()->isFreelancer())
+                <flux:navlist.item icon="magnifying-glass" :href="route('freelancer.projects.index')" :current="request()->routeIs('freelancer.projects.*')" wire:navigate>Browse projects</flux:navlist.item>
                 <flux:navlist.item icon="user-circle" :href="route('freelancer.profile.edit')" :current="request()->routeIs('freelancer.profile.edit')" wire:navigate>Freelancer profile</flux:navlist.item>
             @endif
         </flux:navlist>

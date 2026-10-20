@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ProjectStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\ProjectFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,6 +44,17 @@ class Project extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /** @param Builder<Project> $query */
+    public function scopeDiscoverable(Builder $query): void
+    {
+        $now = CarbonImmutable::now('UTC');
+        $query->where('status', ProjectStatus::Open->value)
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', $now)
+            ->whereHas('category', fn (Builder $category) => $category->where('is_active', true))
+            ->whereDate('deadline', '>=', $now->setTimezone('Asia/Colombo')->toDateString());
     }
 
     public function formattedBudget(): ?string
