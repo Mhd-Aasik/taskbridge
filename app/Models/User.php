@@ -55,6 +55,16 @@ class User extends Authenticatable
         return $this->hasMany(Project::class, 'client_id');
     }
 
+    /**
+     * All proposals authored by this account, regardless of status.
+     *
+     * @return HasMany<Proposal, $this>
+     */
+    public function submittedProposals(): HasMany
+    {
+        return $this->hasMany(Proposal::class, 'freelancer_id');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;
