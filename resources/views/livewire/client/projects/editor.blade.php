@@ -102,7 +102,7 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
 
     <div class="tb-editor-notice flex items-start gap-3 rounded-xl border border-teal-200 p-4 dark:border-teal-900">
         <flux:icon.lock-closed class="mt-1 size-5 shrink-0" />
-        <p><strong>Drafts are private.</strong> They are not available to freelancers. Publishing is not available yet.</p>
+        <p><strong>Drafts are private.</strong> They are not available to freelancers. Review your saved draft before publishing.</p>
     </div>
 
     @if ($inactiveCategory)
@@ -151,6 +151,9 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
                 <span wire:loading wire:target="save" role="status">Saving draft...</span>
             </flux:button>
             <flux:button :href="route('client.projects.index')" variant="ghost" wire:navigate>Back to projects</flux:button>
+            @if ($projectId)
+                <flux:button :href="route('client.projects.show', $projectId)" wire:navigate>Review project</flux:button>
+            @endif
         </div>
     </form>
 </div>

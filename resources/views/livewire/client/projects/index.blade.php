@@ -36,7 +36,7 @@ new #[Layout('components.layouts.app'), Title('Your projects')] class extends Co
 
     @if ($projects->isEmpty())
         <x-dashboard.panel title="Start with a clear brief" description="Make space for your next collaboration.">
-            <x-dashboard.empty-state icon="folder-plus" title="Your projects will appear here." description="Create a private draft to capture your goals, category, budget, and deadline. You can edit it before publishing becomes available." />
+            <x-dashboard.empty-state icon="folder-plus" title="Your projects will appear here." description="Create a private draft to capture your goals, category, budget, and deadline. Review it and publish when you are ready." />
             <div class="flex justify-center px-6 pb-8">
                 <flux:button :href="route('client.projects.create')" variant="primary" wire:navigate>Create project</flux:button>
             </div>

@@ -18,10 +18,18 @@ class ProjectPolicy
         return $user->isClient();
     }
 
+    public function view(User $user, Project $project): bool
+    {
+        return $user->isClient() && $project->client_id === $user->id;
+    }
+
     public function update(User $user, Project $project): bool
     {
-        return $user->isClient()
-            && $project->client_id === $user->id
-            && $project->status === ProjectStatus::Draft;
+        return $this->view($user, $project) && $project->status === ProjectStatus::Draft;
+    }
+
+    public function publish(User $user, Project $project): bool
+    {
+        return $this->update($user, $project) && $project->getRawOriginal('published_at') === null;
     }
 }

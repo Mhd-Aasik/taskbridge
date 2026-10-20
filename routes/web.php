@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountPhotoController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProjectPublicationController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,8 @@ Route::middleware(['auth', 'role:'.User::ROLE_CLIENT])->prefix('client/projects'
     Volt::route('/', 'client.projects.index')->name('index');
     Volt::route('create', 'client.projects.editor')->name('create');
     Volt::route('{project}/edit', 'client.projects.editor')->name('edit');
+    Volt::route('{project}', 'client.projects.show')->name('show');
+    Route::post('{project}/publish', ProjectPublicationController::class)->name('publish');
 });
 
 require __DIR__.'/auth.php';

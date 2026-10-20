@@ -24,6 +24,8 @@ class ProjectPolicyTest extends TestCase
         $this->assertSame($role === User::ROLE_CLIENT, $gate->allows('viewAny', Project::class));
         $this->assertSame($role === User::ROLE_CLIENT, $gate->allows('create', Project::class));
         $this->assertSame($role === User::ROLE_CLIENT, $gate->allows('update', $project));
+        $this->assertSame($role === User::ROLE_CLIENT, $gate->allows('view', $project));
+        $this->assertSame($role === User::ROLE_CLIENT, $gate->allows('publish', $project));
     }
 
     #[DataProvider('statuses')]
@@ -34,6 +36,10 @@ class ProjectPolicyTest extends TestCase
 
         $this->assertSame($status === ProjectStatus::Draft, Gate::forUser($project->client)->allows('update', $project));
         $this->assertFalse(Gate::forUser($other)->allows('update', $project));
+        $this->assertTrue(Gate::forUser($project->client)->allows('view', $project));
+        $this->assertFalse(Gate::forUser($other)->allows('view', $project));
+        $this->assertSame($status === ProjectStatus::Draft, Gate::forUser($project->client)->allows('publish', $project));
+        $this->assertFalse(Gate::forUser($other)->allows('publish', $project));
     }
 
     public function test_guests_have_no_project_permissions(): void
@@ -43,6 +49,8 @@ class ProjectPolicyTest extends TestCase
         $this->assertFalse(Gate::allows('viewAny', Project::class));
         $this->assertFalse(Gate::allows('create', Project::class));
         $this->assertFalse(Gate::allows('update', $project));
+        $this->assertFalse(Gate::allows('view', $project));
+        $this->assertFalse(Gate::allows('publish', $project));
     }
 
     public static function roles(): array

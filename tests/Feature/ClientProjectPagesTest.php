@@ -98,7 +98,7 @@ class ClientProjectPagesTest extends TestCase
             ]);
         }
         $response = $this->actingAs($user)->get(route('client.projects.index'))->assertOk()
-            ->assertSeeText('Web Development')->assertSeeText('LKR 12345.67')->assertSeeText('20 Jan 2027')
+            ->assertSeeText('Web Development')->assertSeeText('LKR 12,345.67')->assertSeeText('20 Jan 2027')
             ->assertSeeText('Draft')->assertSeeText('Open')->assertSeeText('In Progress')->assertSeeText('Completed')->assertSeeText('Cancelled');
 
         $document = new DOMDocument;

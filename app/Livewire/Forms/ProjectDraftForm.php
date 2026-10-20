@@ -2,11 +2,8 @@
 
 namespace App\Livewire\Forms;
 
-use App\Models\Category;
 use App\Models\Project;
-use App\Rules\LkrBudget;
-use Carbon\CarbonImmutable;
-use Illuminate\Validation\Rule;
+use App\Support\ProjectRules;
 use Livewire\Form;
 
 class ProjectDraftForm extends Form
@@ -23,7 +20,7 @@ class ProjectDraftForm extends Form
 
     public static function earliestDeadline(): string
     {
-        return CarbonImmutable::today('Asia/Colombo')->addDay()->toDateString();
+        return ProjectRules::earliestDeadline();
     }
 
     public function updating(string $property): void
@@ -36,8 +33,10 @@ class ProjectDraftForm extends Form
         $this->title = $project->title;
         $this->description = $project->description;
         $this->category_id = (string) $project->category_id;
-        $this->budget = $project->budget;
-        $this->deadline = $project->deadline->toDateString();
+        $rawBudget = (string) $project->getRawOriginal('budget');
+        $this->budget = preg_match('/\A[0-9]+(?:\.[0-9]{1,2})?\z/', $rawBudget)
+            ? $this->normaliseBudget($rawBudget) : $rawBudget;
+        $this->deadline = $project->calendarDeadline()?->toDateString() ?? (string) $project->getRawOriginal('deadline');
     }
 
     public function validatedDetails(): array
@@ -46,28 +45,25 @@ class ProjectDraftForm extends Form
         $this->description = trim($this->description);
         $details = $this->validate();
 
-        [$whole, $fraction] = array_pad(explode('.', $details['budget'], 2), 2, '');
-        $details['budget'] = ltrim($whole, '0').'.'.str_pad($fraction, 2, '0');
+        $details['budget'] = $this->normaliseBudget($details['budget']);
 
         return $details;
     }
 
+    protected function normaliseBudget(string $amount): string
+    {
+        [$whole, $fraction] = array_pad(explode('.', $amount, 2), 2, '');
+
+        return (ltrim($whole, '0') ?: '0').'.'.str_pad($fraction, 2, '0');
+    }
+
     protected function rules(): array
     {
-        return [
-            'title' => ['required', 'string', 'max:150'],
-            'description' => ['required', 'string', 'max:10000'],
-            'category_id' => ['required', 'integer', Rule::exists(Category::class, 'id')->where('is_active', true)],
-            'budget' => ['bail', 'required', 'string', new LkrBudget],
-            'deadline' => ['bail', 'required', 'string', 'date_format:Y-m-d', 'after:'.CarbonImmutable::today('Asia/Colombo')->toDateString()],
-        ];
+        return ProjectRules::rules();
     }
 
     protected function messages(): array
     {
-        return [
-            'category_id.exists' => 'Choose an active project category.',
-            'deadline.after' => 'Choose a deadline tomorrow or later in Sri Lanka (Asia/Colombo).',
-        ];
+        return ProjectRules::messages();
     }
 }

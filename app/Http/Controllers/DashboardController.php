@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ProjectStatus;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,6 +19,8 @@ class DashboardController extends Controller
         return view('dashboards.client', [
             'user' => $user,
             'projectCount' => $user->projects()->count(),
+            'draftCount' => $user->projects()->where('status', ProjectStatus::Draft->value)->count(),
+            'openCount' => $user->projects()->where('status', ProjectStatus::Open->value)->count(),
             'recentProjects' => $user->projects()->with('category')->latest('updated_at')->latest('id')->limit(3)->get(),
         ]);
     }

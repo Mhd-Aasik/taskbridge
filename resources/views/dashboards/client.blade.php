@@ -7,7 +7,7 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="text-xl font-semibold">Your project workspace</h2>
-                    <p class="tb-muted mt-1 text-sm">{{ $projectCount }} {{ Str::plural('project', $projectCount) }}. Drafts are private.</p>
+                    <p class="tb-muted mt-1 text-sm">{{ $projectCount }} {{ Str::plural('project', $projectCount) }}. {{ $draftCount }} {{ Str::plural('draft', $draftCount) }}, {{ $openCount }} open. Drafts are private.</p>
                 </div>
                 <flux:button :href="route('client.projects.create')" variant="primary" icon="plus" class="self-start" wire:navigate>Create project</flux:button>
             </div>
@@ -15,7 +15,7 @@
                 <x-projects.card :project="$project" />
             @empty
                 <x-dashboard.panel title="Start your next project" description="Capture the details at your own pace.">
-                    <x-dashboard.empty-state icon="folder-plus" title="Your projects will appear here." description="Create a private draft with your brief, budget, and deadline. Publishing will be available separately." />
+                    <x-dashboard.empty-state icon="folder-plus" title="Your projects will appear here." description="Create a private draft with your brief, budget, and deadline. Review the saved details and publish when you are ready." />
                 </x-dashboard.panel>
             @endforelse
             <flux:button :href="route('client.projects.index')" wire:navigate>View all projects</flux:button>
