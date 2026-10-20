@@ -23,7 +23,14 @@
         </x-dashboard.panel>
 
         <div class="tb-editor-notice rounded-xl border border-teal-200 p-5 dark:border-teal-900">
-            <p>This project is open. Proposals will be available in a later step.</p>
+            <p>Submitting a proposal does not assign the project or guarantee acceptance.</p>
+            @if ($ownProposal)
+                <flux:button :href="route('freelancer.proposals.show', $ownProposal)" class="mt-4" wire:navigate>View your proposal</flux:button>
+            @elseif ($submissionUnavailable)
+                <p class="mt-3" role="note">{{ $submissionUnavailable }}</p>
+            @else
+                <flux:button :href="route('freelancer.proposals.create', $project)" variant="primary" class="mt-4" wire:navigate>Submit a proposal</flux:button>
+            @endif
         </div>
     </div>
 </x-layouts.app>

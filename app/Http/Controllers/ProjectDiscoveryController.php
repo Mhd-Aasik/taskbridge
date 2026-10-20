@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Project;
+use App\Models\Proposal;
 use App\Models\User;
 use App\Rules\LkrBudget;
+use App\Support\ProposalSubmissionRules;
 use Brick\Math\BigDecimal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -79,7 +81,7 @@ class ProjectDiscoveryController extends Controller
 
     public function show(Request $request, string $project): View
     {
-        $this->authorizeBrowse($request);
+        $user = $this->authorizeBrowse($request);
         $project = Project::query()->discoverable()
             ->with(['category:id,name', 'client:id,name'])->findOrFail($project);
 
@@ -87,14 +89,19 @@ class ProjectDiscoveryController extends Controller
             'project' => $project,
             'deadline' => $project->calendarDeadline(),
             'publicationTime' => $project->published_at->toImmutable()->setTimezone('Asia/Colombo'),
+            'ownProposal' => $user->submittedProposals()->where('project_id', $project->id)->first(['id']),
+            'submissionUnavailable' => Gate::forUser($user)->allows('create', [Proposal::class, $project])
+                ? ProposalSubmissionRules::unavailableReason($project) : 'You cannot submit a proposal to your own project.',
         ]);
     }
 
-    private function authorizeBrowse(Request $request): void
+    private function authorizeBrowse(Request $request): User
     {
         $user = User::query()->find($request->user()->id);
         abort_unless($user, 403);
         Gate::forUser($user)->authorize('browse', Project::class);
+
+        return $user;
     }
 
     /** @param Builder<Project> $query */

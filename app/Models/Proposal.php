@@ -39,6 +39,13 @@ class Proposal extends Model
         );
     }
 
+    public function formattedBudget(): string
+    {
+        [$whole, $fraction] = explode('.', $this->proposed_budget, 2);
+
+        return 'LKR '.preg_replace('/\B(?=(\d{3})+(?!\d))/', ',', $whole).'.'.$fraction;
+    }
+
     /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {

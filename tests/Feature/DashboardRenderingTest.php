@@ -94,6 +94,7 @@ class DashboardRenderingTest extends TestCase
                 if ($role === User::ROLE_FREELANCER) {
                     $allowed[] = route('freelancer.profile.edit');
                     $allowed[] = route('freelancer.projects.index');
+                    $allowed[] = route('freelancer.proposals.index');
                 }
                 if ($role === User::ROLE_CLIENT) {
                     $allowed[] = route('client.projects.index');

@@ -69,4 +69,10 @@ Route::middleware(['auth', 'role:'.User::ROLE_FREELANCER])->prefix('freelancer/p
     Route::get('{project}', [ProjectDiscoveryController::class, 'show'])->whereNumber('project')->name('show');
 });
 
+Route::middleware(['auth', 'role:'.User::ROLE_FREELANCER])->group(function () {
+    Volt::route('freelancer/projects/{project}/proposal', 'freelancer.proposals.create')->whereNumber('project')->name('freelancer.proposals.create');
+    Volt::route('freelancer/proposals', 'freelancer.proposals.index')->name('freelancer.proposals.index');
+    Volt::route('freelancer/proposals/{proposal}', 'freelancer.proposals.show')->whereNumber('proposal')->name('freelancer.proposals.show');
+});
+
 require __DIR__.'/auth.php';

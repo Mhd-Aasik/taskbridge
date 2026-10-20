@@ -38,6 +38,7 @@ class DashboardNavigationTest extends TestCase
         $this->assertSame($role === User::ROLE_FREELANCER ? 1 : 0, $xpath->query('//nav[@aria-label="Workspace navigation"]//a[@href="'.route('freelancer.profile.edit').'"]')->length);
         $this->assertSame($role === User::ROLE_CLIENT ? 1 : 0, $xpath->query('//nav[@aria-label="Workspace navigation"]//a[@href="'.route('client.projects.index').'"]')->length);
         $this->assertSame($role === User::ROLE_FREELANCER ? 1 : 0, $xpath->query('//nav[@aria-label="Workspace navigation"]//a[@href="'.route('freelancer.projects.index').'"]')->length);
+        $this->assertSame($role === User::ROLE_FREELANCER ? 1 : 0, $xpath->query('//nav[@aria-label="Workspace navigation"]//a[@href="'.route('freelancer.proposals.index').'"]')->length);
         $this->assertStringNotContainsString('A little clarity. Better work.', $document->textContent);
         $this->assertStringNotContainsString('Your people, your ideas, your next chapter.', $document->textContent);
 

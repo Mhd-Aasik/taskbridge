@@ -7,8 +7,9 @@
             <x-dashboard.panel title="Find your next collaboration" description="Explore open projects from TaskBridge clients.">
                 <div class="space-y-4 p-6">
                     <p class="tb-muted leading-7">Browse published briefs by category, budget, and deadline. Read the project details to find work that fits your skills.</p>
-                    <p class="tb-muted text-sm leading-6">Proposals will be available in a later step.</p>
+                    <p class="tb-muted text-sm leading-6">Send a considered proposal, then follow its status in My proposals. Submission does not guarantee acceptance.</p>
                     <flux:button :href="route('freelancer.projects.index')" variant="primary" icon="magnifying-glass" wire:navigate>Browse projects</flux:button>
+                    <flux:button :href="route('freelancer.proposals.index')" wire:navigate>My proposals</flux:button>
                 </div>
             </x-dashboard.panel>
 
