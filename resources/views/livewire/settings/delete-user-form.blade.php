@@ -33,6 +33,11 @@ new class extends Component {
                     'password' => __('Your account cannot be deleted because it has proposals. Proposal history must be preserved.'),
                 ]);
             }
+            if ($user->createdMilestones()->exists()) {
+                throw ValidationException::withMessages([
+                    'password' => __('Your account cannot be deleted because it has milestone history. Planning history must be preserved.'),
+                ]);
+            }
 
             if (! $user->delete()) {
                 throw new RuntimeException('The account could not be deleted.');

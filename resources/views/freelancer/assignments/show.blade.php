@@ -12,6 +12,7 @@
         <x-dashboard.panel title="Agreed terms">
             <x-assignments.terms :assignment="$assignment" class="p-5 sm:p-6" />
         </x-dashboard.panel>
+        <flux:button :href="route('projects.plan', $assignment->project_id)" icon="calendar-days" wire:navigate>Project plan</flux:button>
         <x-dashboard.panel title="Project brief">
             <p class="whitespace-pre-wrap break-words p-5 leading-7 sm:p-6">{{ $assignment->project->description }}</p>
         </x-dashboard.panel>

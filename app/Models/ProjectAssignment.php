@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProjectAssignment extends Model
 {
@@ -59,5 +60,11 @@ class ProjectAssignment extends Model
     public function freelancer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'freelancer_id');
+    }
+
+    /** @return HasMany<Milestone, $this> */
+    public function milestones(): HasMany
+    {
+        return $this->hasMany(Milestone::class)->orderBy('position')->orderBy('id');
     }
 }

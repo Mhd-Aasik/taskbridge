@@ -17,7 +17,8 @@ These confirmations do not cover all devices, themes, or keyboard interactions i
 - Private Client proposal lists and details, status filters, sort order, pagination, real counts, and return links.
 - Client acceptance confirmation, advertised/offered term comparison, cancel/confirm keyboard focus, loading feedback, validation, retry messages, and project/proposal status refresh.
 - Both parties' assignment summaries, Freelancer assigned-project list/detail, pagination, history links, real dashboard counts, and empty states. Check that only necessary display information is visible.
-- Parallel acceptance/submission verification against an isolated MySQL test database; never use development records for concurrency tests.
+- Private project planning for the owning Client and assigned Freelancer: create/edit/cancel flows, retained validation input, read-only history, date bounds, overdue labels, escaped long text, and links back to each party's workspace. Verify keyboard focus when loading a milestone into the editor and save announcements in both themes and on mobile.
+- Parallel acceptance/submission and milestone-addition verification against an isolated MySQL test database; never use development records for concurrency tests.
 - Long titles, display names, cover letters, large LKR amounts, and Sri Lankan calendar dates and timestamps on small screens.
 - Identify the resource URL for the previously reported unused-preload warning. The earlier console screenshot included an extension script error; the console has not been verified clear.
 

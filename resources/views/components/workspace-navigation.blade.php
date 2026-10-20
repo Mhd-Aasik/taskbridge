@@ -4,12 +4,12 @@
         <flux:navlist>
             <flux:navlist.item icon="squares-2x2" :href="route('dashboard')" :current="request()->routeIs('dashboard', '*.dashboard')" wire:navigate>Dashboard</flux:navlist.item>
             @if (auth()->user()->isClient())
-                <flux:navlist.item icon="folder" :href="route('client.projects.index')" :current="request()->routeIs('client.projects.*')" wire:navigate>Projects</flux:navlist.item>
+                <flux:navlist.item icon="folder" :href="route('client.projects.index')" :current="request()->routeIs('client.projects.*', 'projects.plan')" wire:navigate>Projects</flux:navlist.item>
             @endif
             @if (auth()->user()->isFreelancer())
                 <flux:navlist.item icon="magnifying-glass" :href="route('freelancer.projects.index')" :current="request()->routeIs('freelancer.projects.*', 'freelancer.proposals.create')" wire:navigate>Browse projects</flux:navlist.item>
                 <flux:navlist.item icon="document-text" :href="route('freelancer.proposals.index')" :current="request()->routeIs('freelancer.proposals.*') && ! request()->routeIs('freelancer.proposals.create')" wire:navigate>My proposals</flux:navlist.item>
-                <flux:navlist.item icon="briefcase" :href="route('freelancer.assignments.index')" :current="request()->routeIs('freelancer.assignments.*')" wire:navigate>Assigned projects</flux:navlist.item>
+                <flux:navlist.item icon="briefcase" :href="route('freelancer.assignments.index')" :current="request()->routeIs('freelancer.assignments.*', 'projects.plan')" wire:navigate>Assigned projects</flux:navlist.item>
                 <flux:navlist.item icon="user-circle" :href="route('freelancer.profile.edit')" :current="request()->routeIs('freelancer.profile.edit')" wire:navigate>Freelancer profile</flux:navlist.item>
             @endif
         </flux:navlist>
