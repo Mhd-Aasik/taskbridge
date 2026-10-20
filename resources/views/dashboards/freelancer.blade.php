@@ -4,6 +4,18 @@
 
     <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div class="min-w-0 space-y-6">
+            <x-dashboard.panel title="Your assigned projects" description="Agreed work selected by clients.">
+                <div class="space-y-4 p-6">
+                    <p class="tb-muted">{{ $assignmentCount }} assigned {{ Str::plural('project', $assignmentCount) }}.</p>
+                    @forelse ($recentAssignments as $assignment)
+                        <a href="{{ route('freelancer.assignments.show', $assignment) }}" class="tb-text-link block break-words" wire:navigate>{{ $assignment->project->title }} · {{ $assignment->formattedBudget() }}</a>
+                    @empty
+                        <p class="tb-muted leading-7">When a client accepts your proposal, your assigned project will appear here.</p>
+                    @endforelse
+                    <flux:button :href="route('freelancer.assignments.index')" icon="briefcase" wire:navigate>Assigned projects</flux:button>
+                </div>
+            </x-dashboard.panel>
+
             <x-dashboard.panel title="Find your next collaboration" description="Explore open projects from TaskBridge clients.">
                 <div class="space-y-4 p-6">
                     <p class="tb-muted leading-7">Browse published briefs by category, budget, and deadline. Read the project details to find work that fits your skills.</p>

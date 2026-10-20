@@ -32,4 +32,10 @@ class ProposalPolicy
     {
         return $this->reviewAny($user, $project) && $proposal->project_id === $project->id;
     }
+
+    public function accept(User $user, Proposal $proposal, Project $project): bool
+    {
+        // State is rechecked under transaction locks, including idempotent retries.
+        return $this->review($user, $proposal, $project);
+    }
 }

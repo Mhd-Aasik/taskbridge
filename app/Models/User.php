@@ -65,6 +65,12 @@ class User extends Authenticatable
         return $this->hasMany(Proposal::class, 'freelancer_id');
     }
 
+    /** @return HasMany<ProjectAssignment, $this> */
+    public function projectAssignments(): HasMany
+    {
+        return $this->hasMany(ProjectAssignment::class, 'freelancer_id');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;

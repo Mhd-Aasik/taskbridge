@@ -9,6 +9,7 @@
                     <h2 class="text-xl font-semibold">Your project workspace</h2>
                     <p class="tb-muted mt-1 text-sm">{{ $projectCount }} {{ Str::plural('project', $projectCount) }}. {{ $draftCount }} {{ Str::plural('draft', $draftCount) }}, {{ $openCount }} open. Drafts are private.</p>
                     <p class="tb-muted mt-2 text-sm">{{ $receivedProposalCount }} {{ Str::plural('proposal', $receivedProposalCount) }} received across your projects.</p>
+                    <p class="tb-muted mt-2 text-sm">{{ $assignedProjectCount }} {{ Str::plural('project', $assignedProjectCount) }} assigned to freelancers.</p>
                 </div>
                 <flux:button :href="route('client.projects.create')" variant="primary" icon="plus" class="self-start" wire:navigate>Create project</flux:button>
             </div>

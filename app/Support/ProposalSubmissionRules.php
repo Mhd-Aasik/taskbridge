@@ -20,6 +20,9 @@ class ProposalSubmissionRules
 
     public static function unavailableReason(Project $project): ?string
     {
+        if ($project->assignment()->exists()) {
+            return 'This project already has an assigned freelancer and is closed to new proposals.';
+        }
         if (! Project::query()->discoverable()->whereKey($project->id)->exists()) {
             return 'This project is no longer available for proposals. It must be open, published, in an active category, and within its deadline.';
         }

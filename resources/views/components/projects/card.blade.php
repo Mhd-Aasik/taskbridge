@@ -17,6 +17,9 @@
         <div><dt class="tb-muted">Deadline</dt><dd class="mt-1 text-base font-medium">@if ($deadline = $project->calendarDeadline())<time datetime="{{ $deadline->toDateString() }}">{{ $deadline->format('j M Y') }}</time>@else Deadline needs correction. @endif</dd></div>
     </dl>
     @can('reviewAny', [\App\Models\Proposal::class, $project])
+        @if ($project->assignment)
+            <p class="tb-muted mt-4 break-words text-sm">Assigned to {{ $project->assignment->freelancer->name }} · {{ $project->assignment->formattedBudget() }} · {{ $project->assignment->agreed_deadline->format('j M Y') }}</p>
+        @endif
         <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
             <p class="tb-muted text-sm">{{ $project->proposals_count }} {{ Str::plural('proposal', $project->proposals_count) }}</p>
             <flux:button :href="route('client.projects.proposals.index', $project)" :aria-label="'View proposals for '.$project->title" wire:navigate>View proposals</flux:button>

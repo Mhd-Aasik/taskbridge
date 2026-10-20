@@ -55,9 +55,11 @@ class ClientProposalReviewTest extends TestCase
             $this->get($url)->assertOk()->assertSeeText('Samara Silva')->assertSeeText('Accessible website')
                 ->assertSeeText('Status: Submitted')->assertSeeText('LKR 35,000.50')->assertSeeText('LKR 25,000.50')
                 ->assertSeeText('23 October 2026')->assertSeeText('20 October 2026, 5:30 pm (Asia/Colombo)')
-                ->assertSeeText('My approach to this project.')->assertDontSeeText('Accept proposal')
+                ->assertSeeText('My approach to this project.')
                 ->assertDontSeeText('Reject proposal')->assertDontSeeText('Assign project');
         }
+        $this->get($this->detailUrl($proposal))->assertSeeText('Accept proposal');
+        $this->get($this->listUrl($proposal->project))->assertDontSeeText('Accept proposal');
         $this->assertSame($before, $proposal->fresh()->getAttributes());
         $this->assertSame($projectBefore, $proposal->project->fresh()->getAttributes());
         $this->post($this->detailUrl($proposal))->assertStatus(405);

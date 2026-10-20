@@ -27,7 +27,7 @@ new #[Layout('components.layouts.app'), Title('Your proposal')] class extends Co
         Gate::forUser($user)->authorize('view', $proposal);
 
         return [
-            'proposal' => $proposal->load('project:id,title,budget'),
+            'proposal' => $proposal->load(['project:id,title,budget', 'assignment']),
             'projectDiscoverable' => Project::query()->discoverable()->whereKey($proposal->project_id)->exists(),
             'submissionTime' => $proposal->submitted_at->setTimezone('Asia/Colombo'),
         ];
@@ -45,6 +45,14 @@ new #[Layout('components.layouts.app'), Title('Your proposal')] class extends Co
     </div>
 
     <p role="status" aria-live="polite" aria-atomic="true" class="tb-editor-confirmation">{{ session('proposal-submission') }}</p>
+    @if ($proposal->assignment)
+        <x-dashboard.panel title="Your accepted assignment">
+            <div class="space-y-5 p-5 sm:p-6">
+                <x-assignments.terms :assignment="$proposal->assignment" />
+                <flux:button :href="route('freelancer.assignments.show', $proposal->assignment)" wire:navigate>View assigned project</flux:button>
+            </div>
+        </x-dashboard.panel>
+    @endif
     <div class="tb-editor-notice rounded-xl border border-teal-200 p-5 dark:border-teal-900">
         <p>Submitting a proposal does not assign the project or guarantee acceptance. This is a read-only record of your offer.</p>
         @if ($projectDiscoverable)

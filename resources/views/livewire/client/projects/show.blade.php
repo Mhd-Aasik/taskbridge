@@ -27,7 +27,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
         Gate::forUser($user)->authorize('view', $project);
 
         return [
-            'project' => $project->load('category')->loadCount('proposals'),
+            'project' => $project->load(['category', 'assignment.freelancer:id,name'])->loadCount('proposals'),
             'deadline' => $project->calendarDeadline(),
             'publicationTime' => $project->published_at?->toImmutable()->setTimezone('Asia/Colombo'),
             'statusDescription' => match ($project->status) {
@@ -77,6 +77,10 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
             <div class="sm:col-span-2"><dt class="tb-muted text-sm">Publication time</dt><dd class="mt-1">@if ($publicationTime)<time datetime="{{ $publicationTime->toIso8601String() }}">{{ $publicationTime->format('j F Y, g:i a') }} (Asia/Colombo)</time>@else Not published @endif</dd></div>
         </dl>
     </x-dashboard.panel>
+
+    @if ($project->assignment)
+        <x-assignments.client-summary :assignment="$project->assignment" />
+    @endif
 
     <x-dashboard.panel title="Project description">
         <p class="whitespace-pre-wrap break-words p-5 leading-7 sm:p-6">{{ $project->description }}</p>

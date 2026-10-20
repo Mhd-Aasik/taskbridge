@@ -59,7 +59,7 @@ class ClientProposalController extends Controller
         }
 
         return response()->view('client.proposals.index', [
-            'project' => $project->loadCount('proposals'),
+            'project' => $project->load('assignment.freelancer:id,name')->loadCount('proposals'),
             'proposals' => $proposals,
             'filters' => $filters,
             'sorts' => self::SORTS,
@@ -75,7 +75,7 @@ class ClientProposalController extends Controller
         $proposal = $project->proposals()->with('freelancer:id,name')->findOrFail($proposal->id);
         Gate::forUser($user)->authorize('review', [$proposal, $project]);
 
-        return view('client.proposals.show', ['project' => $project, 'proposal' => $proposal]);
+        return view('client.proposals.show', ['project' => $project->load(['category', 'assignment.freelancer:id,name']), 'proposal' => $proposal]);
     }
 
     private function context(Request $request, Project $project): array

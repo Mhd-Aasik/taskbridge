@@ -29,12 +29,14 @@ class SubmitProposal
             $project = Project::query()->lockForUpdate()->findOrFail($projectId);
             Gate::forUser($user)->authorize('create', [Proposal::class, $project]);
 
+            Category::query()->whereKey($project->category_id)->lockForUpdate()->first();
             if ($existing = $this->existing($user, $project)) {
                 return ['proposal' => $existing, 'created' => false];
             }
             if ($reason = ProposalSubmissionRules::unavailableReason($project)) {
                 throw ValidationException::withMessages(['project' => $reason]);
             }
+            // Keep the lock order above, and re-read persisted activity at the final eligibility check.
             $category = Category::query()->whereKey($project->category_id)->lockForUpdate()->first();
             if (! $category?->is_active) {
                 throw ValidationException::withMessages(['project' => 'This project category is no longer active. Proposals are unavailable.']);

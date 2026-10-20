@@ -19,7 +19,7 @@ new #[Layout('components.layouts.app'), Title('Your projects')] class extends Co
         Gate::forUser($user)->authorize('viewAny', Project::class);
 
         return [
-            'projects' => $user->projects()->with('category')->withCount('proposals')->latest('updated_at')->latest('id')->paginate(10),
+            'projects' => $user->projects()->with(['category', 'assignment.freelancer:id,name'])->withCount('proposals')->latest('updated_at')->latest('id')->paginate(10),
         ];
     }
 }; ?>

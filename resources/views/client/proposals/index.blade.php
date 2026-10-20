@@ -10,6 +10,10 @@
             <flux:button :href="route('client.projects.show', $project)" class="self-start shrink-0" icon="arrow-left" wire:navigate>Project review</flux:button>
         </div>
 
+        @if ($project->assignment)
+            <x-assignments.client-summary :assignment="$project->assignment" />
+        @endif
+
         <x-dashboard.panel title="Filter proposals">
             <form method="GET" action="{{ route('client.projects.proposals.index', $project) }}" class="space-y-5 p-5 sm:p-6" x-data="{ filtering: false }" x-on:submit="filtering = true" x-on:pageshow.window="filtering = false" x-on:livewire:navigated.window="filtering = false" x-bind:aria-busy="filtering">
                 <div class="grid items-start gap-5 sm:grid-cols-2">

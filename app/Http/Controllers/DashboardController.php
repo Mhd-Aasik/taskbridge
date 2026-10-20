@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ProjectStatus;
 use App\Models\Project;
+use App\Models\ProjectAssignment;
 use App\Models\Proposal;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,14 +25,23 @@ class DashboardController extends Controller
             'projectCount' => $user->projects()->count(),
             'draftCount' => $user->projects()->where('status', ProjectStatus::Draft->value)->count(),
             'openCount' => $user->projects()->where('status', ProjectStatus::Open->value)->count(),
+            'assignedProjectCount' => $user->projects()->whereHas('assignment')->count(),
             'receivedProposalCount' => Proposal::query()->whereHas('project', fn (Builder $projects) => $projects->where('client_id', $user->id))->count(),
-            'recentProjects' => $user->projects()->with('category')->withCount('proposals')->latest('updated_at')->latest('id')->limit(3)->get(),
+            'recentProjects' => $user->projects()->with(['category', 'assignment.freelancer:id,name'])->withCount('proposals')->latest('updated_at')->latest('id')->limit(3)->get(),
         ]);
     }
 
     public function freelancer(Request $request): View
     {
-        return view('dashboards.freelancer', ['user' => $request->user()]);
+        $user = User::query()->find($request->user()->id);
+        abort_unless($user, 403);
+        Gate::forUser($user)->authorize('viewAny', ProjectAssignment::class);
+
+        return view('dashboards.freelancer', [
+            'user' => $user,
+            'assignmentCount' => $user->projectAssignments()->count(),
+            'recentAssignments' => $user->projectAssignments()->with('project:id,title,status')->orderByDesc('assigned_at')->orderByDesc('id')->limit(3)->get(),
+        ]);
     }
 
     public function admin(Request $request): View

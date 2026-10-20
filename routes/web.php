@@ -3,8 +3,10 @@
 use App\Http\Controllers\AccountPhotoController;
 use App\Http\Controllers\ClientProposalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FreelancerAssignmentController;
 use App\Http\Controllers\ProjectDiscoveryController;
 use App\Http\Controllers\ProjectPublicationController;
+use App\Http\Controllers\ProposalAcceptanceController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +67,7 @@ Route::middleware(['auth', 'role:'.User::ROLE_CLIENT])->prefix('client/projects'
     Route::post('{project}/publish', ProjectPublicationController::class)->name('publish');
     Route::get('{project}/proposals', [ClientProposalController::class, 'index'])->whereNumber('project')->name('proposals.index');
     Route::get('{project}/proposals/{proposal}', [ClientProposalController::class, 'show'])->whereNumber(['project', 'proposal'])->scopeBindings()->name('proposals.show');
+    Route::post('{project}/proposals/{proposal}/accept', ProposalAcceptanceController::class)->whereNumber(['project', 'proposal'])->scopeBindings()->name('proposals.accept');
 });
 
 Route::middleware(['auth', 'role:'.User::ROLE_FREELANCER])->prefix('freelancer/projects')->name('freelancer.projects.')->group(function () {
@@ -73,6 +76,8 @@ Route::middleware(['auth', 'role:'.User::ROLE_FREELANCER])->prefix('freelancer/p
 });
 
 Route::middleware(['auth', 'role:'.User::ROLE_FREELANCER])->group(function () {
+    Route::get('freelancer/assigned-projects', [FreelancerAssignmentController::class, 'index'])->name('freelancer.assignments.index');
+    Route::get('freelancer/assigned-projects/{assignment}', [FreelancerAssignmentController::class, 'show'])->whereNumber('assignment')->name('freelancer.assignments.show');
     Volt::route('freelancer/projects/{project}/proposal', 'freelancer.proposals.create')->whereNumber('project')->name('freelancer.proposals.create');
     Volt::route('freelancer/proposals', 'freelancer.proposals.index')->name('freelancer.proposals.index');
     Volt::route('freelancer/proposals/{proposal}', 'freelancer.proposals.show')->whereNumber('proposal')->name('freelancer.proposals.show');
