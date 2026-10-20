@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountPhotoController;
+use App\Http\Controllers\ClientProposalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectDiscoveryController;
 use App\Http\Controllers\ProjectPublicationController;
@@ -62,6 +63,8 @@ Route::middleware(['auth', 'role:'.User::ROLE_CLIENT])->prefix('client/projects'
     Volt::route('{project}/edit', 'client.projects.editor')->name('edit');
     Volt::route('{project}', 'client.projects.show')->name('show');
     Route::post('{project}/publish', ProjectPublicationController::class)->name('publish');
+    Route::get('{project}/proposals', [ClientProposalController::class, 'index'])->whereNumber('project')->name('proposals.index');
+    Route::get('{project}/proposals/{proposal}', [ClientProposalController::class, 'show'])->whereNumber(['project', 'proposal'])->scopeBindings()->name('proposals.show');
 });
 
 Route::middleware(['auth', 'role:'.User::ROLE_FREELANCER])->prefix('freelancer/projects')->name('freelancer.projects.')->group(function () {

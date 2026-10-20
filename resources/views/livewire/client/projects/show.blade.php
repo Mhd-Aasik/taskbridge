@@ -27,7 +27,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
         Gate::forUser($user)->authorize('view', $project);
 
         return [
-            'project' => $project->load('category'),
+            'project' => $project->load('category')->loadCount('proposals'),
             'deadline' => $project->calendarDeadline(),
             'publicationTime' => $project->published_at?->toImmutable()->setTimezone('Asia/Colombo'),
             'statusDescription' => match ($project->status) {
@@ -83,6 +83,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
     </x-dashboard.panel>
 
     <div class="flex flex-wrap items-center gap-3">
+        <flux:button :href="route('client.projects.proposals.index', $project)" icon="document-text" wire:navigate>View proposals ({{ $project->proposals_count }})</flux:button>
         @can('update', $project)
             <flux:button :href="route('client.projects.edit', $project)" icon="pencil-square" wire:navigate>Edit draft</flux:button>
         @endcan

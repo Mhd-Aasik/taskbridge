@@ -22,4 +22,14 @@ class ProposalPolicy
     {
         return $user->isFreelancer() && $project->client_id !== $user->id;
     }
+
+    public function reviewAny(User $user, Project $project): bool
+    {
+        return $user->isClient() && $project->client_id === $user->id;
+    }
+
+    public function review(User $user, Proposal $proposal, Project $project): bool
+    {
+        return $this->reviewAny($user, $project) && $proposal->project_id === $project->id;
+    }
 }
