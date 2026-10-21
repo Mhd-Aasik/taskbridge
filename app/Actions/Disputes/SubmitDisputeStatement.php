@@ -3,7 +3,9 @@
 namespace App\Actions\Disputes;
 
 use App\Enums\DisputeStatementKind;
+use App\Enums\NotificationEvent;
 use App\Models\DisputeStatement;
+use App\Services\ProjectNotifications;
 use App\Support\DisputeContext;
 use App\Support\DisputeRules;
 use Carbon\CarbonImmutable;
@@ -63,7 +65,9 @@ class SubmitDisputeStatement
                 throw new RuntimeException('The statement could not be saved.');
             }
 
+            app(ProjectNotifications::class)->record(NotificationEvent::DisputeStatementAdded, $statement);
+
             return $statement;
-        });
+        }, 3);
     }
 }

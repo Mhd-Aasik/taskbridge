@@ -2,12 +2,14 @@
 
 namespace App\Actions\Deliverables;
 
+use App\Enums\NotificationEvent;
 use App\Enums\ProjectStatus;
 use App\Models\Deliverable;
 use App\Models\DeliverableVersion;
 use App\Models\ProjectAssignment;
 use App\Models\User;
 use App\Services\DeliverableFiles;
+use App\Services\ProjectNotifications;
 use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
 use Carbon\CarbonImmutable;
@@ -109,8 +111,10 @@ class SubmitDeliverable
                     throw new RuntimeException('The deliverable version could not be saved.');
                 }
 
+                app(ProjectNotifications::class)->record(NotificationEvent::VersionSubmitted, $version);
+
                 return $version;
-            });
+            }, 3);
         } catch (UniqueConstraintViolationException $exception) {
             $files->deleteUnreferencedFile($newPath);
             $message = (string) ($exception->errorInfo[2] ?? '');

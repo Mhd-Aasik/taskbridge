@@ -2,7 +2,9 @@
 
 namespace App\Actions\Payments;
 
+use App\Enums\NotificationEvent;
 use App\Models\PaymentAcknowledgment;
+use App\Services\ProjectNotifications;
 use App\Support\PaymentRules;
 use App\Support\ProjectPayment;
 use Carbon\CarbonImmutable;
@@ -58,7 +60,9 @@ class AcknowledgePayment
                 throw new RuntimeException('The receipt acknowledgment could not be recorded.');
             }
 
+            app(ProjectNotifications::class)->record(NotificationEvent::ReceiptAcknowledged, $receipt);
+
             return $receipt;
-        });
+        }, 3);
     }
 }

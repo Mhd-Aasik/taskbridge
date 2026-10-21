@@ -3,7 +3,9 @@
 namespace App\Actions\Disputes;
 
 use App\Enums\DisputeDecision;
+use App\Enums\NotificationEvent;
 use App\Models\DisputeResolution;
+use App\Services\ProjectNotifications;
 use App\Support\DisputeContext;
 use App\Support\DisputeRules;
 use Carbon\CarbonImmutable;
@@ -62,7 +64,9 @@ class ResolveDispute
                 throw new RuntimeException('The active case could not be closed.');
             }
 
+            app(ProjectNotifications::class)->record($decision === DisputeDecision::Resolved ? NotificationEvent::DisputeResolved : NotificationEvent::DisputeDismissed, $resolution);
+
             return $resolution;
-        });
+        }, 3);
     }
 }

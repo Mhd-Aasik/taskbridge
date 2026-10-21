@@ -36,7 +36,7 @@
             </div>
         </flux:sidebar>
 
-        <flux:header class="min-w-0 gap-3 border-b border-slate-200 bg-white px-4! py-4 sm:px-6! lg:px-9! dark:border-slate-800 dark:bg-[#101b2c]">
+        <flux:header class="min-w-0 gap-1 border-b border-slate-200 bg-white px-4! py-4 sm:gap-3 sm:px-6! lg:px-9! dark:border-slate-800 dark:bg-[#101b2c]">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" />
             <div class="min-w-0 flex-1">
                 <p class="truncate text-sm font-semibold">{{ $title ?? 'Account settings' }}</p>
@@ -45,6 +45,7 @@
                     <p class="hidden text-xs text-slate-500 md:block dark:text-slate-400">Your TaskBridge workspace</p>
                 </div>
             </div>
+            <livewire:notifications.bell key="header-notification-bell" />
             <x-theme-dropdown />
             <a href="{{ route('settings.profile') }}" class="flex size-9 shrink-0 items-center justify-center rounded-full border border-teal-200 bg-teal-50 text-xs font-bold text-teal-800 dark:border-teal-800 dark:bg-teal-950 dark:text-teal-200" aria-label="Profile settings" wire:navigate><x-avatar :user="auth()->user()" class="size-full rounded-full" /></a>
         </flux:header>

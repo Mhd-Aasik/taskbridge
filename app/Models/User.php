@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -47,6 +48,12 @@ class User extends Authenticatable
     public function freelancerProfile(): HasOne
     {
         return $this->hasOne(FreelancerProfile::class);
+    }
+
+    /** @return MorphMany<InAppNotification, $this> */
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(InAppNotification::class, 'notifiable')->latest()->orderByDesc('id');
     }
 
     /** @return HasMany<Project, $this> */

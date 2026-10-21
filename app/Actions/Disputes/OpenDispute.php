@@ -2,8 +2,10 @@
 
 namespace App\Actions\Disputes;
 
+use App\Enums\NotificationEvent;
 use App\Models\ActiveDispute;
 use App\Models\DisputeCase;
+use App\Services\ProjectNotifications;
 use App\Support\DisputeContext;
 use App\Support\DisputeRules;
 use Carbon\CarbonImmutable;
@@ -77,7 +79,9 @@ class OpenDispute
                 throw $exception;
             }
 
+            app(ProjectNotifications::class)->record(NotificationEvent::DisputeOpened, $dispute);
+
             return $dispute;
-        });
+        }, 3);
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\Actions\Payments;
 
+use App\Enums\NotificationEvent;
 use App\Enums\PaymentMethod;
 use App\Enums\ProjectStatus;
 use App\Models\PaymentReport;
+use App\Services\ProjectNotifications;
 use App\Support\PaymentRules;
 use App\Support\ProjectPayment;
 use Carbon\CarbonImmutable;
@@ -78,7 +80,9 @@ class ReportPayment
                 throw new RuntimeException('The payment report could not be recorded.');
             }
 
+            app(ProjectNotifications::class)->record(NotificationEvent::PaymentReported, $report);
+
             return $report;
-        });
+        }, 3);
     }
 }

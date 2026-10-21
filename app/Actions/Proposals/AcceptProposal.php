@@ -2,6 +2,7 @@
 
 namespace App\Actions\Proposals;
 
+use App\Enums\NotificationEvent;
 use App\Enums\ProjectStatus;
 use App\Enums\ProposalStatus;
 use App\Models\Category;
@@ -10,6 +11,7 @@ use App\Models\ProjectAssignment;
 use App\Models\Proposal;
 use App\Models\User;
 use App\Rules\LkrBudget;
+use App\Services\ProjectNotifications;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
@@ -115,11 +117,17 @@ class AcceptProposal
             if (! $proposal->save()) {
                 throw new RuntimeException('The accepted proposal could not be saved.');
             }
+            $rejected = $project->proposals()->whereKeyNot($proposal->id)->where('status', ProposalStatus::Submitted->value)->lockForUpdate()->get();
             $project->proposals()->whereKeyNot($proposal->id)->where('status', ProposalStatus::Submitted->value)
                 ->update(['status' => ProposalStatus::Rejected->value, 'updated_at' => $now]);
             $project->status = ProjectStatus::InProgress;
             if (! $project->save()) {
                 throw new RuntimeException('The assigned project could not be saved.');
+            }
+
+            app(ProjectNotifications::class)->record(NotificationEvent::ProposalAccepted, $proposal);
+            foreach ($rejected as $other) {
+                app(ProjectNotifications::class)->record(NotificationEvent::ProposalRejected, $other);
             }
 
             return ['assignment' => $assignment, 'created' => true];

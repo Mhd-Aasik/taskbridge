@@ -2,11 +2,13 @@
 
 namespace App\Actions\Proposals;
 
+use App\Enums\NotificationEvent;
 use App\Enums\ProposalStatus;
 use App\Models\Category;
 use App\Models\Project;
 use App\Models\Proposal;
 use App\Models\User;
+use App\Services\ProjectNotifications;
 use App\Support\ProposalSubmissionRules;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -67,6 +69,8 @@ class SubmitProposal
 
                 return ['proposal' => $existing, 'created' => false];
             }
+
+            app(ProjectNotifications::class)->record(NotificationEvent::ProposalSubmitted, $proposal);
 
             return ['proposal' => $proposal, 'created' => true];
         }, 3);

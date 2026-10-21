@@ -2,8 +2,10 @@
 
 namespace App\Actions\Projects;
 
+use App\Enums\NotificationEvent;
 use App\Enums\ProjectStatus;
 use App\Models\Project;
+use App\Services\ProjectNotifications;
 use App\Support\CompletionReadiness;
 use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
@@ -41,6 +43,8 @@ class CompleteProject
             if (! $project->save()) {
                 throw new RuntimeException('The project completion could not be saved.');
             }
+
+            app(ProjectNotifications::class)->record(NotificationEvent::ProjectCompleted, $project);
 
             return $project;
         }, 3);

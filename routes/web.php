@@ -53,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
+    Volt::route('notifications', 'notifications.index')->name('notifications.index');
     Route::get('settings/appearance', function () {
         return to_route('dashboard');
     })->name('settings.appearance');

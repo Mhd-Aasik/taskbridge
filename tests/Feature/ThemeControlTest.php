@@ -28,8 +28,8 @@ class ThemeControlTest extends TestCase
             @$document->loadHTML($response->getContent());
             $xpath = new DOMXPath($document);
 
-            $this->assertSame(1, $xpath->query('//header//*[@data-flux-dropdown]')->length);
-            $this->assertSame(1, $xpath->query('//header//*[@data-flux-dropdown]/following-sibling::*[1][@aria-label="Profile settings"]')->length);
+            $this->assertSame(1, $xpath->query('//header//*[@data-flux-dropdown][.//button[@aria-label="Choose theme"]]')->length);
+            $this->assertSame(1, $xpath->query('//header//*[@data-flux-dropdown][.//button[@aria-label="Choose theme"]]/following-sibling::*[1][@aria-label="Profile settings"]')->length);
             $trigger = $xpath->query('//header//button[@aria-label="Choose theme"]');
             $this->assertSame(1, $trigger->length);
             $this->assertTrue($trigger->item(0)->hasAttribute('x-bind:aria-label'));

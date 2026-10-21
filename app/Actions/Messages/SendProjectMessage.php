@@ -2,7 +2,9 @@
 
 namespace App\Actions\Messages;
 
+use App\Enums\NotificationEvent;
 use App\Models\ProjectMessage;
+use App\Services\ProjectNotifications;
 use App\Support\ProjectMessageRules;
 use App\Support\ProjectMessaging;
 use Carbon\CarbonImmutable;
@@ -70,6 +72,8 @@ class SendProjectMessage
             if (! $message->save()) {
                 throw new RuntimeException('The message could not be saved.');
             }
+
+            app(ProjectNotifications::class)->record(NotificationEvent::ProjectMessageSent, $message);
 
             return $message;
         }, 3);

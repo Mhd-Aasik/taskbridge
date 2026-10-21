@@ -3,8 +3,10 @@
 namespace App\Actions\Deliverables;
 
 use App\Enums\DeliverableReviewDecision;
+use App\Enums\NotificationEvent;
 use App\Enums\ProjectStatus;
 use App\Models\DeliverableReview;
+use App\Services\ProjectNotifications;
 use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
 use Carbon\CarbonImmutable;
@@ -104,7 +106,9 @@ class ReviewDeliverableVersion
                 throw new RuntimeException('The deliverable review could not be saved.');
             }
 
+            app(ProjectNotifications::class)->record($decision === DeliverableReviewDecision::Approved ? NotificationEvent::VersionApproved : NotificationEvent::VersionChangesRequested, $review);
+
             return $review;
-        });
+        }, 3);
     }
 }
