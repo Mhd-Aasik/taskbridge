@@ -123,7 +123,7 @@ new #[Layout('components.layouts.app'), Title('External payment')] class extends
 
         return [
             'project' => $project,
-            'assignment' => $assignment,
+            'assignment' => $assignment->load('activeDispute'),
             'paymentReport' => $report,
             'methods' => PaymentMethod::cases(),
             'isClientOwner' => $user->isClient() && $project->client_id === $user->id,
@@ -146,6 +146,7 @@ new #[Layout('components.layouts.app'), Title('External payment')] class extends
         <flux:button :href="$isClientOwner ? route('client.projects.show', $project) : route('freelancer.assignments.show', $assignment)" wire:navigate>{{ $isClientOwner ? 'Project review' : 'Assigned project' }}</flux:button>
     </div>
     <x-projects.cover :project="$project" />
+    <x-disputes.notice :project="$project" :assignment="$assignment" />
     <p role="status" aria-live="polite" aria-atomic="true" class="tb-editor-confirmation">{{ session('payment-saved') }}</p>
     <flux:error name="payment" />
     <flux:error name="receipt" />

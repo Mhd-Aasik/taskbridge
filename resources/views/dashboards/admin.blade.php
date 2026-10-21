@@ -14,8 +14,10 @@
 
     <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div class="min-w-0 space-y-6">
-            <x-dashboard.panel title="Workspace administration" description="A foundation for a well-run community.">
-                <x-dashboard.empty-state icon="shield-check" title="Clarity before complexity" description="Account management and moderation tools are not available yet. This overview currently provides read-only account totals, so you can understand who is joining the platform." />
+            <x-dashboard.panel title="Private dispute review" description="Review cases raised by assigned project participants.">
+                <p class="text-3xl font-semibold" data-testid="open-dispute-count">{{ number_format($openDisputeCount) }}</p>
+                <p class="tb-muted mt-2 mb-5 text-sm">{{ $openDisputeCount === 1 ? 'Open case awaiting review' : 'Open cases awaiting review' }}. Decisions close the case without changing project terms or moving money.</p>
+                <flux:button :href="route('admin.disputes.index')" variant="primary" wire:navigate>Review dispute cases</flux:button>
             </x-dashboard.panel>
             <div class="tb-info-notice rounded-xl border border-teal-200 bg-teal-50 p-5 dark:border-teal-900 dark:bg-teal-950/40">
                 <div class="flex items-start gap-3"><flux:icon.lock-closed class="mt-0.5 size-5 shrink-0 text-teal-800 dark:text-teal-300" /><div><h2 class="text-sm font-semibold text-teal-950 dark:text-teal-200">An administrator-only overview</h2><p class="mt-1 text-sm leading-6 text-teal-900 dark:text-teal-200/80">Account totals are available only to administrators. Client and freelancer workspaces remain separate and protected.</p></div></div>

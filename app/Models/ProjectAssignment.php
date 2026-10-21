@@ -86,4 +86,16 @@ class ProjectAssignment extends Model
     {
         return $this->hasOne(PaymentReport::class);
     }
+
+    /** @return HasMany<DisputeCase, $this> */
+    public function disputes(): HasMany
+    {
+        return $this->hasMany(DisputeCase::class);
+    }
+
+    /** @return HasOne<ActiveDispute, $this> */
+    public function activeDispute(): HasOne
+    {
+        return $this->hasOne(ActiveDispute::class);
+    }
 }

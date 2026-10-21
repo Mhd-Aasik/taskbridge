@@ -173,11 +173,12 @@ new #[Layout('components.layouts.app'), Title('Project plan')] class extends Com
             : collect();
         $ungroupedCounts = $assignment->tasks()->whereNull('milestone_id')
             ->selectRaw('COUNT(*) as total, SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as completed', [ProjectTaskStatus::Done->value])->first();
+        $assignment->load('activeDispute');
 
         return [
             'project' => $project->load('completer:id,name'),
             'assignment' => $assignment,
-            'milestones' => $assignment->milestones()->with('completer:id,name')->withCount(CompletionReadiness::milestoneCounts())->get(),
+            'milestones' => $assignment->milestones()->with('completer:id,name')->withCount(CompletionReadiness::milestoneCounts())->get()->each(fn ($milestone) => $milestone->setRelation('assignment', $assignment)),
             'tasksByMilestone' => $tasks->groupBy('milestone_id'),
             'ungroupedTasks' => $tasks->whereNull('milestone_id'),
             'taskProgress' => TaskProgress::forAssignment($assignment),
@@ -208,6 +209,7 @@ new #[Layout('components.layouts.app'), Title('Project plan')] class extends Com
     </div>
 
     <x-projects.completion :record="$project" />
+    <x-disputes.notice :project="$project" :assignment="$assignment" />
     <div class="tb-editor-notice rounded-xl border border-teal-200 p-5 dark:border-teal-900">
         <p>Plan milestone and task dates from <time datetime="{{ $earliestDate }}">{{ $assignment->assigned_at->setTimezone('Asia/Colombo')->format('j F Y') }}</time> through <time datetime="{{ $latestDate }}">{{ $assignment->agreed_deadline->format('j F Y') }}</time>, inclusive.</p>
         <p class="mt-2">Past dates within this interval are allowed so overdue work remains manageable. Planning does not change the agreed completion date or project status.</p>

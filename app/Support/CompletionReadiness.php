@@ -29,6 +29,9 @@ class CompletionReadiness
         $pending = $tasks - (int) $milestone->completed_tasks_count;
         $unapproved = $deliverables - (int) $milestone->approved_deliverables_count;
         $reasons = [];
+        if ($milestone->assignment->activeDispute) {
+            $reasons[] = 'An active dispute must be resolved or dismissed before new completion.';
+        }
         if ($pending) {
             $reasons[] = $pending.' unfinished task(s) must be marked done.';
         }
@@ -49,6 +52,9 @@ class CompletionReadiness
         $deliverables = $assignment->deliverables()->count();
         $unapproved = $deliverables - $reviews['approved'];
         $reasons = [];
+        if ($assignment->activeDispute()->exists()) {
+            $reasons[] = 'An active dispute must be resolved or dismissed before new completion.';
+        }
         if ($incomplete) {
             $reasons[] = $incomplete.' milestone(s) must be explicitly completed by the Client.';
         }

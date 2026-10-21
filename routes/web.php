@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountPhotoController;
 use App\Http\Controllers\ClientProposalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliverableDownloadController;
+use App\Http\Controllers\DisputeDownloadController;
 use App\Http\Controllers\FreelancerAssignmentController;
 use App\Http\Controllers\ProjectCoverController;
 use App\Http\Controllers\ProjectDiscoveryController;
@@ -64,6 +65,12 @@ Volt::route('freelancer/profile', 'freelancer.profile')
 Volt::route('projects/{project}/plan', 'projects.plan')->middleware('auth')->whereNumber('project')->name('projects.plan');
 Volt::route('projects/{project}/completion', 'projects.completion')->middleware('auth')->whereNumber('project')->name('projects.completion');
 Volt::route('projects/{project}/payment', 'projects.payment')->middleware('auth')->whereNumber('project')->name('projects.payment');
+Volt::route('projects/{project}/disputes/create', 'disputes.create')->middleware(['auth', 'role:client,freelancer'])->whereNumber('project')->name('projects.disputes.create');
+Volt::route('disputes', 'disputes.index')->middleware(['auth', 'role:client,freelancer'])->name('disputes.index');
+Volt::route('disputes/{dispute}', 'disputes.show')->middleware(['auth', 'role:client,freelancer'])->whereNumber('dispute')->name('disputes.show');
+Volt::route('admin/disputes', 'disputes.index')->defaults('administration', true)->middleware(['auth', 'role:admin'])->name('admin.disputes.index');
+Volt::route('admin/disputes/{dispute}', 'disputes.show')->defaults('administration', true)->middleware(['auth', 'role:admin'])->whereNumber('dispute')->name('admin.disputes.show');
+Route::get('admin/disputes/{dispute}/versions/{version}/download', DisputeDownloadController::class)->middleware(['auth', 'role:admin'])->whereNumber(['dispute', 'version'])->name('admin.disputes.download');
 Route::get('projects/{project}/cover', ProjectCoverController::class)->middleware('auth')->whereNumber('project')->name('projects.cover');
 Route::middleware('auth')->prefix('projects/{project}/deliverables')->whereNumber('project')->name('projects.deliverables.')->group(function () {
     Volt::route('/', 'projects.deliverables.index')->name('index');

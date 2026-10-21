@@ -12,6 +12,12 @@
                 <flux:navlist.item icon="briefcase" :href="route('freelancer.assignments.index')" :current="request()->routeIs('freelancer.assignments.*', 'projects.plan')" wire:navigate>Assigned projects</flux:navlist.item>
                 <flux:navlist.item icon="user-circle" :href="route('freelancer.profile.edit')" :current="request()->routeIs('freelancer.profile.edit')" wire:navigate>Freelancer profile</flux:navlist.item>
             @endif
+            @if (auth()->user()->isClient() || auth()->user()->isFreelancer())
+                <flux:navlist.item icon="chat-bubble-left-right" :href="route('disputes.index')" :current="request()->routeIs('disputes.*', 'projects.disputes.*')" wire:navigate>Disputes</flux:navlist.item>
+            @endif
+            @if (auth()->user()->isAdmin())
+                <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.disputes.index')" :current="request()->routeIs('admin.disputes.*')" wire:navigate>Dispute cases</flux:navlist.item>
+            @endif
         </flux:navlist>
     </div>
     <div>

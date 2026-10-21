@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ProjectStatus;
+use App\Models\DisputeCase;
 use App\Models\Project;
 use App\Models\ProjectAssignment;
 use App\Models\Proposal;
@@ -48,13 +49,18 @@ class DashboardController extends Controller
 
     public function admin(Request $request): View
     {
+        $user = User::query()->find($request->user()->id);
+        abort_unless($user, 403);
+        Gate::forUser($user)->authorize('viewAdminAny', DisputeCase::class);
+
         $counts = User::query()
             ->selectRaw('role, COUNT(*) as total')
             ->groupBy('role')
             ->pluck('total', 'role');
 
         return view('dashboards.admin', [
-            'user' => $request->user(),
+            'user' => $user,
+            'openDisputeCount' => DisputeCase::query()->inState('open')->count(),
             'accountCounts' => [
                 'total' => (int) $counts->sum(),
                 'clients' => (int) $counts->get(User::ROLE_CLIENT, 0),

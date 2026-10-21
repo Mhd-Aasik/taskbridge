@@ -1,4 +1,4 @@
-@props(['version', 'project', 'deliverable', 'latest' => false])
+@props(['version', 'project', 'deliverable', 'latest' => false, 'downloadUrl' => null])
 
 <div {{ $attributes->class('space-y-4') }}>
     <div class="flex flex-wrap items-center gap-3">
@@ -33,5 +33,5 @@
     @elseif (! $latest)
         <p class="tb-muted">This unreviewed version was superseded by a newer submission.</p>
     @endif
-    <flux:button :href="route('projects.deliverables.download', [$project, $deliverable, $version])" icon="arrow-down-tray" :aria-label="'Download version '.$version->version_number.' of '.$deliverable->title">Download version {{ $version->version_number }}</flux:button>
+    <flux:button :href="$downloadUrl ?? route('projects.deliverables.download', [$project, $deliverable, $version])" icon="arrow-down-tray" :aria-label="'Download version '.$version->version_number.' of '.$deliverable->title">Download version {{ $version->version_number }}</flux:button>
 </div>

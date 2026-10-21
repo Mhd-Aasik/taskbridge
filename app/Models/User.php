@@ -125,6 +125,24 @@ class User extends Authenticatable
         return $this->hasMany(PaymentAcknowledgment::class, 'acknowledged_by');
     }
 
+    /** @return HasMany<DisputeCase, $this> */
+    public function openedDisputes(): HasMany
+    {
+        return $this->hasMany(DisputeCase::class, 'opened_by');
+    }
+
+    /** @return HasMany<DisputeStatement, $this> */
+    public function disputeStatements(): HasMany
+    {
+        return $this->hasMany(DisputeStatement::class, 'submitted_by');
+    }
+
+    /** @return HasMany<DisputeResolution, $this> */
+    public function disputeResolutions(): HasMany
+    {
+        return $this->hasMany(DisputeResolution::class, 'decided_by');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;

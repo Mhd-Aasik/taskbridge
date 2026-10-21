@@ -11,6 +11,9 @@ These confirmations do not cover all devices, themes, or keyboard interactions i
 
 ## Pending final review
 
+- Private disputes for both participants, including opening after completion: confirmation/cancel focus, original immutable text, retained validation input, exact retry/competing-case feedback, scoped history/filter/sort/pagination, real counts, active-case notices and working project/plan/payment links. Verify normal work and payment remain available, new completion is blocked, and earlier completion history stays unchanged.
+- Admin dispute review: explicit Admin routes, clarification statements, required rationale and permanent-decision confirmation, own-case conflict-of-interest message, exact retry/conflicting-decision feedback, and both participants' recorded rationale/discussion. Check current-context labelling, agreed terms/task counts/work/payment history, scoped secure downloads, long escaped text, narrow screens, both themes, loading/announcements and keyboard access. No dispute browser checks have been performed.
+- Parallel dispute opening/statement/resolution/retry versus completion and normal work/payment against an isolated MySQL test database. Automated tests simulate interleavings and injected conflicts; real parallel MySQL execution remains unperformed. Never use development records for concurrency testing.
 - Current Client, Freelancer, and Admin pages on desktop and mobile in light, dark, and system themes, including the mobile navigation menu.
 - Keyboard navigation, visible focus, labels, validation errors, retained input, loading states, and success announcements.
 - Proposal submission, duplicate feedback, and own proposal history, including projects no longer in discovery.

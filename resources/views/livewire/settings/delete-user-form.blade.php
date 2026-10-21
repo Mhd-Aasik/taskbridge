@@ -67,6 +67,12 @@ new class extends Component {
                 ]);
             }
 
+            if ($user->openedDisputes()->exists() || $user->disputeStatements()->exists() || $user->disputeResolutions()->exists()) {
+                throw ValidationException::withMessages([
+                    'password' => __('Your account cannot be deleted because it has dispute history. Cases, statements and decisions must be preserved.'),
+                ]);
+            }
+
             if (! $user->delete()) {
                 throw new RuntimeException('The account could not be deleted.');
             }

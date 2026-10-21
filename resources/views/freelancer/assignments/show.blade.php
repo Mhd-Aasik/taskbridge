@@ -12,6 +12,7 @@
         <x-projects.cover :project="$assignment->project" />
         <x-projects.completion :record="$assignment->project" />
         <x-payments.summary :project="$assignment->project" :assignment="$assignment" />
+        <x-disputes.notice :project="$assignment->project" :assignment="$assignment" />
         <x-dashboard.panel title="Agreed terms">
             <x-assignments.terms :assignment="$assignment" class="p-5 sm:p-6" />
         </x-dashboard.panel>
