@@ -49,6 +49,12 @@ new class extends Component {
                 ]);
             }
 
+            if ($user->completedDeliverableReviews()->exists()) {
+                throw ValidationException::withMessages([
+                    'password' => __('Your account cannot be deleted because it has deliverable review history. Completed reviews and project history must be preserved.'),
+                ]);
+            }
+
             if (! $user->delete()) {
                 throw new RuntimeException('The account could not be deleted.');
             }

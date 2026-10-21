@@ -25,3 +25,15 @@ Submissions lock the persisted account, project, assignment, optional milestone,
 Generated paths are collision-checked before writing. Failed transactions clean up new unreferenced files; committed versions are never removed by cleanup, including after a response failure. Earlier files are never replaced. Cleanup failures are reported for investigation if storage is unavailable.
 
 SQLite/fake-storage tests exercise sequential retries and simulated failures. Real parallel MySQL testing remains deferred to an isolated test database, never development records.
+
+## Immutable version reviews
+
+Only the persisted owning Client may approve or request changes while the project is in progress. Approval requires explicit confirmation; requesting changes requires meaningful plain-text remarks. Remarks are trimmed, limited to 5,000 characters, and escaped on display. A version has at most one immutable review, with server-resolved reviewer, decision and UTC review time.
+
+Reviews use the same account -> project -> assignment -> optional milestone -> deliverable -> version lock order as uploads, followed by the review record. A new review must target the latest unreviewed version. An upload that wins the assignment lock makes an older review form stale; an approval that wins closes further versions of that deliverable. Other deliverables remain available. A committed upload-token retry still returns its original version without creating new work.
+
+Exact review retries by the original reviewer, with the same normalized remarks and decision, return the original review and timestamp, including after later revisions or project status changes. Conflicting decisions or remarks are refused. Only the known unique version-review constraint is eligible for conflict recovery; unrelated database errors propagate.
+
+The current review state is derived from the latest version and its review, never a separately editable status. Earlier unreviewed versions are superseded. A changes request permits another immutable version with a response note; old files and reviews remain intact. Latest-version aggregate counts are scoped to the assignment and independent of pagination. Version approval does not change task progress, project status, agreed terms, or payment status.
+
+Reviewer foreign keys restrict deletion. Account deletion checks review history before profile/avatar cleanup and returns validation feedback. Completed reviews and submitted versions reject ordinary model updates/deletion; there are no review edit/delete endpoints.

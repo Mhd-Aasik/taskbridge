@@ -20,4 +20,10 @@ class DeliverableVersionPolicy
     {
         return $this->view($user, $version, $deliverable, $assignment, $project);
     }
+
+    public function review(User $user, DeliverableVersion $version, Deliverable $deliverable, ProjectAssignment $assignment, Project $project): bool
+    {
+        return $this->view($user, $version, $deliverable, $assignment, $project)
+            && $user->isClient() && $project->client_id === $user->id;
+    }
 }

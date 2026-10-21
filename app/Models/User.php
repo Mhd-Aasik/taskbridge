@@ -95,6 +95,12 @@ class User extends Authenticatable
         return $this->hasMany(DeliverableVersion::class, 'uploaded_by');
     }
 
+    /** @return HasMany<DeliverableReview, $this> */
+    public function completedDeliverableReviews(): HasMany
+    {
+        return $this->hasMany(DeliverableReview::class, 'reviewed_by');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;

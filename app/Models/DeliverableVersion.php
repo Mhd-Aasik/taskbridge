@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use LogicException;
 
 class DeliverableVersion extends Model
@@ -63,5 +64,11 @@ class DeliverableVersion extends Model
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    /** @return HasOne<DeliverableReview, $this> */
+    public function review(): HasOne
+    {
+        return $this->hasOne(DeliverableReview::class);
     }
 }

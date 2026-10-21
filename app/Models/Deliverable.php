@@ -57,4 +57,16 @@ class Deliverable extends Model
     {
         return $this->hasOne(DeliverableVersion::class)->ofMany('version_number', 'max');
     }
+
+    public function reviewState(): ?string
+    {
+        $version = $this->latestVersion;
+
+        return $version ? ($version->review?->decision->value ?? 'awaiting_review') : null;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->reviewState() === 'approved';
+    }
 }

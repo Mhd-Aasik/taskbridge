@@ -55,6 +55,9 @@ class SubmitDeliverable
                 }
                 if ($deliverable) {
                     $deliverable = $assignment->deliverables()->lockForUpdate()->findOrFail($deliverableId);
+                    if ($deliverable->isApproved()) {
+                        throw ValidationException::withMessages(['deliverables' => 'This deliverable has been approved and cannot receive more versions. You can still upload work to other deliverables.']);
+                    }
                     Gate::forUser($user)->authorize('uploadVersion', [$deliverable, $assignment, $project]);
                 } else {
                     Gate::forUser($user)->authorize('create', [Deliverable::class, $assignment, $project]);

@@ -28,6 +28,7 @@ class DeliverablePolicy
 
     public function uploadVersion(User $user, Deliverable $deliverable, ProjectAssignment $assignment, Project $project): bool
     {
-        return $deliverable->project_assignment_id === $assignment->id && $this->create($user, $assignment, $project);
+        return $deliverable->project_assignment_id === $assignment->id
+            && $this->create($user, $assignment, $project) && ! $deliverable->isApproved();
     }
 }

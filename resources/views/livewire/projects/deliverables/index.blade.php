@@ -3,6 +3,7 @@
 use App\Actions\Deliverables\SubmitDeliverable;
 use App\Models\Deliverable;
 use App\Models\Project;
+use App\Support\DeliverableReviewSummary;
 use App\Support\ProjectPlanning;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -58,7 +59,7 @@ new #[Layout('components.layouts.app'), Title('Project deliverables')] class ext
                 'milestone_id' => $this->milestone_id,
                 'submission_note' => $this->submission_note,
             ], $this->file, $this->submissionId);
-        } catch (ValidationException|AuthorizationException|\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|ModelNotFoundException $exception) {
+        } catch (ValidationException|AuthorizationException|HttpExceptionInterface|ModelNotFoundException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
             report($exception);
@@ -79,7 +80,8 @@ new #[Layout('components.layouts.app'), Title('Project deliverables')] class ext
         return [
             'project' => $project,
             'assignment' => $assignment,
-            'deliverables' => $assignment->deliverables()->with(['milestone:id,title', 'latestVersion.uploader:id,name'])->withCount('versions')->reorder()->latest('id')->paginate(10),
+            'deliverables' => $assignment->deliverables()->with(['milestone:id,title', 'latestVersion.uploader:id,name', 'latestVersion.review.reviewer:id,name'])->withCount('versions')->reorder()->latest('id')->paginate(10),
+            'reviewSummary' => DeliverableReviewSummary::forAssignment($assignment),
             'milestones' => $assignment->milestones()->get(['id', 'title']),
             'canUpload' => Gate::forUser($user)->allows('create', [Deliverable::class, $assignment, $project]),
             'isClientOwner' => $user->isClient() && $project->client_id === $user->id,
@@ -99,7 +101,7 @@ new #[Layout('components.layouts.app'), Title('Project deliverables')] class ext
     </div>
 
     <div class="tb-editor-notice rounded-xl border border-teal-200 p-5 dark:border-teal-900">
-        <p>Files are private to the owning Client and assigned Freelancer. Every version is retained. Submitting a deliverable does not mean Client approval or project acceptance.</p>
+        <p>Files and reviews are private to the owning Client and assigned Freelancer. Every version is retained. Version approval is separate from task progress, project completion, and payment.</p>
         @if (! $canUpload)
             <p class="mt-3 font-medium">{{ $isClientOwner ? 'You can read and download submitted work. Only the assigned Freelancer can upload files while the project is in progress.' : 'Deliverable history is read-only because this project is no longer in progress.' }}</p>
         @endif
@@ -107,6 +109,15 @@ new #[Layout('components.layouts.app'), Title('Project deliverables')] class ext
 
     <p role="status" aria-live="polite" aria-atomic="true" class="tb-editor-confirmation">{{ session('deliverable-saved') }}</p>
     <flux:error name="deliverables" />
+
+    <x-dashboard.panel title="Deliverable review summary" description="Based on each deliverable’s latest version, across all pages.">
+        <dl class="grid grid-cols-2 gap-5 p-5 sm:grid-cols-4 sm:p-6">
+            <div><dt class="tb-muted text-sm">Total deliverables</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{{ $reviewSummary['total'] }}</dd></div>
+            <div><dt class="tb-muted text-sm">Approved</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{{ $reviewSummary['approved'] }}</dd></div>
+            <div><dt class="tb-muted text-sm">Awaiting review</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{{ $reviewSummary['awaiting_review'] }}</dd></div>
+            <div><dt class="tb-muted text-sm">Changes requested</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{{ $reviewSummary['changes_requested'] }}</dd></div>
+        </dl>
+    </x-dashboard.panel>
 
     <x-dashboard.panel title="Submitted deliverables">
         @if ($deliverables->isEmpty())

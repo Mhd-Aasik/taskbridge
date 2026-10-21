@@ -6,6 +6,7 @@
         @if ($latest)
             <span class="rounded-full border border-teal-300 px-2.5 py-1 text-sm font-medium text-teal-900 dark:border-teal-700 dark:text-teal-200">Latest version</span>
         @endif
+        <span class="rounded-full border border-slate-300 px-2.5 py-1 text-sm font-medium text-slate-800 dark:border-slate-600 dark:text-slate-200">{{ $version->review ? ($version->review->decision->value === 'approved' ? 'Approved' : 'Changes requested') : ($latest ? 'Awaiting review' : 'Superseded') }}</span>
     </div>
     <dl class="grid gap-4 sm:grid-cols-2">
         <div class="min-w-0"><dt class="tb-muted text-sm">File</dt><dd class="mt-1 break-words font-medium">{{ $version->original_filename }}</dd></div>
@@ -15,6 +16,22 @@
     </dl>
     @if ($version->submission_note !== null && $version->submission_note !== '')
         <div><p class="tb-muted text-sm">Submission note</p><p class="mt-1 whitespace-pre-wrap break-words leading-7">{{ $version->submission_note }}</p></div>
+    @endif
+    @if ($version->review)
+        <section aria-label="Version {{ $version->version_number }} review" class="rounded-lg border border-slate-300 p-4 dark:border-slate-600">
+            <h4 class="font-semibold">Client review: {{ $version->review->decision->value === 'approved' ? 'Approved' : 'Changes requested' }}</h4>
+            <dl class="mt-3 grid gap-4 sm:grid-cols-2">
+                <div class="min-w-0"><dt class="tb-muted text-sm">Reviewed by</dt><dd class="mt-1 break-words">{{ $version->review->reviewer->name }}</dd></div>
+                <div><dt class="tb-muted text-sm">Reviewed (Sri Lanka)</dt><dd class="mt-1"><time datetime="{{ $version->review->reviewed_at->toIso8601String() }}">{{ $version->review->reviewed_at->setTimezone('Asia/Colombo')->format('j F Y, g:i a') }}</time></dd></div>
+            </dl>
+            @if ($version->review->remarks !== null && $version->review->remarks !== '')
+                <div class="mt-4"><p class="tb-muted text-sm">Review remarks</p><p class="mt-1 whitespace-pre-wrap break-words leading-7">{{ $version->review->remarks }}</p></div>
+            @else
+                <p class="tb-muted mt-4">No review remarks.</p>
+            @endif
+        </section>
+    @elseif (! $latest)
+        <p class="tb-muted">This unreviewed version was superseded by a newer submission.</p>
     @endif
     <flux:button :href="route('projects.deliverables.download', [$project, $deliverable, $version])" icon="arrow-down-tray" :aria-label="'Download version '.$version->version_number.' of '.$deliverable->title">Download version {{ $version->version_number }}</flux:button>
 </div>
