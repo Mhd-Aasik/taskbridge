@@ -27,7 +27,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
         abort_unless($user, 403);
         $project = Project::query()->findOrFail($this->projectId);
         Gate::forUser($user)->authorize('view', $project);
-        $project->load(['category', 'assignment.freelancer:id,name', 'completer:id,name'])->loadCount('proposals');
+        $project->load(['category', 'assignment.freelancer:id,name', 'assignment.paymentReport.acknowledgment', 'completer:id,name'])->loadCount('proposals');
 
         return [
             'project' => $project,
@@ -87,6 +87,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
 
     @if ($project->assignment)
         <x-assignments.client-summary :assignment="$project->assignment" />
+        <x-payments.summary :project="$project" :assignment="$project->assignment" />
         <x-dashboard.panel title="Project task progress" description="Task completion does not represent Client approval or project acceptance.">
             <x-tasks.progress :progress="$taskProgress" class="p-5 sm:p-6" />
         </x-dashboard.panel>

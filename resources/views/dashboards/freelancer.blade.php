@@ -14,6 +14,7 @@
                             <a href="{{ route('freelancer.assignments.show', $assignment) }}" class="tb-text-link min-w-0 break-words" wire:navigate>{{ $assignment->project->title }} · {{ $assignment->formattedBudget() }}</a>
                         </div>
                         <x-projects.completion :record="$assignment->project" />
+                        <x-payments.summary :project="$assignment->project" :assignment="$assignment" />
                     @empty
                         <p class="tb-muted leading-7">When a client accepts your proposal, your assigned project will appear here.</p>
                     @endforelse

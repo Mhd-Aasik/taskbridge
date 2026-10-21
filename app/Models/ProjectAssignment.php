@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ProjectAssignment extends Model
 {
@@ -78,5 +79,11 @@ class ProjectAssignment extends Model
     public function deliverables(): HasMany
     {
         return $this->hasMany(Deliverable::class)->orderBy('id');
+    }
+
+    /** @return HasOne<PaymentReport, $this> */
+    public function paymentReport(): HasOne
+    {
+        return $this->hasOne(PaymentReport::class);
     }
 }

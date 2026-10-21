@@ -113,6 +113,18 @@ class User extends Authenticatable
         return $this->hasMany(Milestone::class, 'completed_by');
     }
 
+    /** @return HasMany<PaymentReport, $this> */
+    public function reportedPayments(): HasMany
+    {
+        return $this->hasMany(PaymentReport::class, 'reported_by');
+    }
+
+    /** @return HasMany<PaymentAcknowledgment, $this> */
+    public function paymentAcknowledgments(): HasMany
+    {
+        return $this->hasMany(PaymentAcknowledgment::class, 'acknowledged_by');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;

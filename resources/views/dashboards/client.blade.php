@@ -16,6 +16,9 @@
             @forelse ($recentProjects as $project)
                 <x-projects.card :project="$project" />
                 <x-projects.completion :record="$project" />
+                @if ($project->assignment)
+                    <x-payments.summary :project="$project" :assignment="$project->assignment" />
+                @endif
             @empty
                 <x-dashboard.panel title="Start your next project" description="Capture the details at your own pace.">
                     <x-dashboard.empty-state icon="folder-plus" title="Your projects will appear here." description="Create a private draft with your brief, budget, and deadline. Review the saved details and publish when you are ready." />

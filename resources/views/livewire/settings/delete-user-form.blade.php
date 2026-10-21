@@ -61,6 +61,12 @@ new class extends Component {
                 ]);
             }
 
+            if ($user->reportedPayments()->exists() || $user->paymentAcknowledgments()->exists()) {
+                throw ValidationException::withMessages([
+                    'password' => __('Your account cannot be deleted because it has payment history. Payment reports and receipt acknowledgments must be preserved.'),
+                ]);
+            }
+
             if (! $user->delete()) {
                 throw new RuntimeException('The account could not be deleted.');
             }

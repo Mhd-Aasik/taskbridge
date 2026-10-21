@@ -31,7 +31,7 @@ class FreelancerAssignmentController extends Controller
         Gate::forUser($user)->authorize('view', $assignment);
 
         return view('freelancer.assignments.show', [
-            'assignment' => $assignment->load(['project', 'project.client:id,name', 'project.category:id,name', 'project.completer:id,name']),
+            'assignment' => $assignment->load(['project', 'project.client:id,name', 'project.category:id,name', 'project.completer:id,name', 'paymentReport.acknowledgment']),
             'taskProgress' => TaskProgress::forAssignment($assignment),
         ]);
     }

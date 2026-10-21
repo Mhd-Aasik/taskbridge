@@ -63,6 +63,7 @@ Volt::route('freelancer/profile', 'freelancer.profile')
 
 Volt::route('projects/{project}/plan', 'projects.plan')->middleware('auth')->whereNumber('project')->name('projects.plan');
 Volt::route('projects/{project}/completion', 'projects.completion')->middleware('auth')->whereNumber('project')->name('projects.completion');
+Volt::route('projects/{project}/payment', 'projects.payment')->middleware('auth')->whereNumber('project')->name('projects.payment');
 Route::get('projects/{project}/cover', ProjectCoverController::class)->middleware('auth')->whereNumber('project')->name('projects.cover');
 Route::middleware('auth')->prefix('projects/{project}/deliverables')->whereNumber('project')->name('projects.deliverables.')->group(function () {
     Volt::route('/', 'projects.deliverables.index')->name('index');
