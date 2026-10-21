@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\ProjectAssignment;
 use App\Models\Proposal;
 use App\Models\User;
+use App\Support\ProjectReputation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -24,6 +25,7 @@ class DashboardController extends Controller
         return view('dashboards.client', [
             'user' => $user,
             'projectCount' => $user->projects()->count(),
+            'reputation' => ProjectReputation::forUsers([$user->id], User::ROLE_CLIENT)[$user->id],
             'draftCount' => $user->projects()->where('status', ProjectStatus::Draft->value)->count(),
             'openCount' => $user->projects()->where('status', ProjectStatus::Open->value)->count(),
             'assignedProjectCount' => $user->projects()->whereHas('assignment')->count(),
@@ -42,6 +44,7 @@ class DashboardController extends Controller
         return view('dashboards.freelancer', [
             'user' => $user,
             'assignmentCount' => $user->projectAssignments()->count(),
+            'reputation' => ProjectReputation::forUsers([$user->id], User::ROLE_FREELANCER)[$user->id],
             'completedAssignmentCount' => $user->projectAssignments()->whereHas('project', fn ($query) => $query->where('status', ProjectStatus::Completed->value))->count(),
             'recentAssignments' => $user->projectAssignments()->with(['project:id,title,status,cover_path,completed_at,completed_by,completion_note', 'project.completer:id,name', 'paymentReport.acknowledgment'])->orderByDesc('assigned_at')->orderByDesc('id')->limit(3)->get(),
         ]);

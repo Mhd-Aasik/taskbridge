@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Support\ProjectReputation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -9,6 +10,12 @@ use Livewire\Volt\Component;
 new class extends Component {
     public string $name = '';
     public string $email = '';
+
+    public function with(): array
+    {
+        $account = User::query()->findOrFail(Auth::id());
+        return ['reputation' => in_array($account->role, [User::ROLE_CLIENT, User::ROLE_FREELANCER], true) ? ProjectReputation::forUsers([$account->id], $account->role)[$account->id] : null];
+    }
 
     /**
      * Mount the component.
@@ -74,6 +81,7 @@ new class extends Component {
 
     <x-settings.layout heading="Profile" subheading="Update your name and email address">
         <livewire:settings.photo />
+        @if ($reputation)<x-feedback.reputation :summary="$reputation" class="mt-6 rounded-xl border border-slate-200 p-5 dark:border-slate-700" />@endif
 
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
             <flux:input wire:model="name" label="{{ __('Name') }}" type="text" name="name" required autofocus autocomplete="name" />

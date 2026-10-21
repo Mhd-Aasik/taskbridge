@@ -49,7 +49,7 @@
             </x-dashboard.panel>
         </div>
         <aside aria-label="Your account and preferences" class="min-w-0 space-y-6">
-            <x-dashboard.account-card :user="$user" />
+            <x-dashboard.account-card :user="$user" :reputation="$reputation" />
             <x-dashboard.account-actions />
         </aside>
     </div>

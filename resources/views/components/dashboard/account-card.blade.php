@@ -1,4 +1,4 @@
-@props(['user'])
+@props(['user', 'reputation' => null])
 
 <x-dashboard.panel title="Your account" description="The details behind your workspace.">
     <div class="p-6">
@@ -13,6 +13,7 @@
             <div><dt class="tb-eyebrow mb-1">Email address</dt><dd class="break-all leading-6">{{ $user->email }}</dd></div>
             <div><dt class="tb-eyebrow mb-1">Member since</dt><dd class="leading-6">{{ $user->created_at->format('F Y') }}</dd></div>
         </dl>
+        @if ($reputation)<x-feedback.reputation :summary="$reputation" class="mt-6 border-t border-slate-200 pt-5 dark:border-slate-700" />@endif
         <a href="{{ route('settings.profile') }}" class="tb-text-link mt-6 inline-flex items-center gap-2 text-sm" wire:navigate>Edit account details <flux:icon.arrow-up-right class="size-4" /></a>
     </div>
 </x-dashboard.panel>

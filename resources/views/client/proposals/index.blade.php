@@ -66,6 +66,7 @@
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div class="min-w-0">
                                 <h2 class="break-words text-lg font-semibold">{{ $proposal->freelancer->name }}</h2>
+                                <x-feedback.reputation :summary="$freelancerReputations[$proposal->freelancer_id]" class="mt-3" />
                                 <p class="tb-muted mt-1 text-sm">Status: {{ Str::headline($proposal->status->value) }}</p>
                             </div>
                             <flux:button :href="route('client.projects.proposals.show', [$project, $proposal])" :aria-label="'View proposal from '.$proposal->freelancer->name" class="self-start shrink-0" wire:navigate>View proposal</flux:button>

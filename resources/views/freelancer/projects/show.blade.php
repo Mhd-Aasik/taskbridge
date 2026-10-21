@@ -21,6 +21,7 @@
         </x-dashboard.panel>
 
         <x-dashboard.panel title="Project description">
+            <x-feedback.reputation :summary="$clientReputation" class="px-5 pt-5 sm:px-6 sm:pt-6" />
             <p class="whitespace-pre-wrap break-words p-5 leading-7 sm:p-6">{{ $project->description }}</p>
         </x-dashboard.panel>
 

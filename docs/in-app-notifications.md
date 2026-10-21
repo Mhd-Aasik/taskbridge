@@ -31,6 +31,7 @@ Every recipient below must still have the stated role and pass the destination's
 | Dispute statement added | DisputeStatement ID | Other project participants, plus already participating clarification-author Admins who still pass case policies |
 | Dispute resolved / dismissed | Immutable Resolution ID | Both project participants |
 | Project message sent | Message ID | Other project participant |
+| Project feedback submitted | Immutable ProjectRating ID | Opposite project participant; generic text only, with no blind score/comments |
 
 No other private event is broadcast to Admins. Under the current dispute policy all non-involved Admins may manage an open case; the opening notification uses those policy checks rather than an unconditional Admin broadcast. Subsequent discussion alerts go only to eligible Admins already participating through clarification statements.
 

@@ -15,6 +15,7 @@ use App\Models\PaymentAcknowledgment;
 use App\Models\PaymentReport;
 use App\Models\ProjectAssignment;
 use App\Models\ProjectMessage;
+use App\Models\ProjectRating;
 use App\Models\Proposal;
 use App\Services\ProjectNotifications;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,11 @@ trait BuildsNotificationEvents
     /** Domain factories never create alerts. Explicit service calls below are test-only event fixtures. */
     protected function notificationEvent(NotificationEvent $event): array
     {
+        if ($event === NotificationEvent::ProjectFeedbackSubmitted) {
+            $record = ProjectRating::factory()->create();
+
+            return [$record, $record->reviewer, [$record->reviewee]];
+        }
         if (in_array($event, [NotificationEvent::ProposalSubmitted, NotificationEvent::ProposalAccepted, NotificationEvent::ProposalRejected], true)) {
             $record = Proposal::factory()->create(['status' => match ($event) {
                 NotificationEvent::ProposalAccepted => ProposalStatus::Accepted, NotificationEvent::ProposalRejected => ProposalStatus::Rejected, default => ProposalStatus::Submitted

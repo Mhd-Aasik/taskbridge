@@ -8,6 +8,7 @@ use App\Models\DisputeCase;
 use App\Models\InAppNotification;
 use App\Models\PaymentReport;
 use App\Models\ProjectMessage;
+use App\Models\ProjectRating;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
@@ -41,6 +42,12 @@ class NotificationDestinations
     private static function forRecord(User $user, NotificationEvent $event, Model $record): ?string
     {
         $gate = Gate::forUser($user);
+        if ($event === NotificationEvent::ProjectFeedbackSubmitted) {
+            $assignment = $record->assignment;
+            $project = $assignment?->project;
+
+            return $project && $gate->allows('viewAny', [ProjectRating::class, $assignment, $project]) ? route('projects.feedback', $project) : null;
+        }
         if ($event === NotificationEvent::ProposalSubmitted) {
             $project = $record->project;
 

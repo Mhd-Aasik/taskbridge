@@ -162,6 +162,18 @@ class User extends Authenticatable
         return $this->hasMany(DisputeResolution::class, 'decided_by');
     }
 
+    /** @return HasMany<ProjectRating, $this> */
+    public function submittedProjectRatings(): HasMany
+    {
+        return $this->hasMany(ProjectRating::class, 'reviewer_id');
+    }
+
+    /** @return HasMany<ProjectRating, $this> */
+    public function receivedProjectRatings(): HasMany
+    {
+        return $this->hasMany(ProjectRating::class, 'reviewee_id');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;

@@ -110,4 +110,10 @@ class ProjectAssignment extends Model
     {
         return $this->hasMany(ProjectReadCursor::class);
     }
+
+    /** @return HasMany<ProjectRating, $this> */
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(ProjectRating::class);
+    }
 }

@@ -23,6 +23,9 @@ new class extends Component {
 
         DB::transaction(function (): void {
             $user = User::query()->lockForUpdate()->findOrFail(Auth::id());
+            if ($user->submittedProjectRatings()->exists() || $user->receivedProjectRatings()->exists()) {
+                throw ValidationException::withMessages(['password' => __('Your account cannot be deleted because it has project feedback history. Submitted feedback and reputation history must be preserved.')]);
+            }
             if ($user->projects()->exists()) {
                 throw ValidationException::withMessages([
                     'password' => __('Your account cannot be deleted because it has projects. Project history must be preserved.'),

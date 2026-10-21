@@ -21,6 +21,7 @@
         </x-dashboard.panel>
         <div class="flex flex-wrap gap-3">
             <flux:button :href="route('projects.completion', $assignment->project_id)" wire:navigate>Project completion</flux:button>
+            <x-feedback.link :project="$assignment->project" :assignment="$assignment" />
             <flux:button :href="route('projects.plan', $assignment->project_id)" icon="calendar-days" wire:navigate>Project plan</flux:button>
             <flux:button :href="route('projects.deliverables.index', $assignment->project_id)" icon="document-text" wire:navigate>Deliverables</flux:button>
         </div>

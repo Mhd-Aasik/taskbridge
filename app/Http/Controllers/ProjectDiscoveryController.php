@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\Proposal;
 use App\Models\User;
 use App\Rules\LkrBudget;
+use App\Support\ProjectReputation;
 use App\Support\ProposalSubmissionRules;
 use Brick\Math\BigDecimal;
 use Illuminate\Database\Eloquent\Builder;
@@ -89,6 +90,7 @@ class ProjectDiscoveryController extends Controller
             'project' => $project,
             'deadline' => $project->calendarDeadline(),
             'publicationTime' => $project->published_at->toImmutable()->setTimezone('Asia/Colombo'),
+            'clientReputation' => ProjectReputation::forUsers([$project->client_id], User::ROLE_CLIENT)[$project->client_id],
             'ownProposal' => $user->submittedProposals()->where('project_id', $project->id)->first(['id']),
             'submissionUnavailable' => Gate::forUser($user)->allows('create', [Proposal::class, $project])
                 ? ProposalSubmissionRules::unavailableReason($project) : 'You cannot submit a proposal to your own project.',

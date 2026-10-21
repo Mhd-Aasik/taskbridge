@@ -12,6 +12,7 @@ use App\Models\PaymentAcknowledgment;
 use App\Models\PaymentReport;
 use App\Models\Project;
 use App\Models\ProjectMessage;
+use App\Models\ProjectRating;
 use App\Models\Proposal;
 
 enum NotificationEvent: string
@@ -31,6 +32,7 @@ enum NotificationEvent: string
     case DisputeResolved = 'dispute_resolved';
     case DisputeDismissed = 'dispute_dismissed';
     case ProjectMessageSent = 'project_message_sent';
+    case ProjectFeedbackSubmitted = 'project_feedback_submitted';
 
     public function label(): string
     {
@@ -50,6 +52,7 @@ enum NotificationEvent: string
             self::DisputeResolved => 'An Admin resolved a project dispute.',
             self::DisputeDismissed => 'An Admin dismissed a project dispute.',
             self::ProjectMessageSent => 'You have a new project message.',
+            self::ProjectFeedbackSubmitted => 'Project feedback was submitted. Your private feedback page explains when it becomes shared.',
         };
     }
 
@@ -67,6 +70,7 @@ enum NotificationEvent: string
             self::DisputeStatementAdded => DisputeStatement::class,
             self::DisputeResolved, self::DisputeDismissed => DisputeResolution::class,
             self::ProjectMessageSent => ProjectMessage::class,
+            self::ProjectFeedbackSubmitted => ProjectRating::class,
         };
     }
 }

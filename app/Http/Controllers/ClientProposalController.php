@@ -6,6 +6,7 @@ use App\Enums\ProposalStatus;
 use App\Models\Project;
 use App\Models\Proposal;
 use App\Models\User;
+use App\Support\ProjectReputation;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
@@ -65,6 +66,7 @@ class ClientProposalController extends Controller
             'sorts' => self::SORTS,
             'statuses' => $statuses,
             'filterErrors' => $validator->errors(),
+            'freelancerReputations' => ProjectReputation::forUsers($proposals?->pluck('freelancer_id')->unique()->all() ?? [], User::ROLE_FREELANCER),
         ], $valid ? 200 : 422);
     }
 
@@ -75,7 +77,8 @@ class ClientProposalController extends Controller
         $proposal = $project->proposals()->with('freelancer:id,name')->findOrFail($proposal->id);
         Gate::forUser($user)->authorize('review', [$proposal, $project]);
 
-        return view('client.proposals.show', ['project' => $project->load(['category', 'assignment.freelancer:id,name']), 'proposal' => $proposal]);
+        return view('client.proposals.show', ['project' => $project->load(['category', 'assignment.freelancer:id,name']), 'proposal' => $proposal,
+            'freelancerReputation' => ProjectReputation::forUsers([$proposal->freelancer_id], User::ROLE_FREELANCER)[$proposal->freelancer_id]]);
     }
 
     private function context(Request $request, Project $project): array

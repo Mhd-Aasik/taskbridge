@@ -64,6 +64,9 @@ class ProjectNotifications
 
     private function audience(NotificationEvent $event, Model $record): array
     {
+        if ($event === NotificationEvent::ProjectFeedbackSubmitted) {
+            return [$record->reviewer_id, [$record->reviewee_id => $record->reviewee_id === $record->assignment->freelancer_id ? User::ROLE_FREELANCER : User::ROLE_CLIENT]];
+        }
         if (in_array($event, [NotificationEvent::ProposalSubmitted, NotificationEvent::ProposalAccepted, NotificationEvent::ProposalRejected], true)) {
             return $event === NotificationEvent::ProposalSubmitted
                 ? [$record->freelancer_id, [$record->project->client_id => User::ROLE_CLIENT]]

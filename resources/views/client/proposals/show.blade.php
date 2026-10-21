@@ -31,6 +31,7 @@
         @endif
 
         <x-dashboard.panel title="Submitted offer">
+            <x-feedback.reputation :summary="$freelancerReputation" class="px-5 pt-5 sm:px-6 sm:pt-6" />
             <x-proposals.review-offer :proposal="$proposal" :project="$project" class="p-5 sm:p-6" />
         </x-dashboard.panel>
         <x-dashboard.panel title="Cover letter">

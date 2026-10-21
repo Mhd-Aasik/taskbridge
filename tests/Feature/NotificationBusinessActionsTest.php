@@ -7,6 +7,7 @@ use App\Actions\Deliverables\SubmitDeliverable;
 use App\Actions\Disputes\OpenDispute;
 use App\Actions\Disputes\ResolveDispute;
 use App\Actions\Disputes\SubmitDisputeStatement;
+use App\Actions\Feedback\SubmitProjectRating;
 use App\Actions\Messages\SendProjectMessage;
 use App\Actions\Milestones\CompleteMilestone;
 use App\Actions\Payments\AcknowledgePayment;
@@ -74,7 +75,7 @@ class NotificationBusinessActionsTest extends TestCase
     public function test_notification_failure_rolls_back_the_originating_business_mutation(NotificationEvent $event): void
     {
         [$run] = $this->operation($event);
-        $tables = ['projects', 'proposals', 'project_assignments', 'milestones', 'deliverables', 'deliverable_versions', 'deliverable_reviews', 'payment_reports', 'payment_acknowledgments', 'dispute_cases', 'active_disputes', 'dispute_statements', 'dispute_resolutions', 'project_messages'];
+        $tables = ['projects', 'proposals', 'project_assignments', 'milestones', 'deliverables', 'deliverable_versions', 'deliverable_reviews', 'payment_reports', 'payment_acknowledgments', 'dispute_cases', 'active_disputes', 'dispute_statements', 'dispute_resolutions', 'project_messages', 'project_ratings'];
         $before = [];
         foreach ($tables as $table) {
             $before[$table] = DB::table($table)->orderBy($table === 'active_disputes' ? 'project_assignment_id' : 'id')->get()->toJson();
@@ -146,6 +147,14 @@ class NotificationBusinessActionsTest extends TestCase
 
     private function operation(NotificationEvent $event): array
     {
+        if ($event === NotificationEvent::ProjectFeedbackSubmitted) {
+            $assignment = ProjectAssignment::factory()->create();
+            $assignment->project->forceFill(['status' => ProjectStatus::Completed, 'completed_at' => now('UTC'), 'completed_by' => $assignment->project->client_id])->save();
+            $this->actingAs($assignment->project->client);
+            $token = (string) Str::uuid();
+
+            return [fn () => app(SubmitProjectRating::class)->submit($assignment->project_id, ['rating' => 4, 'feedback' => 'Private blind feedback', 'confirmed' => true], $token), [$assignment->freelancer_id]];
+        }
         if ($event === NotificationEvent::ProposalSubmitted) {
             $project = $this->openProject();
             $this->actingAs(User::factory()->create(['role' => User::ROLE_FREELANCER]));

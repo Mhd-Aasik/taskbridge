@@ -58,6 +58,7 @@ new #[Layout('components.layouts.app'), Title('Project completion')] class exten
     <p role="status" aria-live="polite" aria-atomic="true" class="tb-editor-confirmation">{{ session('project-completed') }}</p>
     <flux:error name="completion" />
     <x-projects.completion :record="$project" />
+    <x-feedback.link :project="$project" :assignment="$assignment" />
     <x-disputes.notice :project="$project" :assignment="$assignment" />
     <x-dashboard.panel title="Completion requirements" description="Based on all persisted work, including ungrouped tasks and deliverables. Task filters do not affect these counts.">
         <div class="space-y-5 p-5 sm:p-6">
