@@ -63,6 +63,8 @@ Volt::route('freelancer/profile', 'freelancer.profile')
     ->middleware(['auth', 'role:'.User::ROLE_FREELANCER])
     ->name('freelancer.profile.edit');
 
+Volt::route('admin/categories', 'admin.categories')->middleware(['auth', 'role:admin'])->name('admin.categories.index');
+
 Volt::route('projects/{project}/plan', 'projects.plan')->middleware('auth')->whereNumber('project')->name('projects.plan');
 Volt::route('projects/{project}/completion', 'projects.completion')->middleware('auth')->whereNumber('project')->name('projects.completion');
 Volt::route('projects/{project}/feedback', 'projects.feedback')->middleware(['auth', 'role:client,freelancer'])->whereNumber('project')->name('projects.feedback');

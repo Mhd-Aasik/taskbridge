@@ -92,6 +92,9 @@ class DashboardRenderingTest extends TestCase
             } else {
                 $allowed = [route('dashboard'), route('settings.profile'), route('settings.password'), route('notifications.index')];
                 $allowed[] = route($role === User::ROLE_ADMIN ? 'admin.disputes.index' : 'disputes.index');
+                if ($role === User::ROLE_ADMIN) {
+                    $allowed[] = route('admin.categories.index');
+                }
                 if ($role !== User::ROLE_ADMIN) {
                     $allowed[] = route('messages.index');
                 }

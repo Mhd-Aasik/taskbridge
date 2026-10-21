@@ -14,6 +14,11 @@
 
     <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div class="min-w-0 space-y-6">
+            <x-dashboard.panel title="Project categories" description="Manage the reference catalogue without changing existing project history.">
+                <p class="text-3xl font-semibold" data-testid="category-total">{{ (int) $categoryCounts->total }}</p>
+                <p class="tb-muted mt-2 mb-5 text-sm">{{ (int) $categoryCounts->active }} active · {{ (int) $categoryCounts->total - (int) $categoryCounts->active }} inactive</p>
+                <flux:button :href="route('admin.categories.index')" variant="primary" wire:navigate>Manage categories</flux:button>
+            </x-dashboard.panel>
             <x-dashboard.panel title="Private dispute review" description="Review cases raised by assigned project participants.">
                 <p class="text-3xl font-semibold" data-testid="open-dispute-count">{{ number_format($openDisputeCount) }}</p>
                 <p class="tb-muted mt-2 mb-5 text-sm">{{ $openDisputeCount === 1 ? 'Open case awaiting review' : 'Open cases awaiting review' }}. Decisions close the case without changing project terms or moving money.</p>

@@ -17,6 +17,7 @@
                 <flux:navlist.item icon="chat-bubble-left-right" :href="route('disputes.index')" :current="request()->routeIs('disputes.*', 'projects.disputes.*')" wire:navigate>Disputes</flux:navlist.item>
             @endif
             @if (auth()->user()->isAdmin())
+                <flux:navlist.item icon="tag" :href="route('admin.categories.index')" :current="request()->routeIs('admin.categories.*')" wire:navigate>Categories</flux:navlist.item>
                 <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.disputes.index')" :current="request()->routeIs('admin.disputes.*')" wire:navigate>Dispute cases</flux:navlist.item>
             @endif
         </flux:navlist>

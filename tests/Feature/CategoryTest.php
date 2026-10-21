@@ -9,6 +9,7 @@ use Database\Seeders\CategorySeeder;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use LogicException;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
@@ -27,8 +28,12 @@ class CategoryTest extends TestCase
         $this->assertSame('web-development', $category->fresh()->slug);
         $this->assertFalse($category->fresh()->is_active);
 
-        $category->update(['slug' => ' Custom SLUG ']);
-        $this->assertSame('custom-slug', $category->fresh()->slug);
+        try {
+            $category->update(['slug' => ' Custom SLUG ']);
+            $this->fail('Existing category slugs must remain stable.');
+        } catch (LogicException) {
+            $this->assertSame('web-development', $category->fresh()->slug);
+        }
     }
 
     public function test_category_slugs_are_unique_after_normalisation(): void

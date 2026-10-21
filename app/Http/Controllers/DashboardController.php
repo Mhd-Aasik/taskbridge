@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ProjectStatus;
+use App\Models\Category;
 use App\Models\DisputeCase;
 use App\Models\Project;
 use App\Models\ProjectAssignment;
@@ -64,6 +65,7 @@ class DashboardController extends Controller
         return view('dashboards.admin', [
             'user' => $user,
             'openDisputeCount' => DisputeCase::query()->inState('open')->count(),
+            'categoryCounts' => Category::query()->selectRaw('COUNT(*) as total, SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active')->first(),
             'accountCounts' => [
                 'total' => (int) $counts->sum(),
                 'clients' => (int) $counts->get(User::ROLE_CLIENT, 0),

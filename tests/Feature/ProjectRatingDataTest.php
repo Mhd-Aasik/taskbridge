@@ -42,7 +42,8 @@ class ProjectRatingDataTest extends TestCase
     #[DataProvider('immutableFields')]
     public function test_submitted_feedback_cannot_be_edited(string $field, mixed $value): void
     {
-        $rating = ProjectRating::factory()->create()->fresh();
+        // The provider changes the score to 1; a random initial 1 would test a no-op.
+        $rating = ProjectRating::factory()->create(['rating' => 5])->fresh();
         $before = $rating->getAttributes();
         try {
             $rating->forceFill([$field => $value])->save();

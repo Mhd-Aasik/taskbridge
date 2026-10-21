@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use LogicException;
 
 class Category extends Model
 {
@@ -29,8 +30,13 @@ class Category extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (Category $category): void {
+        static::creating(function (Category $category): void {
             $category->slug = Str::slug($category->slug ?: $category->name);
+        });
+        static::updating(function (Category $category): void {
+            if ($category->isDirty('slug')) {
+                throw new LogicException('Existing category slugs cannot be changed.');
+            }
         });
     }
 

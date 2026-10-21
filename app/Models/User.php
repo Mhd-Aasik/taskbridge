@@ -174,6 +174,12 @@ class User extends Authenticatable
         return $this->hasMany(ProjectRating::class, 'reviewee_id');
     }
 
+    /** @return HasMany<AdminActionLog, $this> */
+    public function adminActionLogs(): HasMany
+    {
+        return $this->hasMany(AdminActionLog::class, 'actor_id');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;

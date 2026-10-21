@@ -15,6 +15,7 @@
         @endcan
     </div>
     <p class="tb-muted mt-4 whitespace-pre-wrap break-words text-base leading-7">{{ Str::limit($project->description, 220) }}</p>
+    <x-projects.inactive-category :project="$project" class="mt-4" />
     <dl class="mt-5 grid gap-4 border-t border-slate-100 pt-4 text-sm sm:grid-cols-2 dark:border-slate-700">
         <div><dt class="tb-muted">Fixed budget</dt><dd class="mt-1 text-base font-medium tabular-nums">{{ $project->formattedBudget() ?? 'Budget needs correction.' }}</dd></div>
         <div><dt class="tb-muted">Deadline</dt><dd class="mt-1 text-base font-medium">@if ($deadline = $project->calendarDeadline())<time datetime="{{ $deadline->toDateString() }}">{{ $deadline->format('j M Y') }}</time>@else Deadline needs correction. @endif</dd></div>

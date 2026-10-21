@@ -37,7 +37,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
             'publicationTime' => $project->published_at?->toImmutable()->setTimezone('Asia/Colombo'),
             'statusDescription' => match ($project->status) {
                 ProjectStatus::Draft => 'This draft is private and is not available to freelancers. Review the saved details before publishing.',
-                ProjectStatus::Open => 'This project is open for freelancer applications. Draft editing is no longer available.',
+                ProjectStatus::Open => $project->category->is_active ? 'This project is open for freelancer applications. Draft editing is no longer available.' : 'This project remains open, but applications and Freelancer discovery are unavailable while its category is inactive.',
                 ProjectStatus::InProgress => 'This project is in progress. Its details are read-only.',
                 ProjectStatus::Completed => 'This project is completed. Its details are read-only.',
                 ProjectStatus::Cancelled => 'This project is cancelled. Its details are read-only.',
@@ -57,6 +57,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
     </div>
 
     <x-projects.cover :project="$project" />
+    <x-projects.inactive-category :project="$project" />
     <x-projects.completion :record="$project" />
     @if ($canMessage)<x-messages.link :project="$project" />@endif
 
