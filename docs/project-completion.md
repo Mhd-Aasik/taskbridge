@@ -1,0 +1,15 @@
+# Explicit work completion
+
+Completion is a Client action, separate from task progress, version approval and payment. Milestones derive completion from their recorded `completed_at`; there is no milestone status column. Projects use the existing `completed` status. Both records carry protected nullable UTC completion time, Client actor and plain-text note. The additive migration leaves every existing record's new metadata null, including any legacy completed projects.
+
+The owning Client may complete an assigned project only while it is in progress. All milestones must be explicitly completed, every task (including ungrouped work) must be done, at least one deliverable must exist, and every deliverable's latest version must be approved. Shared readiness queries power feedback and transactional enforcement. Counts cover all persisted work, independent of pagination or task filters; a deliverable without a version fails readiness.
+
+A milestone may be completed with all attached tasks done and all attached latest deliverable versions approved. With neither tasks nor deliverables it requires a meaningful outcome note. Notes are trimmed, limited to 2,000 characters and displayed escaped with line breaks. Confirmation is required. Nothing completes automatically when a task is done or a version is approved.
+
+Actions lock the persisted account, project and assignment in the established order, then the scoped milestone where needed. All existing planning/task/upload/review writers share this assignment lock, so readiness checks cannot race with another supported work mutation. Task moves lock source and destination milestones in ID order before the task. Milestone completion locks details, incoming/outgoing task membership, task edits/status changes, new attached deliverables and further versions. Project completion locks all new work mutations. Historical read access and private downloads remain authorised for both participants.
+
+Completion saves are atomic. A same-actor retry with the same normalized note returns the original result without rewriting time or terms, including milestone retries after project completion. Changed notes/actors are refused. Legacy projects already marked completed without metadata cannot be backfilled by the completion action. Existing committed upload/review/proposal/assignment retries may return their durable historical result without mutation; they cannot create new work or change recorded outcomes.
+
+Completed metadata rejects ordinary mass assignment and subsequent model rewrites. Restrictive actor foreign keys preserve history, and account deletion checks completion references before profile/avatar cleanup. There are no reopening, cancellation or payment actions in this feature.
+
+SQLite in-memory/fake-storage tests exercise persisted checks, sequential competing-write simulations, rollback, history and access restrictions. They do not prove parallel MySQL locking behaviour. Isolated parallel database testing and browser/device/theme/keyboard review remain in `docs/manual-review.md`; development records must never be used for concurrency testing.

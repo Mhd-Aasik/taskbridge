@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasCompletionMetadata;
 use Carbon\CarbonImmutable;
 use Database\Factories\MilestoneFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Milestone extends Model
 {
     /** @use HasFactory<MilestoneFactory> */
-    use HasFactory;
+    use HasCompletionMetadata, HasFactory;
 
     protected $fillable = ['title', 'description', 'due_date'];
 
@@ -25,6 +26,9 @@ class Milestone extends Model
             'description' => 'string',
             'due_date' => 'immutable_date:Y-m-d',
             'position' => 'integer',
+            'completed_at' => 'immutable_datetime',
+            'completed_by' => 'integer',
+            'completion_note' => 'string',
         ];
     }
 
@@ -54,6 +58,6 @@ class Milestone extends Model
 
     public function isOverdue(): bool
     {
-        return $this->due_date->toDateString() < CarbonImmutable::today('Asia/Colombo')->toDateString();
+        return ! $this->isCompleted() && $this->due_date->toDateString() < CarbonImmutable::today('Asia/Colombo')->toDateString();
     }
 }

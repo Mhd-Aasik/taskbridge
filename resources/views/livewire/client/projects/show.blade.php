@@ -27,7 +27,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
         abort_unless($user, 403);
         $project = Project::query()->findOrFail($this->projectId);
         Gate::forUser($user)->authorize('view', $project);
-        $project->load(['category', 'assignment.freelancer:id,name'])->loadCount('proposals');
+        $project->load(['category', 'assignment.freelancer:id,name', 'completer:id,name'])->loadCount('proposals');
 
         return [
             'project' => $project,
@@ -56,6 +56,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
     </div>
 
     <x-projects.cover :project="$project" />
+    <x-projects.completion :record="$project" />
 
     <p role="status" aria-live="polite" aria-atomic="true" class="tb-editor-confirmation">{{ session('project-publication') }}</p>
 
@@ -97,6 +98,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
 
     <div class="flex flex-wrap items-center gap-3">
         @if ($project->assignment)
+            <flux:button :href="route('projects.completion', $project)" wire:navigate>Project completion</flux:button>
             <flux:button :href="route('projects.plan', $project)" icon="calendar-days" wire:navigate>Project plan</flux:button>
             <flux:button :href="route('projects.deliverables.index', $project)" icon="document-text" wire:navigate>Deliverables</flux:button>
         @endif

@@ -101,6 +101,18 @@ class User extends Authenticatable
         return $this->hasMany(DeliverableReview::class, 'reviewed_by');
     }
 
+    /** @return HasMany<Project, $this> */
+    public function completedProjects(): HasMany
+    {
+        return $this->hasMany(Project::class, 'completed_by');
+    }
+
+    /** @return HasMany<Milestone, $this> */
+    public function completedMilestones(): HasMany
+    {
+        return $this->hasMany(Milestone::class, 'completed_by');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;

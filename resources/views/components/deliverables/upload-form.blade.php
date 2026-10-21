@@ -19,7 +19,7 @@
                     <flux:select wire:model="milestone_id" label="Milestone (optional)">
                         <option value="">No milestone</option>
                         @foreach ($milestones as $milestone)
-                            <option value="{{ $milestone->id }}">{{ $milestone->title }}</option>
+                            <option value="{{ $milestone->id }}" @disabled($milestone->isCompleted())>{{ $milestone->title }}{{ $milestone->isCompleted() ? ' — completed, work locked' : '' }}</option>
                         @endforeach
                     </flux:select>
                 @endif

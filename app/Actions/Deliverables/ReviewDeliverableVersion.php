@@ -5,6 +5,7 @@ namespace App\Actions\Deliverables;
 use App\Enums\DeliverableReviewDecision;
 use App\Enums\ProjectStatus;
 use App\Models\DeliverableReview;
+use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -51,9 +52,7 @@ class ReviewDeliverableVersion
             abort_unless($user->isClient() && $project->client_id === $user->id, 403);
             $deliverable = $assignment->deliverables()->findOrFail($deliverableId);
             // Match upload locking: account -> project -> assignment -> milestone -> deliverable -> version -> review.
-            if ($deliverable->milestone_id !== null) {
-                $assignment->milestones()->whereKey($deliverable->milestone_id)->lockForUpdate()->firstOrFail();
-            }
+            $milestone = $deliverable->milestone_id === null ? null : $assignment->milestones()->whereKey($deliverable->milestone_id)->lockForUpdate()->firstOrFail();
             $deliverable = $assignment->deliverables()->lockForUpdate()->findOrFail($deliverableId);
             $version = $deliverable->versions()->lockForUpdate()->findOrFail($versionId);
             Gate::forUser($user)->authorize('review', [$version, $deliverable, $assignment, $project]);
@@ -86,6 +85,7 @@ class ReviewDeliverableVersion
             if ($conflict) {
                 throw $conflict;
             }
+            CompletionRules::ensureMutable($milestone, 'review');
             if ($project->status !== ProjectStatus::InProgress) {
                 throw ValidationException::withMessages(['review' => 'New reviews are unavailable because this project is no longer in progress. Review history remains available.']);
             }

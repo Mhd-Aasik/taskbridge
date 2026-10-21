@@ -128,7 +128,7 @@ new #[Layout('components.layouts.app'), Title('Deliverable history')] class exte
     public function with(): array
     {
         [$user, $project, $assignment, $deliverable] = $this->authorisedContext();
-        $deliverable->load(['milestone:id,title', 'latestVersion.review.reviewer:id,name']);
+        $deliverable->load(['milestone:id,title,completed_at', 'latestVersion.review.reviewer:id,name']);
         $latest = $deliverable->latestVersion;
 
         return [
@@ -136,7 +136,7 @@ new #[Layout('components.layouts.app'), Title('Deliverable history')] class exte
             'deliverable' => $deliverable,
             'versions' => $deliverable->versions()->with(['uploader:id,name', 'review.reviewer:id,name'])->orderByDesc('version_number')->orderByDesc('id')->get(),
             'canUpload' => Gate::forUser($user)->allows('uploadVersion', [$deliverable, $assignment, $project]),
-            'canReview' => $latest && ! $latest->review && $project->status === ProjectStatus::InProgress && Gate::forUser($user)->allows('review', [$latest, $deliverable, $assignment, $project]),
+            'canReview' => $latest && ! $latest->review && ! $deliverable->milestone?->isCompleted() && $project->status === ProjectStatus::InProgress && Gate::forUser($user)->allows('review', [$latest, $deliverable, $assignment, $project]),
             'reviewTargetCurrent' => $latest?->id === $this->reviewVersionId,
             'reviewState' => $deliverable->reviewState(),
         ];
@@ -166,6 +166,9 @@ new #[Layout('components.layouts.app'), Title('Deliverable history')] class exte
     @endif
 
     <div class="tb-editor-notice rounded-xl border border-teal-200 p-5 dark:border-teal-900">
+        @if ($deliverable->milestone?->isCompleted())
+            <p class="mb-3 font-medium">This milestone is completed. Its work is locked; historical versions and downloads remain available.</p>
+        @endif
         <p>Each submitted version and completed review is retained unchanged. Version approval does not itself complete the project or confirm payment.</p>
         @if ($reviewState === 'approved')
             <p class="mt-3 font-medium">This deliverable is approved. Further versions are closed; other deliverables are unaffected.</p>

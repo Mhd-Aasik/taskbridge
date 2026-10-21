@@ -7,11 +7,13 @@
             <x-dashboard.panel title="Your assigned projects" description="Agreed work selected by clients.">
                 <div class="space-y-4 p-6">
                     <p class="tb-muted">{{ $assignmentCount }} assigned {{ Str::plural('project', $assignmentCount) }}.</p>
+                    <p class="tb-muted">{{ $completedAssignmentCount }} completed {{ Str::plural('project', $completedAssignmentCount) }}. Completion does not confirm payment.</p>
                     @forelse ($recentAssignments as $assignment)
                         <div class="flex items-center gap-4">
                             <x-projects.cover :project="$assignment->project" compact />
                             <a href="{{ route('freelancer.assignments.show', $assignment) }}" class="tb-text-link min-w-0 break-words" wire:navigate>{{ $assignment->project->title }} · {{ $assignment->formattedBudget() }}</a>
                         </div>
+                        <x-projects.completion :record="$assignment->project" />
                     @empty
                         <p class="tb-muted leading-7">When a client accepts your proposal, your assigned project will appear here.</p>
                     @endforelse

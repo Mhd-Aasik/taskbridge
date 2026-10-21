@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Milestones\SaveMilestone;
+use App\Actions\Milestones\CompleteMilestone;
 use App\Actions\Tasks\ChangeProjectTaskStatus;
 use App\Actions\Tasks\SaveProjectTask;
 use App\Enums\ProjectStatus;
@@ -9,6 +10,7 @@ use App\Livewire\Forms\MilestoneForm;
 use App\Livewire\Forms\ProjectTaskForm;
 use App\Models\Project;
 use App\Support\MilestoneRules;
+use App\Support\CompletionReadiness;
 use App\Support\ProjectPlanning;
 use App\Support\TaskProgress;
 use Illuminate\Support\Facades\Gate;
@@ -37,6 +39,32 @@ new #[Layout('components.layouts.app'), Title('Project plan')] class extends Com
     public ?int $taskDetailsVersion = null;
 
     public $taskStatusFilter = '';
+
+    public array $milestoneNotes = [];
+
+    public array $milestoneConfirmed = [];
+
+    public function completeMilestone(int $milestoneId): void
+    {
+        $this->resetValidation();
+        try {
+            app(CompleteMilestone::class)->complete($this->projectId, $milestoneId, [
+                'completion_note' => $this->milestoneNotes[$milestoneId] ?? null,
+                'confirmed' => $this->milestoneConfirmed[$milestoneId] ?? false,
+            ]);
+        } catch (ValidationException $exception) {
+            $errors = [];
+            foreach ($exception->errors() as $key => $messages) {
+                $errors[match ($key) {
+                    'completion_note' => 'milestoneNotes.'.$milestoneId,
+                    'confirmed' => 'milestoneConfirmed.'.$milestoneId,
+                    default => 'milestoneCompletion.'.$milestoneId,
+                }] = $messages;
+            }
+            throw ValidationException::withMessages($errors);
+        }
+        session()->flash('milestone-saved', 'Milestone completed. Its work is locked. Project completion and payment have not changed.');
+    }
 
     public function mount(Project $project): void
     {
@@ -141,15 +169,15 @@ new #[Layout('components.layouts.app'), Title('Project plan')] class extends Com
             $this->addError('taskStatusFilter', 'Choose a supported task status or show all tasks.');
         }
         $tasks = $filterIsValid
-            ? $assignment->tasks()->when($this->taskStatusFilter !== '', fn ($query) => $query->where('status', $this->taskStatusFilter))->orderBy('due_date')->orderBy('id')->get()
+            ? $assignment->tasks()->with('milestone:id,completed_at')->when($this->taskStatusFilter !== '', fn ($query) => $query->where('status', $this->taskStatusFilter))->orderBy('due_date')->orderBy('id')->get()
             : collect();
         $ungroupedCounts = $assignment->tasks()->whereNull('milestone_id')
             ->selectRaw('COUNT(*) as total, SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as completed', [ProjectTaskStatus::Done->value])->first();
 
         return [
-            'project' => $project,
+            'project' => $project->load('completer:id,name'),
             'assignment' => $assignment,
-            'milestones' => $assignment->milestones()->withCount(['tasks', 'tasks as completed_tasks_count' => fn ($query) => $query->where('status', ProjectTaskStatus::Done->value)])->get(),
+            'milestones' => $assignment->milestones()->with('completer:id,name')->withCount(CompletionReadiness::milestoneCounts())->get(),
             'tasksByMilestone' => $tasks->groupBy('milestone_id'),
             'ungroupedTasks' => $tasks->whereNull('milestone_id'),
             'taskProgress' => TaskProgress::forAssignment($assignment),
@@ -173,11 +201,13 @@ new #[Layout('components.layouts.app'), Title('Project plan')] class extends Com
             <p class="tb-muted mt-1">Status: {{ Str::headline($project->status->value) }}</p>
         </div>
         <div class="flex flex-wrap gap-3">
+            <flux:button :href="route('projects.completion', $project)" wire:navigate>Project completion</flux:button>
             <flux:button :href="route('projects.deliverables.index', $project)" icon="document-text" wire:navigate>Deliverables</flux:button>
             <flux:button :href="$isClientOwner ? route('client.projects.show', $project) : route('freelancer.assignments.show', $assignment)" icon="arrow-left" class="self-start shrink-0" wire:navigate>{{ $isClientOwner ? 'Project review' : 'Assigned project' }}</flux:button>
         </div>
     </div>
 
+    <x-projects.completion :record="$project" />
     <div class="tb-editor-notice rounded-xl border border-teal-200 p-5 dark:border-teal-900">
         <p>Plan milestone and task dates from <time datetime="{{ $earliestDate }}">{{ $assignment->assigned_at->setTimezone('Asia/Colombo')->format('j F Y') }}</time> through <time datetime="{{ $latestDate }}">{{ $assignment->agreed_deadline->format('j F Y') }}</time>, inclusive.</p>
         <p class="mt-2">Past dates within this interval are allowed so overdue work remains manageable. Planning does not change the agreed completion date or project status.</p>
@@ -225,12 +255,16 @@ new #[Layout('components.layouts.app'), Title('Project plan')] class extends Com
                                     <p class="mt-2 font-semibold text-amber-900 dark:text-amber-200">Overdue <span class="font-normal">— due before today in Sri Lanka.</span></p>
                                 @endif
                             </div>
-                            @if ($canManage)
+                            @if ($canManage && ! $milestone->isCompleted())
                                 <flux:button type="button" wire:click="edit({{ $milestone->id }})" wire:loading.attr="disabled" wire:target="edit,save,cancelEdit" :aria-label="'Edit milestone '.$milestone->title" class="self-start shrink-0">Edit milestone</flux:button>
                             @endif
                         </div>
                         @if ($milestone->description !== null && $milestone->description !== '')
                             <p class="mt-4 whitespace-pre-wrap break-words leading-7">{{ $milestone->description }}</p>
+                        @endif
+                        <x-projects.completion :record="$milestone" class="mt-4" />
+                        @if ($canManage && ! $milestone->isCompleted())
+                            <x-milestones.complete :milestone="$milestone" :readiness="\App\Support\CompletionReadiness::forMilestone($milestone, reload: false)" />
                         @endif
                         <div class="mt-5 border-t border-slate-200 pt-4 dark:border-slate-700">
                             <x-tasks.progress :progress="\App\Support\TaskProgress::summarize($milestone->tasks_count, $milestone->completed_tasks_count)" :label="'Task progress for '.$milestone->title" />
@@ -303,7 +337,7 @@ new #[Layout('components.layouts.app'), Title('Project plan')] class extends Com
                         <flux:select wire:model="taskForm.milestone_id" label="Milestone (optional)" description="Tasks attached to a milestone must be due on or before that milestone's due date.">
                             <option value="">No milestone — ungrouped task</option>
                             @foreach ($milestones as $milestone)
-                                <option value="{{ $milestone->id }}">{{ $milestone->title }} — due {{ $milestone->due_date->format('j F Y') }}</option>
+                                <option value="{{ $milestone->id }}" @disabled($milestone->isCompleted())>{{ $milestone->title }} — {{ $milestone->isCompleted() ? 'completed, work locked' : 'due '.$milestone->due_date->format('j F Y') }}</option>
                             @endforeach
                         </flux:select>
                         <flux:input wire:model="taskForm.due_date" label="Task due date" type="date" :min="$earliestDate" :max="$latestDate" description="Within the assignment interval and no later than the selected milestone's due date. Past dates are allowed." required />

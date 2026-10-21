@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\ProjectStatus;
 use App\Models\Project;
+use App\Models\ProjectAssignment;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 
@@ -32,6 +33,11 @@ class ProjectPolicy
     public function update(User $user, Project $project): bool
     {
         return $this->view($user, $project) && $project->status === ProjectStatus::Draft;
+    }
+
+    public function complete(User $user, Project $project, ProjectAssignment $assignment): bool
+    {
+        return $assignment->project_id === $project->id && $this->view($user, $project);
     }
 
     public function publish(User $user, Project $project): bool

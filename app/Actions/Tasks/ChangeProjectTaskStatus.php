@@ -5,6 +5,7 @@ namespace App\Actions\Tasks;
 use App\Enums\ProjectStatus;
 use App\Enums\ProjectTaskStatus;
 use App\Models\ProjectTask;
+use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
@@ -20,10 +21,13 @@ class ChangeProjectTaskStatus
     {
         return DB::transaction(function () use ($projectId, $taskId, $status, $expectedStatusVersion): ProjectTask {
             [$user, $project, $assignment] = ProjectPlanning::context($projectId, lock: true);
+            $candidate = $assignment->tasks()->findOrFail($taskId);
+            $milestone = $candidate->milestone_id === null ? null : $assignment->milestones()->whereKey($candidate->milestone_id)->lockForUpdate()->firstOrFail();
             $task = $assignment->tasks()->whereKey($taskId)->lockForUpdate()->firstOrFail();
             if ($project->status !== ProjectStatus::InProgress) {
                 throw ValidationException::withMessages(['plan' => 'This plan is read-only because the project is no longer in progress. Task status has not changed.']);
             }
+            CompletionRules::ensureMutable($milestone);
             Gate::forUser($user)->authorize('changeStatus', [$task, $assignment, $project]);
             Validator::make(['task_status' => $status], ['task_status' => ['required', Rule::enum(ProjectTaskStatus::class)]])->validate();
             $target = ProjectTaskStatus::from($status);

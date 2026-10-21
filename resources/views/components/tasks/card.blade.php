@@ -13,14 +13,14 @@
                 <p class="tb-muted mt-2 text-sm">Completed <time datetime="{{ $task->completed_at->setTimezone('Asia/Colombo')->toIso8601String() }}">{{ $task->completed_at->setTimezone('Asia/Colombo')->format('j F Y, g:i a') }}</time> (Asia/Colombo)</p>
             @endif
         </div>
-        @if ($canManage)
+        @if ($canManage && ! $task->milestone?->isCompleted())
             <flux:button type="button" wire:click="editTask({{ $task->id }})" wire:loading.attr="disabled" wire:target="editTask,saveTask,cancelTaskEdit,changeTaskStatus" :aria-label="'Edit task '.$task->title" class="self-start shrink-0">Edit task</flux:button>
         @endif
     </div>
     @if ($task->description !== null && $task->description !== '')
         <p class="mt-4 whitespace-pre-wrap break-words leading-7">{{ $task->description }}</p>
     @endif
-    @if ($canChangeStatus)
+    @if ($canChangeStatus && ! $task->milestone?->isCompleted())
         <form wire:submit="changeTaskStatus({{ $task->id }}, $event.target.elements.status.value, {{ $task->status_version }})" class="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:items-end" aria-label="Change status for {{ $task->title }}">
             <fieldset wire:loading.attr="disabled" wire:target="changeTaskStatus,editTask,saveTask,cancelTaskEdit" class="min-w-0 w-full sm:max-w-xs">
                 <legend class="sr-only">Task status</legend>

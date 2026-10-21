@@ -26,8 +26,9 @@ class DashboardController extends Controller
             'draftCount' => $user->projects()->where('status', ProjectStatus::Draft->value)->count(),
             'openCount' => $user->projects()->where('status', ProjectStatus::Open->value)->count(),
             'assignedProjectCount' => $user->projects()->whereHas('assignment')->count(),
+            'completedProjectCount' => $user->projects()->where('status', ProjectStatus::Completed->value)->count(),
             'receivedProposalCount' => Proposal::query()->whereHas('project', fn (Builder $projects) => $projects->where('client_id', $user->id))->count(),
-            'recentProjects' => $user->projects()->with(['category', 'assignment.freelancer:id,name'])->withCount('proposals')->latest('updated_at')->latest('id')->limit(3)->get(),
+            'recentProjects' => $user->projects()->with(['category', 'assignment.freelancer:id,name', 'completer:id,name'])->withCount('proposals')->latest('updated_at')->latest('id')->limit(3)->get(),
         ]);
     }
 
@@ -40,7 +41,8 @@ class DashboardController extends Controller
         return view('dashboards.freelancer', [
             'user' => $user,
             'assignmentCount' => $user->projectAssignments()->count(),
-            'recentAssignments' => $user->projectAssignments()->with('project:id,title,status,cover_path')->orderByDesc('assigned_at')->orderByDesc('id')->limit(3)->get(),
+            'completedAssignmentCount' => $user->projectAssignments()->whereHas('project', fn ($query) => $query->where('status', ProjectStatus::Completed->value))->count(),
+            'recentAssignments' => $user->projectAssignments()->with(['project:id,title,status,cover_path,completed_at,completed_by,completion_note', 'project.completer:id,name'])->orderByDesc('assigned_at')->orderByDesc('id')->limit(3)->get(),
         ]);
     }
 

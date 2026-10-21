@@ -17,12 +17,12 @@ class ProjectTaskPolicy
 
     public function update(User $user, ProjectTask $task, ProjectAssignment $assignment, Project $project): bool
     {
-        return $task->project_assignment_id === $assignment->id && $this->create($user, $assignment, $project);
+        return ! $task->milestone?->isCompleted() && $task->project_assignment_id === $assignment->id && $this->create($user, $assignment, $project);
     }
 
     public function changeStatus(User $user, ProjectTask $task, ProjectAssignment $assignment, Project $project): bool
     {
-        return $task->project_assignment_id === $assignment->id && $project->status === ProjectStatus::InProgress
+        return ! $task->milestone?->isCompleted() && $task->project_assignment_id === $assignment->id && $project->status === ProjectStatus::InProgress
             && app(ProjectAssignmentPolicy::class)->viewPlan($user, $assignment, $project);
     }
 }

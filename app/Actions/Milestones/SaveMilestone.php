@@ -4,6 +4,7 @@ namespace App\Actions\Milestones;
 
 use App\Enums\ProjectStatus;
 use App\Models\Milestone;
+use App\Support\CompletionRules;
 use App\Support\MilestoneRules;
 use App\Support\ProjectPlanning;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,7 @@ class SaveMilestone
             if ($project->status !== ProjectStatus::InProgress) {
                 throw ValidationException::withMessages(['plan' => 'This plan is read-only because the project is no longer in progress. Your changes have not been saved.']);
             }
+            CompletionRules::ensureMutable($milestone);
             Gate::forUser($user)->authorize($milestone ? 'update' : 'create', $milestone
                 ? [$milestone, $assignment, $project] : [Milestone::class, $assignment, $project]);
             $details = MilestoneRules::validatedDetails($assignment, $input);

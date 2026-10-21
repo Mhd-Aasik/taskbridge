@@ -15,11 +15,13 @@
             </div>
             @forelse ($recentProjects as $project)
                 <x-projects.card :project="$project" />
+                <x-projects.completion :record="$project" />
             @empty
                 <x-dashboard.panel title="Start your next project" description="Capture the details at your own pace.">
                     <x-dashboard.empty-state icon="folder-plus" title="Your projects will appear here." description="Create a private draft with your brief, budget, and deadline. Review the saved details and publish when you are ready." />
                 </x-dashboard.panel>
             @endforelse
+            <p class="tb-muted">{{ $completedProjectCount }} completed {{ Str::plural('project', $completedProjectCount) }}. Completion does not confirm payment.</p>
             <flux:button :href="route('client.projects.index')" wire:navigate>View all projects</flux:button>
 
             <x-dashboard.panel title="Before your next collaboration" description="A good brief makes room for great work.">

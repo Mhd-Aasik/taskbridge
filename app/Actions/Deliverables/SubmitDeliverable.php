@@ -8,6 +8,7 @@ use App\Models\DeliverableVersion;
 use App\Models\ProjectAssignment;
 use App\Models\User;
 use App\Services\DeliverableFiles;
+use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -53,6 +54,7 @@ class SubmitDeliverable
                 if ($milestoneId !== null && ! $milestone) {
                     throw ValidationException::withMessages(['milestone_id' => 'Choose a milestone from this project, or leave the deliverable ungrouped.']);
                 }
+                CompletionRules::ensureMutable($milestone, 'deliverables');
                 if ($deliverable) {
                     $deliverable = $assignment->deliverables()->lockForUpdate()->findOrFail($deliverableId);
                     if ($deliverable->isApproved()) {

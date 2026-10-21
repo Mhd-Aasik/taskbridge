@@ -82,7 +82,7 @@ new #[Layout('components.layouts.app'), Title('Project deliverables')] class ext
             'assignment' => $assignment,
             'deliverables' => $assignment->deliverables()->with(['milestone:id,title', 'latestVersion.uploader:id,name', 'latestVersion.review.reviewer:id,name'])->withCount('versions')->reorder()->latest('id')->paginate(10),
             'reviewSummary' => DeliverableReviewSummary::forAssignment($assignment),
-            'milestones' => $assignment->milestones()->get(['id', 'title']),
+            'milestones' => $assignment->milestones()->get(['id', 'title', 'completed_at']),
             'canUpload' => Gate::forUser($user)->allows('create', [Deliverable::class, $assignment, $project]),
             'isClientOwner' => $user->isClient() && $project->client_id === $user->id,
         ];

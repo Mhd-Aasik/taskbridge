@@ -55,6 +55,12 @@ new class extends Component {
                 ]);
             }
 
+            if ($user->completedProjects()->exists() || $user->completedMilestones()->exists()) {
+                throw ValidationException::withMessages([
+                    'password' => __('Your account cannot be deleted because it has completion history. Completed work and project history must be preserved.'),
+                ]);
+            }
+
             if (! $user->delete()) {
                 throw new RuntimeException('The account could not be deleted.');
             }

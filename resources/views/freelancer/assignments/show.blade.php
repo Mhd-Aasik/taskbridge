@@ -10,10 +10,12 @@
             <flux:button :href="route('freelancer.assignments.index')" class="self-start shrink-0" wire:navigate>Assigned projects</flux:button>
         </div>
         <x-projects.cover :project="$assignment->project" />
+        <x-projects.completion :record="$assignment->project" />
         <x-dashboard.panel title="Agreed terms">
             <x-assignments.terms :assignment="$assignment" class="p-5 sm:p-6" />
         </x-dashboard.panel>
         <div class="flex flex-wrap gap-3">
+            <flux:button :href="route('projects.completion', $assignment->project_id)" wire:navigate>Project completion</flux:button>
             <flux:button :href="route('projects.plan', $assignment->project_id)" icon="calendar-days" wire:navigate>Project plan</flux:button>
             <flux:button :href="route('projects.deliverables.index', $assignment->project_id)" icon="document-text" wire:navigate>Deliverables</flux:button>
         </div>

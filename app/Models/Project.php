@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ProjectStatus;
+use App\Models\Concerns\HasCompletionMetadata;
 use App\Services\ProjectCovers;
 use Carbon\CarbonImmutable;
 use Database\Factories\ProjectFactory;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Project extends Model
 {
     /** @use HasFactory<ProjectFactory> */
-    use HasFactory;
+    use HasCompletionMetadata, HasFactory;
 
     protected $fillable = ['title', 'description', 'category_id', 'budget', 'deadline'];
 
@@ -37,6 +38,9 @@ class Project extends Model
             'deadline' => 'immutable_date:Y-m-d',
             'status' => ProjectStatus::class,
             'published_at' => 'datetime',
+            'completed_at' => 'immutable_datetime',
+            'completed_by' => 'integer',
+            'completion_note' => 'string',
         ];
     }
 
