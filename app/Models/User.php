@@ -131,6 +131,18 @@ class User extends Authenticatable
         return $this->hasMany(DisputeCase::class, 'opened_by');
     }
 
+    /** @return HasMany<ProjectMessage, $this> */
+    public function projectMessages(): HasMany
+    {
+        return $this->hasMany(ProjectMessage::class, 'sender_id');
+    }
+
+    /** @return HasMany<ProjectReadCursor, $this> */
+    public function projectReadCursors(): HasMany
+    {
+        return $this->hasMany(ProjectReadCursor::class);
+    }
+
     /** @return HasMany<DisputeStatement, $this> */
     public function disputeStatements(): HasMany
     {

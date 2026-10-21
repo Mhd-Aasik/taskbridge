@@ -6,6 +6,7 @@ use App\Enums\DisputeDecision;
 use App\Livewire\Concerns\HandlesDisputeActions;
 use App\Models\DisputeCase;
 use App\Support\DisputeContext;
+use App\Support\DisputeConversation;
 use App\Support\TaskProgress;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -88,10 +89,11 @@ new #[Layout('components.layouts.app'), Title('Private dispute case')] class ext
     public function with(): array
     {
         [$user, $project, $assignment, $dispute] = $this->authorisedContext();
-        $pagination = Validator::make(['discussionPage' => $this->paginators['discussionPage'] ?? request()->query('discussionPage', 1), 'workPage' => $this->paginators['workPage'] ?? request()->query('workPage', 1)], [
+        $pagination = Validator::make(['messagePage' => $this->paginators['messagePage'] ?? request()->query('messagePage', 1), 'discussionPage' => $this->paginators['discussionPage'] ?? request()->query('discussionPage', 1), 'workPage' => $this->paginators['workPage'] ?? request()->query('workPage', 1)], [
+            'messagePage' => ['required', 'integer', 'min:1', 'max:10000'],
             'discussionPage' => ['required', 'integer', 'min:1', 'max:10000'], 'workPage' => ['required', 'integer', 'min:1', 'max:10000'],
         ]);
-        abort_if($pagination->fails(), 422, 'Choose discussion and work pages between 1 and 10,000.');
+        abort_if($pagination->fails(), 422, 'Choose discussion, conversation and work pages between 1 and 10,000.');
         $assignment->load(['freelancer:id,name', 'paymentReport.reporter:id,name', 'paymentReport.acknowledgment.acknowledger:id,name']);
         return [
             'project' => $project->load(['client:id,name', 'completer:id,name']),
@@ -102,6 +104,7 @@ new #[Layout('components.layouts.app'), Title('Private dispute case')] class ext
             'taskProgress' => TaskProgress::forAssignment($assignment),
             'canResolve' => Gate::forUser($user)->allows('resolve', [$dispute, $assignment, $project]),
             'decisions' => DisputeDecision::cases(),
+            'caseMessages' => $this->adminContext ? DisputeConversation::messages($this->caseId)->paginate(20, ['*'], 'messagePage') : null,
         ];
     }
 }; ?>
@@ -170,5 +173,6 @@ new #[Layout('components.layouts.app'), Title('Private dispute case')] class ext
         @endif
     @endif
 
+    @if ($caseMessages !== null)<x-messages.dispute-context :messages="$caseMessages" />@endif
     <x-disputes.context :project="$project" :assignment="$assignment" :dispute="$dispute" :task-progress="$taskProgress" :deliverables="$deliverables" :admin-context="$adminContext" />
 </div>

@@ -98,4 +98,16 @@ class ProjectAssignment extends Model
     {
         return $this->hasOne(ActiveDispute::class);
     }
+
+    /** @return HasMany<ProjectMessage, $this> */
+    public function messages(): HasMany
+    {
+        return $this->hasMany(ProjectMessage::class)->orderBy('id');
+    }
+
+    /** @return HasMany<ProjectReadCursor, $this> */
+    public function readCursors(): HasMany
+    {
+        return $this->hasMany(ProjectReadCursor::class);
+    }
 }

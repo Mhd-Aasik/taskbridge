@@ -13,6 +13,7 @@
                 <flux:navlist.item icon="user-circle" :href="route('freelancer.profile.edit')" :current="request()->routeIs('freelancer.profile.edit')" wire:navigate>Freelancer profile</flux:navlist.item>
             @endif
             @if (auth()->user()->isClient() || auth()->user()->isFreelancer())
+                <flux:navlist.item icon="chat-bubble-oval-left" :href="route('messages.index')" :current="request()->routeIs('messages.*', 'projects.messages')" wire:navigate><span class="inline-flex items-center gap-2">Messages <livewire:messages.unread-badge key="navigation-message-badge" /></span></flux:navlist.item>
                 <flux:navlist.item icon="chat-bubble-left-right" :href="route('disputes.index')" :current="request()->routeIs('disputes.*', 'projects.disputes.*')" wire:navigate>Disputes</flux:navlist.item>
             @endif
             @if (auth()->user()->isAdmin())

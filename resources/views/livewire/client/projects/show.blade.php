@@ -32,6 +32,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
         return [
             'project' => $project,
             'taskProgress' => $project->assignment ? TaskProgress::forAssignment($project->assignment) : null,
+            'canMessage' => $project->assignment && Gate::forUser($user)->allows('viewConversation', [App\Models\ProjectMessage::class, $project->assignment, $project]),
             'deadline' => $project->calendarDeadline(),
             'publicationTime' => $project->published_at?->toImmutable()->setTimezone('Asia/Colombo'),
             'statusDescription' => match ($project->status) {
@@ -57,6 +58,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
 
     <x-projects.cover :project="$project" />
     <x-projects.completion :record="$project" />
+    @if ($canMessage)<x-messages.link :project="$project" />@endif
 
     <p role="status" aria-live="polite" aria-atomic="true" class="tb-editor-confirmation">{{ session('project-publication') }}</p>
 
