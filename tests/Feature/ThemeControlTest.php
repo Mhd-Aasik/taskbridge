@@ -7,11 +7,12 @@ use DOMDocument;
 use DOMXPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Concerns\BuildsUnknownRoleAccount;
 use Tests\TestCase;
 
 class ThemeControlTest extends TestCase
 {
-    use RefreshDatabase;
+    use BuildsUnknownRoleAccount, RefreshDatabase;
 
     #[DataProvider('roles')]
     public function test_every_role_has_one_shared_theme_dropdown_beside_the_avatar(string $role): void
@@ -69,7 +70,7 @@ class ThemeControlTest extends TestCase
 
     public function test_the_retired_appearance_redirect_preserves_unknown_role_rejection(): void
     {
-        $user = User::factory()->make(['role' => 'unknown']);
+        $user = $this->unknownRoleAccount();
 
         $this->actingAs($user)->get('/settings/appearance')->assertRedirectToRoute('dashboard');
         $this->get(route('dashboard'))->assertForbidden();

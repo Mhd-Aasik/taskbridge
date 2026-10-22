@@ -38,6 +38,9 @@ class ProjectMessageAccountDeletionTest extends TestCase
     {
         Storage::fake('avatars');
         $record = ProjectReadCursor::factory()->create()->fresh();
+        if ($role === User::ROLE_ADMIN) {
+            User::factory()->create(['role' => User::ROLE_ADMIN]);
+        }
         $before = $record->getAttributes();
         $actor = User::factory()->create(['role' => $role]);
         $this->actingAs($actor);

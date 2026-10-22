@@ -28,6 +28,7 @@ class ProjectFeedback
         $accounts = $accounts->get()->keyBy('id');
         $user = $accounts->get(Auth::id());
         abort_unless($user, 403);
+        AccountAccess::ensure($user);
         $projects = Project::query()->whereKey($projectId);
         $assignments = ProjectAssignment::query()->whereKey($candidate->id);
         if ($lock) {

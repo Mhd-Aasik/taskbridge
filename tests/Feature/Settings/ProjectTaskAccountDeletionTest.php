@@ -59,6 +59,9 @@ class ProjectTaskAccountDeletionTest extends TestCase
     public function test_accounts_without_history_still_delete_without_affecting_other_tasks(string $role): void
     {
         $unrelated = ProjectTask::factory()->create()->fresh();
+        if ($role === User::ROLE_ADMIN) {
+            User::factory()->create(['role' => User::ROLE_ADMIN]);
+        }
         $before = $unrelated->getAttributes();
         $user = User::factory()->create(['role' => $role]);
         $this->actingAs($user);

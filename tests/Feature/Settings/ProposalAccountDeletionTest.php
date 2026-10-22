@@ -89,6 +89,9 @@ class ProposalAccountDeletionTest extends TestCase
     public function test_accounts_without_project_or_proposal_history_still_delete_and_clean_up_resources(string $role): void
     {
         $unrelated = Proposal::factory()->create();
+        if ($role === User::ROLE_ADMIN) {
+            User::factory()->create(['role' => User::ROLE_ADMIN]);
+        }
         $user = User::factory()->create(['role' => $role]);
         $this->actingAs($user);
         $user = app(AccountPhotos::class)->replace($user, UploadedFile::fake()->image('photo.png'));

@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Services\ProjectCoverImages;
 use App\Services\ProjectCovers;
+use App\Support\AccountAccess;
 use App\Support\ProjectRules;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +32,7 @@ class SaveProjectDraft
                 // Shared user -> project -> category order coordinates with publication.
                 $user = User::query()->lockForUpdate()->find(Auth::id());
                 abort_unless($user, 403);
+                AccountAccess::ensure($user);
                 $project = $projectId === null ? null : Project::query()->lockForUpdate()->findOrFail($projectId);
                 Gate::forUser($user)->authorize($project ? 'update' : 'create', $project ?? Project::class);
 

@@ -66,6 +66,7 @@ class DashboardController extends Controller
             'user' => $user,
             'openDisputeCount' => DisputeCase::query()->inState('open')->count(),
             'categoryCounts' => Category::query()->selectRaw('COUNT(*) as total, SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active')->first(),
+            'accountStatusCounts' => User::query()->selectRaw('SUM(CASE WHEN suspended_at IS NULL THEN 1 ELSE 0 END) as active, SUM(CASE WHEN suspended_at IS NOT NULL THEN 1 ELSE 0 END) as suspended')->first(),
             'accountCounts' => [
                 'total' => (int) $counts->sum(),
                 'clients' => (int) $counts->get(User::ROLE_CLIENT, 0),

@@ -76,6 +76,7 @@ class Project extends Model
             ->whereNotNull('published_at')
             ->where('published_at', '<=', $now)
             ->whereHas('category', fn (Builder $category) => $category->where('is_active', true))
+            ->whereHas('client', fn (Builder $clients) => $clients->whereNull('suspended_at'))
             ->whereDate('deadline', '>=', $now->setTimezone('Asia/Colombo')->toDateString());
     }
 

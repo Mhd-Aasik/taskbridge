@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Proposal;
 use App\Models\User;
 use App\Services\ProjectNotifications;
+use App\Support\AccountAccess;
 use App\Support\ProposalSubmissionRules;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -26,10 +27,17 @@ class SubmitProposal
         abort_unless(Auth::check(), 403);
 
         return DB::transaction(function () use ($projectId, $input): array {
-            $user = User::query()->lockForUpdate()->find(Auth::id());
+            $clientId = Project::query()->whereKey($projectId)->value('client_id');
+            $accounts = User::query()->whereIn('id', [Auth::id(), $clientId])->orderBy('id')->lockForUpdate()->get()->keyBy('id');
+            $user = $accounts->get(Auth::id());
             abort_unless($user, 403);
+            AccountAccess::ensure($user);
             $project = Project::query()->lockForUpdate()->findOrFail($projectId);
             Gate::forUser($user)->authorize('create', [Proposal::class, $project]);
+
+            if ($project->client_id !== (int) $clientId || ! $accounts->get($project->client_id)?->isActive()) {
+                throw ValidationException::withMessages(['project' => 'This project is no longer available for proposals.']);
+            }
 
             Category::query()->whereKey($project->category_id)->lockForUpdate()->first();
             if ($existing = $this->existing($user, $project)) {

@@ -16,6 +16,7 @@ new class extends Component {
      */
     public function updatePassword(): void
     {
+        \App\Support\AccountAccess::account();
         try {
             $validated = $this->validate([
                 'current_password' => ['required', 'string', 'current_password'],
@@ -27,9 +28,12 @@ new class extends Component {
             throw $e;
         }
 
-        Auth::user()->update([
-            'password' => Hash::make($validated['password']),
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($validated): void {
+            $account = \App\Support\AccountAccess::account(lock: true);
+            $account->password = Hash::make($validated['password']);
+            if (! $account->save()) { throw new \RuntimeException('The password could not be saved.'); }
+            Auth::setUser($account);
+        });
 
         $this->reset('current_password', 'password', 'password_confirmation');
 

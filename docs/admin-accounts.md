@@ -1,0 +1,51 @@
+# Account administration and suspension
+
+`/admin/accounts` and `/admin/accounts/{account}` require an active, authenticated administrator and dedicated User policy abilities. Name/email search is bounded to 100 characters and treats SQL wildcards literally. Role/status filters are validated, pagination is bounded and ordered by name/id, and associated record counts use aggregate queries. Target queries select explicit fields; neither pages nor status history expose passwords, remember tokens, private avatar paths, private work, or audit retry hashes/identifiers. Administrator accounts have no suspension/reactivation controls. There are no role changes, impersonation, password replacement or administrative deletion actions.
+
+The additive users migration supplies nullable UTC `suspended_at`, restrictive nullable `suspended_by`, nullable internal `suspension_reason` and a guarded monotonically increasing `access_version`, initially zero. It does not change any existing account's status. There is no global User scope: suspended authors and counterpart relationships remain available in authorized history.
+
+## Status transactions and audit
+
+`ChangeAccountStatus` locks the actor and target accounts in ascending ID order, matching participant-account locking in acceptance and feedback. It checks the persisted actor's active status and role, the target's permitted Client/Freelancer role, confirmation, meaningful trimmed reason (maximum 1,000 characters), and the captured revision. The revision includes status metadata, access version and the displayed name/email; it detects stale confirmations and status changes that return to an earlier state.
+
+The existing append-only Admin action log gains explicit account action types and a User subject whitelist. Before/after snapshots contain only account status, suspension time and the administrative reason. Actor and UTC occurrence time use the existing audit columns. Status changes, audit writes, remember-token rotation and same-database session deletion are transactional. No-op requests do not touch timestamps or create events. Exact UUID retries return the original audit outcome without reversing later changes; changed payloads/actors are refused. Only the known audit-identity uniqueness conflict is recoverable. Failures without a matching committed receipt propagate.
+
+Reasons are **internal administrative notes**, clearly labelled in both confirmations and history. They are not shown to the affected owner. Reactivation clears current suspension metadata, rotates remember tokens again, increments the access version and preserves immutable history. It does not reset project/proposal state, publication time or agreed terms. Accounts with administrative status history, and actors referenced by suspension/audit history, receive a clear deletion refusal before private cleanup.
+
+## Authentication and sessions
+
+The configured `active-eloquent` provider preserves normal password verification. Incorrect credentials retain the generic authentication error, including for suspended accounts. A generic account-unavailable explanation is returned only after a correct password or an already authenticated session. Password reset remains available and updates only the password/remember token; it cannot clear suspension metadata or reactivate an account.
+
+Remember-me authentication rejects suspended accounts. Login events verify current state and stamp the session with account ID/access version. The shared web middleware checks persisted state and that stamp on each request, including Livewire updates, polling, temporary uploads/previews and private downloads. Baseline sessions with no stamp can continue only while access version is zero. A suspension/reactivation increments the version, so an old session cannot resume after reactivation even if its backend cannot delete targeted sessions. Logout remains available. Unavailable requests clear the current device session; JSON/Livewire/file requests receive 403 and normal browser requests return to login with a generic explanation.
+
+The Login event also compares the event's User access version with the freshly loaded account. An old User instance cannot acquire a current session stamp after suspension/reactivation. Rejected Login events clear authentication and invalidate the session before returning the generic account-unavailable message. A fresh authenticated login can establish the new version stamp.
+
+The local configured backend is `database`: matching target session rows are deleted without affecting other accounts. Separate database connections revoke after the originating commit; file/cookie/cache backends have no reliable account index and rely on per-request version enforcement. No actual account or session was suspended, reactivated or deleted during local verification.
+
+Shared authorization denies inactive or revoked actors. The web middleware supplies a validated per-request actor snapshot for rendering policies without one account query per card; mutation contexts bypass that snapshot and recheck persisted access after obtaining account locks. Domain actions taking a previously loaded User also check that instance's access version. Settings changes use locked accounts and whitelist editable fields. Registration, profile editing and ordinary model mass assignment cannot set suspension metadata or access version.
+
+## Counterpart access and history
+
+The shared discovery rule excludes open projects whose Client is suspended, for listing and direct URLs. Proposal submission locks both participating accounts before the project and refuses an inactive owner. Acceptance refuses a suspended selected Freelancer. Reactivation restores only eligibility under the normal current category, status, publication and date rules.
+
+Existing assignments, proposals, work, messages, feedback, notifications and private files are preserved. An active party can continue their authorized planning, tasks, uploads/reviews, completion, payment tracking, messages, disputes and downloads without requiring the other party to be active. Suspended recipients, including historical suspended Admins, are excluded from new event notifications; existing alerts are retained. Internal suspension reasons never enter notification previews.
+
+## Last active administrator
+
+Account deletion locks all active Admin accounts in ID order before locking the deleting Admin and holds those locks through the transaction. After existing history guards and before deletion/private cleanup, a fresh locking read requires another active administrator to remain. Historical suspended Admins do not count. This serializes cooperative concurrent deletions on MySQL. Existing history refusal messages and permitted cleanup for accounts without blocking history are preserved.
+
+## Verification limits
+
+Automated tests use SQLite `:memory:` and fake storage. Stale snapshots, sequential competing deletions and injected uniqueness failures simulate concurrency; they are not real parallel MySQL tests. Local migration verification compares original column/row hashes, counts and private-file hashes and checks every existing account remains active at access version zero. Browser, keyboard, mobile, theme and isolated parallel MySQL review remain deferred in `manual-review.md`.
+
+## Recovered verification, 22 October 2026
+
+- The completed `storage/logs/accounts-full.txt` and corresponding `accounts-full.xml` agree: **2,108 tests, 11,708 assertions, zero failures, zero errors and zero skips**. The original process exited with status zero. That complete suite was recovered rather than repeated; application/configuration/test inputs have not changed since that run.
+- Unknown-role corruption fixtures are test-only. They assert the SQLite driver and `:memory:` database before changing any PRAGMA, and restore `ignore_check_constraints = OFF` in `finally`, including when factory creation throws. Production role constraints and unknown-role authorization rejection are unchanged.
+- A subsequent sequential targeted run passed **32 tests / 305 assertions**, exit status zero, with zero failures/errors/skips (`storage/logs/accounts-recovery-guards.txt` and `.xml`; exit status saved in `accounts-recovery-guards-exit.txt`). It covers authentication, suspension/session revocation, last-active-Admin protection, dashboard/theme unknown-role rejection, and five supplemental probes under ignored local storage. The probes verify rejected stale/suspended Login events, a fresh reactivated login stamp, and restored CHECK enforcement after successful and failed fixture creation. The CHECK probes use an explicit temporary SQLite CHECK constraint rather than assuming the migrated SQLite users table retains the original enum CHECK. No application fix or constraint relaxation was needed.
+- Repository-wide Pint and syntax checks for all 65 changed PHP/Blade files passed again. The successful frontend build is reused because its inputs have not changed; `package.json` has no JavaScript test script. The known empty Vite `app` chunk comes from the existing empty `resources/js/app.js` entry.
+- Whitespace verification covers all **67 changed files** (48 tracked modifications and 19 untracked files); `git diff --check` also passes. None of these files are staged.
+- Read-only comparison against `storage/app/private/account-baseline.json` passed for all 24 domain tables' original columns/rows and private-file hashes. The three real accounts are active, with null suspension metadata and access version zero. Existing rows and files were not changed, no demonstration records were created, and the applied migration was not repeated.
+- Database-backed sessions are runtime authentication state and are deliberately excluded from the domain/file baseline. A separate read-only aggregate check found three session rows, one authenticated, without inspecting or disclosing session IDs or payloads. These runtime rows are not claimed to match a captured domain hash; no real account's sessions were revoked during this verification.
+
+The account implementation remains unstaged and uncommitted on `feature/admin-accounts`, based on category checkpoint `6b6441d` (`Add admin category management and audit history`). No browser checks or real parallel MySQL tests were performed.

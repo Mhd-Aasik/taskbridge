@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\AccountPhotos;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -33,7 +34,10 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'avatar_path',
+        'suspended_at', 'suspended_by', 'suspension_reason', 'access_version',
     ];
+
+    protected $attributes = ['access_version' => 0];
 
     protected function casts(): array
     {
@@ -41,6 +45,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'avatar_path' => 'string',
+            'suspended_at' => 'immutable_datetime',
+            'suspended_by' => 'integer',
+            'suspension_reason' => 'string',
+            'access_version' => 'integer',
         ];
     }
 
@@ -183,6 +191,23 @@ class User extends Authenticatable
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->suspended_at === null;
+    }
+
+    /** @return HasMany<User, $this> */
+    public function suspendedAccounts(): HasMany
+    {
+        return $this->hasMany(self::class, 'suspended_by');
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function suspendedBy(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'suspended_by');
     }
 
     public function isFreelancer(): bool

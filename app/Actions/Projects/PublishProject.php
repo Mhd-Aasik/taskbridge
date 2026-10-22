@@ -6,6 +6,7 @@ use App\Enums\ProjectStatus;
 use App\Models\Category;
 use App\Models\Project;
 use App\Models\User;
+use App\Support\AccountAccess;
 use App\Support\ProjectRules;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
@@ -17,9 +18,12 @@ class PublishProject
 {
     public function publish(User $actor, int $projectId, bool $confirmed): bool
     {
+        AccountAccess::ensure($actor);
+
         return DB::transaction(function () use ($actor, $projectId, $confirmed): bool {
             $user = User::query()->lockForUpdate()->find($actor->getKey());
             abort_unless($user, 403);
+            AccountAccess::ensure($user);
             $project = Project::query()->lockForUpdate()->findOrFail($projectId);
             Gate::forUser($user)->authorize('view', $project);
 

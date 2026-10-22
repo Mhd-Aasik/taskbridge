@@ -12,6 +12,7 @@ use App\Models\Proposal;
 use App\Models\User;
 use App\Rules\LkrBudget;
 use App\Services\ProjectNotifications;
+use App\Support\AccountAccess;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,7 @@ class AcceptProposal
                 ->orderBy('id')->lockForUpdate()->get()->keyBy('id');
             $user = $accounts->get(Auth::id());
             abort_unless($user, 403);
+            AccountAccess::ensure($user);
             $project = Project::query()->lockForUpdate()->findOrFail($projectId);
             Gate::forUser($user)->authorize('view', $project);
             $category = Category::query()->whereKey($project->category_id)->lockForUpdate()->first();
@@ -59,8 +61,8 @@ class AcceptProposal
                 throw ValidationException::withMessages(['proposal' => 'Only a submitted proposal can be accepted. Refresh the proposal list to review its current status.']);
             }
             $freelancer = $accounts->get($proposal->freelancer_id);
-            if ($proposal->freelancer_id !== $candidate->freelancer_id || ! $freelancer?->isFreelancer() || $freelancer->id === $user->id) {
-                throw ValidationException::withMessages(['proposal' => 'The selected offer must belong to a different account with the Freelancer role.']);
+            if ($proposal->freelancer_id !== $candidate->freelancer_id || ! $freelancer?->isFreelancer() || ! $freelancer->isActive() || $freelancer->id === $user->id) {
+                throw ValidationException::withMessages(['proposal' => 'The selected offer must belong to a different active account with the Freelancer role.']);
             }
 
             $deadline = $project->calendarDeadline();

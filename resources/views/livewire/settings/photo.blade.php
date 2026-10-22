@@ -74,6 +74,7 @@ new class extends Component {
     {
         $account = User::query()->find(Auth::id());
         abort_unless($account, 403);
+        \App\Support\AccountAccess::ensure($account);
         Gate::authorize('updatePhoto', $account);
 
         return $account;

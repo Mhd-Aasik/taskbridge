@@ -24,6 +24,7 @@ class ProjectPlanning
         // Keep the account -> project -> assignment order used by existing actions.
         $user = $users->first();
         abort_unless($user, 403);
+        AccountAccess::ensure($user);
         $project = $projects->firstOrFail();
         $assignment = $assignments->firstOrFail();
         Gate::forUser($user)->authorize('viewPlan', [$assignment, $project]);

@@ -23,6 +23,7 @@ class CategoryManagement
         }
         $user = $query->first();
         abort_unless($user, 403);
+        AccountAccess::ensure($user);
         Gate::forUser($user)->authorize('viewAny', Category::class);
 
         return $user;

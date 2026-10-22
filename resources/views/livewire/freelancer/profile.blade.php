@@ -85,6 +85,7 @@ new #[Layout('components.layouts.app'), Title('Freelancer profile')] class exten
         }
         $user = $users->first();
         abort_unless($user, 403);
+        \App\Support\AccountAccess::ensure($user);
 
         $profiles = $user->freelancerProfile();
         if ($lock) {

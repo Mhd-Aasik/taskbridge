@@ -13,7 +13,7 @@ new class extends Component {
 
     public function with(): array
     {
-        $account = User::query()->findOrFail(Auth::id());
+        $account = \App\Support\AccountAccess::account();
         return ['reputation' => in_array($account->role, [User::ROLE_CLIENT, User::ROLE_FREELANCER], true) ? ProjectReputation::forUsers([$account->id], $account->role)[$account->id] : null];
     }
 
@@ -22,6 +22,7 @@ new class extends Component {
      */
     public function mount(): void
     {
+        \App\Support\AccountAccess::account();
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
     }
@@ -31,7 +32,7 @@ new class extends Component {
      */
     public function updateProfileInformation(): void
     {
-        $user = Auth::user();
+        $user = \App\Support\AccountAccess::account();
 
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -46,13 +47,14 @@ new class extends Component {
             ],
         ]);
 
-        $user->fill($validated);
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
+        $user = \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
+            $account = \App\Support\AccountAccess::account(lock: true);
+            $account->fill($validated);
+            if ($account->isDirty('email')) { $account->email_verified_at = null; }
+            if (! $account->save()) { throw new \RuntimeException('The account details could not be saved.'); }
+            return $account;
+        });
+        Auth::setUser($user);
 
         $this->dispatch('profile-updated', name: $user->name);
     }
@@ -62,7 +64,7 @@ new class extends Component {
      */
     public function resendVerificationNotification(): void
     {
-        $user = Auth::user();
+        $user = \App\Support\AccountAccess::account();
 
         if ($user->hasVerifiedEmail()) {
             $this->redirectIntended(default: route('dashboard', absolute: false));

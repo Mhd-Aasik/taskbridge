@@ -45,6 +45,9 @@ class PaymentAccountDeletionTest extends TestCase
     {
         Storage::fake('avatars');
         $receipt = PaymentAcknowledgment::factory()->create()->fresh();
+        if ($role === User::ROLE_ADMIN) {
+            User::factory()->create(['role' => User::ROLE_ADMIN]);
+        }
         $reportBefore = $receipt->report->getAttributes();
         $receiptBefore = $receipt->getAttributes();
         $actor = User::factory()->create(['role' => $role]);

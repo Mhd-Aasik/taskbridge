@@ -23,6 +23,9 @@ class NotificationAccountDeletionTest extends TestCase
     public function test_personal_alerts_do_not_block_deletion_and_are_cleaned_without_touching_other_accounts(string $role): void
     {
         Storage::fake('avatars');
+        if ($role === User::ROLE_ADMIN) {
+            User::factory()->create(['role' => User::ROLE_ADMIN]);
+        }
         $user = User::factory()->create(['role' => $role]);
         $other = User::factory()->create();
         // Old personal alerts may outlive their resource. They are not domain-history ownership.

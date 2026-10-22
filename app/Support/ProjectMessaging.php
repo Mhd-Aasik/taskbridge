@@ -17,6 +17,7 @@ class ProjectMessaging
     {
         $user = User::query()->find(Auth::id());
         abort_unless($user, 403);
+        AccountAccess::ensure($user);
 
         return $user;
     }
@@ -34,6 +35,7 @@ class ProjectMessaging
         }
         $user = $users->first();
         abort_unless($user, 403);
+        AccountAccess::ensure($user);
         $project = $projects->firstOrFail();
         $assignment = $assignments->firstOrFail();
         Gate::forUser($user)->authorize('viewConversation', [ProjectMessage::class, $assignment, $project]);

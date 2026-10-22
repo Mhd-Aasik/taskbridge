@@ -14,6 +14,7 @@
 
     <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div class="min-w-0 space-y-6">
+            <x-dashboard.panel title="Account administration" description="Manage Client and Freelancer access while preserving their work and history."><div class="space-y-4 p-5 sm:p-6"><p class="tb-muted">{{ (int) $accountStatusCounts->active }} active · {{ (int) $accountStatusCounts->suspended }} suspended</p><flux:button :href="route('admin.accounts.index')" variant="primary" wire:navigate>Manage accounts</flux:button></div></x-dashboard.panel>
             <x-dashboard.panel title="Project categories" description="Manage the reference catalogue without changing existing project history.">
                 <p class="text-3xl font-semibold" data-testid="category-total">{{ (int) $categoryCounts->total }}</p>
                 <p class="tb-muted mt-2 mb-5 text-sm">{{ (int) $categoryCounts->active }} active · {{ (int) $categoryCounts->total - (int) $categoryCounts->active }} inactive</p>

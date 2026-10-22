@@ -5,11 +5,12 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Concerns\BuildsUnknownRoleAccount;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
 {
-    use RefreshDatabase;
+    use BuildsUnknownRoleAccount, RefreshDatabase;
 
     public function test_guests_are_redirected_to_the_login_page(): void
     {
@@ -31,7 +32,7 @@ class DashboardTest extends TestCase
 
     public function test_unknown_roles_are_forbidden(): void
     {
-        $user = User::factory()->make(['role' => 'unknown']);
+        $user = $this->unknownRoleAccount();
 
         $this->actingAs($user)->get(route('dashboard'))->assertForbidden();
 

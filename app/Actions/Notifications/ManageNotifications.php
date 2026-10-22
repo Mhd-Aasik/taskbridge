@@ -4,6 +4,7 @@ namespace App\Actions\Notifications;
 
 use App\Models\InAppNotification;
 use App\Models\User;
+use App\Support\AccountAccess;
 use App\Support\NotificationDestinations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -23,6 +24,7 @@ class ManageNotifications
         }
         $user = $query->first();
         abort_unless($user, 403);
+        AccountAccess::ensure($user);
 
         return $user;
     }

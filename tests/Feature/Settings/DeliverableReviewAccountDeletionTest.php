@@ -73,6 +73,9 @@ class DeliverableReviewAccountDeletionTest extends TestCase
         $before = $unrelated->getAttributes();
         $version = $unrelated->version;
         Storage::disk('deliverables')->put($version->storage_path, 'Unrelated submitted history.');
+        if ($role === User::ROLE_ADMIN) {
+            User::factory()->create(['role' => User::ROLE_ADMIN]);
+        }
         $user = User::factory()->create(['role' => $role]);
         $this->actingAs($user);
         $user = app(AccountPhotos::class)->replace($user, UploadedFile::fake()->image('photo.png'));

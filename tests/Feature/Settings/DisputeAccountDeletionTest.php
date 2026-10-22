@@ -44,6 +44,9 @@ class DisputeAccountDeletionTest extends TestCase
     {
         Storage::fake('avatars');
         $case = DisputeCase::factory()->create();
+        if ($role === User::ROLE_ADMIN) {
+            User::factory()->create(['role' => User::ROLE_ADMIN]);
+        }
         $actor = User::factory()->create(['role' => $role, 'avatar_path' => null]);
         $this->actingAs($actor);
         Volt::test('settings.delete-user-form')->set('password', 'password')->call('deleteUser')->assertHasNoErrors()->assertRedirect('/');

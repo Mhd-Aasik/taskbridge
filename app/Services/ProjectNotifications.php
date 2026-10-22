@@ -47,7 +47,7 @@ class ProjectNotifications
                 continue;
             }
             $recipient = User::on($connection->getName())->find($id);
-            if (! $recipient || $recipient->role !== $role || ! NotificationDestinations::forEvent($recipient, $event, $record->id)) {
+            if (! $recipient || ! $recipient->isActive() || $recipient->role !== $role || ! NotificationDestinations::forEvent($recipient, $event, $record->id)) {
                 continue;
             }
             if ($role === User::ROLE_ADMIN) {
@@ -100,7 +100,7 @@ class ProjectNotifications
         $assignment = $dispute->assignment;
         $candidates = [$assignment->project->client_id => User::ROLE_CLIENT, $assignment->freelancer_id => User::ROLE_FREELANCER];
         if ($event === NotificationEvent::DisputeOpened) {
-            $adminIds = User::on($record->getConnectionName())->where('role', User::ROLE_ADMIN)->pluck('id');
+            $adminIds = User::on($record->getConnectionName())->where('role', User::ROLE_ADMIN)->whereNull('suspended_at')->pluck('id');
             $actor = $record->opened_by;
         } elseif ($event === NotificationEvent::DisputeStatementAdded) {
             // Notify only already participating clarification authors, not every Admin on each reply.

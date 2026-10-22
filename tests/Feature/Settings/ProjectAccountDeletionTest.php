@@ -74,6 +74,9 @@ class ProjectAccountDeletionTest extends TestCase
     public function test_accounts_without_projects_can_still_be_deleted_with_resource_cleanup(string $role): void
     {
         $otherProject = Project::factory()->create();
+        if ($role === User::ROLE_ADMIN) {
+            User::factory()->create(['role' => User::ROLE_ADMIN]);
+        }
         $user = User::factory()->create(['role' => $role]);
         $this->actingAs($user);
         $user = app(AccountPhotos::class)->replace($user, UploadedFile::fake()->image('photo.png'));

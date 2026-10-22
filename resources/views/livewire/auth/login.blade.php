@@ -28,7 +28,16 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        try {
+            $authenticated = \Illuminate\Support\Facades\DB::transaction(function (): bool {
+                \App\Models\User::query()->where('email', $this->email)->lockForUpdate()->first();
+                return Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember);
+            });
+        } catch (ValidationException $exception) {
+            RateLimiter::hit($this->throttleKey());
+            throw $exception;
+        }
+        if (! $authenticated) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

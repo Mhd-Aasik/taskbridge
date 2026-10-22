@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Support\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -74,6 +75,7 @@ class AccountPhotos
 
     public function replace(User $account, mixed $photo): User
     {
+        AccountAccess::account();
         Gate::authorize('updatePhoto', $account);
         $prepared = $this->prepare($photo);
         $path = 'users/'.$account->getKey().'/'.Str::uuid().'.'.$prepared['extension'];
@@ -85,6 +87,7 @@ class AccountPhotos
             }
             $account = DB::transaction(function () use ($account, $path, &$oldPath): User {
                 $current = User::query()->lockForUpdate()->findOrFail($account->getKey());
+                AccountAccess::account(lock: true);
                 Gate::authorize('updatePhoto', $current);
                 $oldPath = $current->avatar_path;
                 $current->avatar_path = $path;
@@ -107,10 +110,12 @@ class AccountPhotos
 
     public function remove(User $account): User
     {
+        AccountAccess::account();
         Gate::authorize('updatePhoto', $account);
         $oldPath = null;
         $account = DB::transaction(function () use ($account, &$oldPath): User {
             $current = User::query()->lockForUpdate()->findOrFail($account->getKey());
+            AccountAccess::account(lock: true);
             Gate::authorize('updatePhoto', $current);
             $oldPath = $current->avatar_path;
             $current->avatar_path = null;

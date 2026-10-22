@@ -72,6 +72,9 @@ class DeliverableAccountDeletionTest extends TestCase
         $unrelated = DeliverableVersion::factory()->create()->fresh();
         $before = $unrelated->getAttributes();
         Storage::disk('deliverables')->put($unrelated->storage_path, 'Unrelated immutable delivery.');
+        if ($role === User::ROLE_ADMIN) {
+            User::factory()->create(['role' => User::ROLE_ADMIN]);
+        }
         $user = User::factory()->create(['role' => $role]);
         $this->actingAs($user);
         $user = app(AccountPhotos::class)->replace($user, UploadedFile::fake()->image('photo.png'));

@@ -94,6 +94,7 @@ class DashboardRenderingTest extends TestCase
                 $allowed[] = route($role === User::ROLE_ADMIN ? 'admin.disputes.index' : 'disputes.index');
                 if ($role === User::ROLE_ADMIN) {
                     $allowed[] = route('admin.categories.index');
+                    $allowed[] = route('admin.accounts.index');
                 }
                 if ($role !== User::ROLE_ADMIN) {
                     $allowed[] = route('messages.index');

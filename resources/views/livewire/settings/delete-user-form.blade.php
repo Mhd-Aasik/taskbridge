@@ -16,16 +16,14 @@ new class extends Component {
     public function deleteUser(Logout $logout): void
     {
         abort_unless(Auth::check(), 403);
+        \App\Support\AccountAccess::account();
 
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
         ]);
 
         DB::transaction(function (): void {
-            $user = User::query()->lockForUpdate()->findOrFail(Auth::id());
-            if ($user->adminActionLogs()->exists()) {
-                throw ValidationException::withMessages(['password' => __('Your account cannot be deleted because it has administrative action history. Audit records must be preserved.')]);
-            }
+            $user = \App\Support\AccountDeletion::lockAccount();
             if ($user->submittedProjectRatings()->exists() || $user->receivedProjectRatings()->exists()) {
                 throw ValidationException::withMessages(['password' => __('Your account cannot be deleted because it has project feedback history. Submitted feedback and reputation history must be preserved.')]);
             }
@@ -83,6 +81,7 @@ new class extends Component {
                 throw ValidationException::withMessages(['password' => __('Your account cannot be deleted because it has project conversation history. Messages and read records must be preserved.')]);
             }
 
+            \App\Support\AccountDeletion::ensureAdministratorRemains($user);
             if (! $user->delete()) {
                 throw new RuntimeException('The account could not be deleted.');
             }

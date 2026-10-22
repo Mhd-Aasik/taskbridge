@@ -34,6 +34,7 @@ class AdminActionAccountDeletionTest extends TestCase
 
     public function test_admin_without_audit_or_domain_history_can_still_delete_their_account(): void
     {
+        User::factory()->create(['role' => User::ROLE_ADMIN]);
         Storage::fake('avatars');
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $this->actingAs($admin);

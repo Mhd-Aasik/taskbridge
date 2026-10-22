@@ -15,6 +15,7 @@ class DisputeContext
     {
         $user = User::query()->find(Auth::id());
         abort_unless($user, 403);
+        AccountAccess::ensure($user);
 
         return $user;
     }
@@ -32,6 +33,7 @@ class DisputeContext
         }
         $user = $users->first();
         abort_unless($user, 403);
+        AccountAccess::ensure($user);
         $project = $projects->firstOrFail();
         $assignment = $assignments->firstOrFail();
         Gate::forUser($user)->authorize('create', [DisputeCase::class, $assignment, $project]);
@@ -55,6 +57,7 @@ class DisputeContext
         }
         $user = $users->first();
         abort_unless($user, 403);
+        AccountAccess::ensure($user);
         $project = $projects->firstOrFail();
         $assignment = $assignments->firstOrFail();
         $cases = $assignment->disputes()->whereKey($caseId);
