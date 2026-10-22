@@ -3,12 +3,14 @@
 namespace App\Actions\Deliverables;
 
 use App\Enums\NotificationEvent;
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Models\Deliverable;
 use App\Models\DeliverableVersion;
 use App\Models\ProjectAssignment;
 use App\Models\User;
 use App\Services\DeliverableFiles;
+use App\Services\ProjectActivities;
 use App\Services\ProjectNotifications;
 use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
@@ -112,6 +114,7 @@ class SubmitDeliverable
                 }
 
                 app(ProjectNotifications::class)->record(NotificationEvent::VersionSubmitted, $version);
+                app(ProjectActivities::class)->record(ProjectActivityEvent::VersionSubmitted, $version, $user);
 
                 return $version;
             }, 3);

@@ -2,8 +2,10 @@
 
 namespace App\Actions\Tasks;
 
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Models\ProjectTask;
+use App\Services\ProjectActivities;
 use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
 use App\Support\ProjectTaskRules;
@@ -55,6 +57,8 @@ class SaveProjectTask
             if (! $task->save()) {
                 throw new RuntimeException('The task could not be saved.');
             }
+
+            app(ProjectActivities::class)->record($taskId === null ? ProjectActivityEvent::TaskCreated : ProjectActivityEvent::TaskEdited, $task, $user);
 
             return $task;
         }, 3);

@@ -4,8 +4,10 @@ namespace App\Actions\Payments;
 
 use App\Enums\NotificationEvent;
 use App\Enums\PaymentMethod;
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Models\PaymentReport;
+use App\Services\ProjectActivities;
 use App\Services\ProjectNotifications;
 use App\Support\PaymentRules;
 use App\Support\ProjectPayment;
@@ -81,6 +83,7 @@ class ReportPayment
             }
 
             app(ProjectNotifications::class)->record(NotificationEvent::PaymentReported, $report);
+            app(ProjectActivities::class)->record(ProjectActivityEvent::PaymentReported, $report, $user);
 
             return $report;
         }, 3);

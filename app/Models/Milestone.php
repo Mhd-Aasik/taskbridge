@@ -26,6 +26,7 @@ class Milestone extends Model
             'description' => 'string',
             'due_date' => 'immutable_date:Y-m-d',
             'position' => 'integer',
+            'details_version' => 'integer',
             'completed_at' => 'immutable_datetime',
             'completed_by' => 'integer',
             'completion_note' => 'string',

@@ -3,8 +3,10 @@
 namespace App\Actions\Milestones;
 
 use App\Enums\NotificationEvent;
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Models\Milestone;
+use App\Services\ProjectActivities;
 use App\Services\ProjectNotifications;
 use App\Support\CompletionReadiness;
 use App\Support\CompletionRules;
@@ -45,6 +47,7 @@ class CompleteMilestone
             }
 
             app(ProjectNotifications::class)->record(NotificationEvent::MilestoneCompleted, $milestone);
+            app(ProjectActivities::class)->record(ProjectActivityEvent::MilestoneCompleted, $milestone, $user);
 
             return $milestone;
         }, 3);

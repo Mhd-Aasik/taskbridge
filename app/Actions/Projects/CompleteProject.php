@@ -3,8 +3,10 @@
 namespace App\Actions\Projects;
 
 use App\Enums\NotificationEvent;
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Models\Project;
+use App\Services\ProjectActivities;
 use App\Services\ProjectNotifications;
 use App\Support\CompletionReadiness;
 use App\Support\CompletionRules;
@@ -45,6 +47,7 @@ class CompleteProject
             }
 
             app(ProjectNotifications::class)->record(NotificationEvent::ProjectCompleted, $project);
+            app(ProjectActivities::class)->record(ProjectActivityEvent::Completed, $project, $user);
 
             return $project;
         }, 3);

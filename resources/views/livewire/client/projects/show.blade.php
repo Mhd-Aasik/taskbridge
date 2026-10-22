@@ -102,6 +102,7 @@ new #[Layout('components.layouts.app'), Title('Project review')] class extends C
     </x-dashboard.panel>
 
     <div class="flex flex-wrap items-center gap-3">
+        <flux:button :href="route('projects.activity', $project)" wire:navigate>Project activity</flux:button>
         @if ($project->assignment)
             <flux:button :href="route('projects.completion', $project)" wire:navigate>Project completion</flux:button>
             <x-feedback.link :project="$project" :assignment="$project->assignment" />

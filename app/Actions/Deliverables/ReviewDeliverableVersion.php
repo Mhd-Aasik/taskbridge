@@ -4,8 +4,10 @@ namespace App\Actions\Deliverables;
 
 use App\Enums\DeliverableReviewDecision;
 use App\Enums\NotificationEvent;
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Models\DeliverableReview;
+use App\Services\ProjectActivities;
 use App\Services\ProjectNotifications;
 use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
@@ -107,6 +109,7 @@ class ReviewDeliverableVersion
             }
 
             app(ProjectNotifications::class)->record($decision === DeliverableReviewDecision::Approved ? NotificationEvent::VersionApproved : NotificationEvent::VersionChangesRequested, $review);
+            app(ProjectActivities::class)->record($decision === DeliverableReviewDecision::Approved ? ProjectActivityEvent::VersionApproved : ProjectActivityEvent::ChangesRequested, $review, $user);
 
             return $review;
         }, 3);

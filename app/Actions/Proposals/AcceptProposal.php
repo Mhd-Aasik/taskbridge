@@ -3,6 +3,7 @@
 namespace App\Actions\Proposals;
 
 use App\Enums\NotificationEvent;
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Enums\ProposalStatus;
 use App\Models\Category;
@@ -11,6 +12,7 @@ use App\Models\ProjectAssignment;
 use App\Models\Proposal;
 use App\Models\User;
 use App\Rules\LkrBudget;
+use App\Services\ProjectActivities;
 use App\Services\ProjectNotifications;
 use App\Support\AccountAccess;
 use Carbon\CarbonImmutable;
@@ -128,6 +130,7 @@ class AcceptProposal
             }
 
             app(ProjectNotifications::class)->record(NotificationEvent::ProposalAccepted, $proposal);
+            app(ProjectActivities::class)->record(ProjectActivityEvent::Assigned, $assignment, $user);
             foreach ($rejected as $other) {
                 app(ProjectNotifications::class)->record(NotificationEvent::ProposalRejected, $other);
             }

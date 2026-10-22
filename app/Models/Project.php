@@ -68,6 +68,12 @@ class Project extends Model
         return $this->hasOne(ProjectAssignment::class);
     }
 
+    /** @return HasMany<ProjectActivity, $this> */
+    public function activities(): HasMany
+    {
+        return $this->hasMany(ProjectActivity::class);
+    }
+
     /** @param Builder<Project> $query */
     public function scopeDiscoverable(Builder $query): void
     {

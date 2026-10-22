@@ -2,8 +2,10 @@
 
 namespace App\Actions\Milestones;
 
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Models\Milestone;
+use App\Services\ProjectActivities;
 use App\Support\CompletionRules;
 use App\Support\MilestoneRules;
 use App\Support\ProjectPlanning;
@@ -35,6 +37,10 @@ class SaveMilestone
                     throw ValidationException::withMessages(['due_date' => 'This date would put an attached task after its milestone. Change the affected task dates or membership first.']);
                 }
                 $milestone->fill($details);
+                if (! $milestone->isDirty(['title', 'description', 'due_date'])) {
+                    return $milestone;
+                }
+                $milestone->details_version++;
             } else {
                 $position = ((int) $assignment->milestones()->reorder()->orderByDesc('position')->lockForUpdate()->value('position')) + 1;
                 if ($position > 4294967295) {
@@ -48,6 +54,8 @@ class SaveMilestone
             if (! $milestone->save()) {
                 throw new RuntimeException('The milestone could not be saved.');
             }
+
+            app(ProjectActivities::class)->record($milestoneId === null ? ProjectActivityEvent::MilestoneCreated : ProjectActivityEvent::MilestoneEdited, $milestone, $user);
 
             return $milestone;
         }, 3);

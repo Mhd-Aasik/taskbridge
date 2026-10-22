@@ -2,9 +2,11 @@
 
 namespace App\Actions\Tasks;
 
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Enums\ProjectTaskStatus;
 use App\Models\ProjectTask;
+use App\Services\ProjectActivities;
 use App\Support\CompletionRules;
 use App\Support\ProjectPlanning;
 use Carbon\CarbonImmutable;
@@ -44,6 +46,8 @@ class ChangeProjectTaskStatus
             if (! $task->save()) {
                 throw new RuntimeException('The task status could not be saved.');
             }
+
+            app(ProjectActivities::class)->record(ProjectActivityEvent::TaskStatusChanged, $task, $user);
 
             return $task;
         }, 3);

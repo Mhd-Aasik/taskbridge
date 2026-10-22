@@ -202,6 +202,7 @@ new #[Layout('components.layouts.app'), Title('Project plan')] class extends Com
             <p class="tb-muted mt-1">Status: {{ Str::headline($project->status->value) }}</p>
         </div>
         <div class="flex flex-wrap gap-3">
+            <flux:button :href="route('projects.activity', $project)" wire:navigate>Project activity</flux:button>
             <flux:button :href="route('projects.completion', $project)" wire:navigate>Project completion</flux:button>
             <flux:button :href="route('projects.deliverables.index', $project)" icon="document-text" wire:navigate>Deliverables</flux:button>
             <flux:button :href="$isClientOwner ? route('client.projects.show', $project) : route('freelancer.assignments.show', $assignment)" icon="arrow-left" class="self-start shrink-0" wire:navigate>{{ $isClientOwner ? 'Project review' : 'Assigned project' }}</flux:button>

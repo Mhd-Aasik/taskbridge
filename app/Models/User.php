@@ -188,6 +188,12 @@ class User extends Authenticatable
         return $this->hasMany(AdminActionLog::class, 'actor_id');
     }
 
+    /** @return HasMany<ProjectActivity, $this> */
+    public function projectActivities(): HasMany
+    {
+        return $this->hasMany(ProjectActivity::class, 'actor_id');
+    }
+
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;

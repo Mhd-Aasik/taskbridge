@@ -8,6 +8,7 @@ use App\Http\Controllers\DisputeDownloadController;
 use App\Http\Controllers\FreelancerAssignmentController;
 use App\Http\Controllers\FreelancerDiscoveryController;
 use App\Http\Controllers\FreelancerProfilePhotoController;
+use App\Http\Controllers\ProjectActivityController;
 use App\Http\Controllers\ProjectCoverController;
 use App\Http\Controllers\ProjectDiscoveryController;
 use App\Http\Controllers\ProjectPublicationController;
@@ -77,6 +78,7 @@ Volt::route('admin/accounts', 'admin.accounts.index')->middleware(['auth', 'role
 Volt::route('admin/accounts/{account}', 'admin.accounts.show')->middleware(['auth', 'role:admin'])->whereNumber('account')->name('admin.accounts.show');
 
 Volt::route('projects/{project}/plan', 'projects.plan')->middleware('auth')->whereNumber('project')->name('projects.plan');
+Route::get('projects/{project}/activity', ProjectActivityController::class)->middleware(['auth', 'role:client,freelancer'])->whereNumber('project')->name('projects.activity');
 Volt::route('projects/{project}/completion', 'projects.completion')->middleware('auth')->whereNumber('project')->name('projects.completion');
 Volt::route('projects/{project}/feedback', 'projects.feedback')->middleware(['auth', 'role:client,freelancer'])->whereNumber('project')->name('projects.feedback');
 Volt::route('projects/{project}/payment', 'projects.payment')->middleware('auth')->whereNumber('project')->name('projects.payment');

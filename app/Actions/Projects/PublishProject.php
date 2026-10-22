@@ -2,10 +2,12 @@
 
 namespace App\Actions\Projects;
 
+use App\Enums\ProjectActivityEvent;
 use App\Enums\ProjectStatus;
 use App\Models\Category;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\ProjectActivities;
 use App\Support\AccountAccess;
 use App\Support\ProjectRules;
 use Carbon\CarbonImmutable;
@@ -52,6 +54,10 @@ class PublishProject
                 $project->refresh();
                 Gate::forUser($user)->authorize('view', $project);
                 abort_unless($project->status === ProjectStatus::Open && $project->published_at !== null, 403);
+            }
+
+            if ($changed === 1) {
+                app(ProjectActivities::class)->record(ProjectActivityEvent::Published, $project, $user);
             }
 
             return $changed === 1;

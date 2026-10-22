@@ -3,8 +3,10 @@
 namespace App\Actions\Disputes;
 
 use App\Enums\NotificationEvent;
+use App\Enums\ProjectActivityEvent;
 use App\Models\ActiveDispute;
 use App\Models\DisputeCase;
+use App\Services\ProjectActivities;
 use App\Services\ProjectNotifications;
 use App\Support\DisputeContext;
 use App\Support\DisputeRules;
@@ -80,6 +82,7 @@ class OpenDispute
             }
 
             app(ProjectNotifications::class)->record(NotificationEvent::DisputeOpened, $dispute);
+            app(ProjectActivities::class)->record(ProjectActivityEvent::DisputeOpened, $dispute, $user);
 
             return $dispute;
         }, 3);

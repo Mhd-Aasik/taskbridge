@@ -3,7 +3,9 @@
 namespace App\Actions\Payments;
 
 use App\Enums\NotificationEvent;
+use App\Enums\ProjectActivityEvent;
 use App\Models\PaymentAcknowledgment;
+use App\Services\ProjectActivities;
 use App\Services\ProjectNotifications;
 use App\Support\PaymentRules;
 use App\Support\ProjectPayment;
@@ -61,6 +63,7 @@ class AcknowledgePayment
             }
 
             app(ProjectNotifications::class)->record(NotificationEvent::ReceiptAcknowledged, $receipt);
+            app(ProjectActivities::class)->record(ProjectActivityEvent::ReceiptAcknowledged, $receipt, $user);
 
             return $receipt;
         }, 3);

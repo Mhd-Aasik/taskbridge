@@ -20,6 +20,7 @@
             <x-assignments.terms :assignment="$assignment" class="p-5 sm:p-6" />
         </x-dashboard.panel>
         <div class="flex flex-wrap gap-3">
+            <flux:button :href="route('projects.activity', $assignment->project_id)" wire:navigate>Project activity</flux:button>
             <flux:button :href="route('projects.completion', $assignment->project_id)" wire:navigate>Project completion</flux:button>
             <x-feedback.link :project="$assignment->project" :assignment="$assignment" />
             <flux:button :href="route('projects.plan', $assignment->project_id)" icon="calendar-days" wire:navigate>Project plan</flux:button>

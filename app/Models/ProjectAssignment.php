@@ -116,4 +116,10 @@ class ProjectAssignment extends Model
     {
         return $this->hasMany(ProjectRating::class);
     }
+
+    /** @return HasMany<ProjectActivity, $this> */
+    public function activities(): HasMany
+    {
+        return $this->hasMany(ProjectActivity::class);
+    }
 }

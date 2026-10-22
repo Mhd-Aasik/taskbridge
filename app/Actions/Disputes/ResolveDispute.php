@@ -4,7 +4,9 @@ namespace App\Actions\Disputes;
 
 use App\Enums\DisputeDecision;
 use App\Enums\NotificationEvent;
+use App\Enums\ProjectActivityEvent;
 use App\Models\DisputeResolution;
+use App\Services\ProjectActivities;
 use App\Services\ProjectNotifications;
 use App\Support\DisputeContext;
 use App\Support\DisputeRules;
@@ -65,6 +67,7 @@ class ResolveDispute
             }
 
             app(ProjectNotifications::class)->record($decision === DisputeDecision::Resolved ? NotificationEvent::DisputeResolved : NotificationEvent::DisputeDismissed, $resolution);
+            app(ProjectActivities::class)->record($decision === DisputeDecision::Resolved ? ProjectActivityEvent::DisputeResolved : ProjectActivityEvent::DisputeDismissed, $resolution, $user);
 
             return $resolution;
         }, 3);

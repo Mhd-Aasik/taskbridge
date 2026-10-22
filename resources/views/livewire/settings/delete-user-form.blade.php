@@ -81,6 +81,10 @@ new class extends Component {
                 throw ValidationException::withMessages(['password' => __('Your account cannot be deleted because it has project conversation history. Messages and read records must be preserved.')]);
             }
 
+            if ($user->projectActivities()->exists()) {
+                throw ValidationException::withMessages(['password' => __('Your account cannot be deleted because it has project activity history. These records must be preserved.')]);
+            }
+
             \App\Support\AccountDeletion::ensureAdministratorRemains($user);
             if (! $user->delete()) {
                 throw new RuntimeException('The account could not be deleted.');
