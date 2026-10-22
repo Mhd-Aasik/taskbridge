@@ -16,9 +16,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
             'email' => ['required', 'string', 'email'],
         ]);
 
-        Password::sendResetLink($this->only('email'));
+        app(\App\Actions\Accounts\SendAccountEmail::class)->reset($this->email, request()->ip());
 
-        session()->flash('status', __('A reset link will be sent if the account exists.'));
+        session()->flash('status', __(\App\Actions\Accounts\SendAccountEmail::RESET_STATUS));
     }
 }; ?>
 

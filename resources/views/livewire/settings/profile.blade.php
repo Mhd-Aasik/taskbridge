@@ -73,7 +73,8 @@ new class extends Component {
             return;
         }
 
-        $user->sendEmailVerificationNotification();
+        Session::forget('status');
+        app(\App\Actions\Accounts\SendAccountEmail::class)->verification();
 
         Session::flash('status', 'verification-link-sent');
     }
@@ -92,21 +93,23 @@ new class extends Component {
             <div>
                 <flux:input wire:model="email" label="{{ __('Email') }}" type="email" name="email" required autocomplete="email" />
 
-                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail &&! auth()->user()->hasVerifiedEmail())
+                @if (! auth()->user()->hasVerifiedEmail())
+                    <flux:error name="verification" />
                     <div>
-                        <p class="mt-2 text-sm text-gray-800">
-                            {{ __('Your email address is unverified.') }}
+                        <p class="tb-muted mt-2 text-sm">
+                            {{ __('Your email address is unverified. Verification is optional.') }}
 
                             <button
+                                type="button"
                                 wire:click.prevent="resendVerificationNotification"
-                                class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                class="tb-text-link text-sm underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
                             >
                                 {{ __('Click here to re-send the verification email.') }}
                             </button>
                         </p>
 
                         @if (session('status') === 'verification-link-sent')
-                            <p class="mt-2 text-sm font-medium text-green-600">
+                            <p role="status" class="mt-2 text-sm font-medium text-teal-700 dark:text-teal-300">
                                 {{ __('A new verification link has been sent to your email address.') }}
                             </p>
                         @endif

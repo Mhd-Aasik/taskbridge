@@ -19,7 +19,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
             return;
         }
 
-        Auth::user()->sendEmailVerificationNotification();
+        Session::forget('status');
+        app(\App\Actions\Accounts\SendAccountEmail::class)->verification();
 
         Session::flash('status', 'verification-link-sent');
     }
@@ -36,12 +37,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div class="mt-4 flex flex-col gap-6">
-    <div class="text-center text-sm text-gray-600">
+    <flux:error name="verification" />
+    <div class="text-center text-sm text-slate-600 dark:text-slate-300">
         {{ __('You can request a verification link for your current email address.') }}
     </div>
 
     @if (session('status') == 'verification-link-sent')
-        <div class="font-medium text-center text-sm text-green-600">
+        <div role="status" class="font-medium text-center text-sm text-teal-700 dark:text-teal-300">
             {{ __('A verification link has been sent to your current email address.') }}
         </div>
     @endif

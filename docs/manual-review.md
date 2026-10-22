@@ -2,6 +2,12 @@
 
 Manual checks are deferred to the final project review. Continue development and automated verification without waiting for browser checks. The previously denied browser preview must not be retried.
 
+## Account email review carried forward
+
+See `account-email.md` for trusted-origin links, branded HTML/plain-text, request limits, safe SMTP failure handling and actual isolated loopback transport verification. Optional verification and current account access remain unchanged. Real provider authentication/TLS, delivery/inbox placement, email-client rendering, accessible action/fallback links and optional Profile resend controls still need final environment/browser review. No real recipient received a test message, and loopback capture is not external-delivery verification.
+
+Final automated account-email verification passed **2,314 tests / 13,913 assertions**, zero failures/errors/skips, exit zero; focused parser/security/actual-SMTP checks passed **8 / 109**. Repository-wide Pint, 12 PHP/compiled Blade syntax checks, whitespace and frontend build passed. All 25 MySQL domain-table hashes and private-file hashes match the baseline, all three accounts remain active at version zero, and four runtime sessions (two authenticated) are accounted for separately. Local capture processes/messages were removed. These results do not complete the manual or external-delivery items.
+
 ## Isolated MySQL verification
 
 See `mysql-verification.md` for actual MySQL 8.0.43 multi-process testing on a separate disposable instance, including observed InnoDB contention, exact retry/term checks, reset-token single use, stale sessions after password/suspension revocation and private-file rollback. This supersedes the blanket "parallel MySQL unperformed" qualification only for those explicitly executed scenarios. The other per-feature MySQL items below remain pending. No browser/device/keyboard/theme or console checks are completed by this work.
