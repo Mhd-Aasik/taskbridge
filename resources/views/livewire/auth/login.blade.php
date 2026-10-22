@@ -48,7 +48,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        // Discard destinations captured before authentication; resolve the saved role afresh.
+        Session::pull('url.intended');
+        $this->redirect(route('dashboard', absolute: false), navigate: true);
     }
 
     /**
