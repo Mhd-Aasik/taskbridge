@@ -2,6 +2,10 @@
 
 Manual checks are deferred to the final project review. Continue development and automated verification without waiting for browser checks. The previously denied browser preview must not be retried.
 
+## Isolated MySQL verification
+
+See `mysql-verification.md` for actual MySQL 8.0.43 multi-process testing on a separate disposable instance, including observed InnoDB contention, exact retry/term checks, reset-token single use, stale sessions after password/suspension revocation and private-file rollback. This supersedes the blanket "parallel MySQL unperformed" qualification only for those explicitly executed scenarios. The other per-feature MySQL items below remain pending. No browser/device/keyboard/theme or console checks are completed by this work.
+
 ## Confirmed by the user
 
 - Freelancer project browsing, filtering, and reset work.
