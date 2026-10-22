@@ -69,7 +69,10 @@
                                 <x-feedback.reputation :summary="$freelancerReputations[$proposal->freelancer_id]" class="mt-3" />
                                 <p class="tb-muted mt-1 text-sm">Status: {{ Str::headline($proposal->status->value) }}</p>
                             </div>
-                            <flux:button :href="route('client.projects.proposals.show', [$project, $proposal])" :aria-label="'View proposal from '.$proposal->freelancer->name" class="self-start shrink-0" wire:navigate>View proposal</flux:button>
+                            <div class="flex shrink-0 flex-wrap gap-3">
+                                @if (isset($visibleProfiles[$proposal->freelancer_id]))<flux:button :href="route('client.freelancers.show', $visibleProfiles[$proposal->freelancer_id])" :aria-label="'View profile of '.$proposal->freelancer->name" wire:navigate>View profile</flux:button>@endif
+                                <flux:button :href="route('client.projects.proposals.show', [$project, $proposal])" :aria-label="'View proposal from '.$proposal->freelancer->name" class="self-start shrink-0" wire:navigate>View proposal</flux:button>
+                            </div>
                         </div>
                         <p class="tb-muted mt-4 whitespace-pre-wrap break-words leading-7">{{ Str::limit($proposal->cover_letter, 220) }}</p>
                         <x-proposals.review-offer :proposal="$proposal" :project="$project" class="mt-5 border-t border-slate-100 pt-5 dark:border-slate-700" />

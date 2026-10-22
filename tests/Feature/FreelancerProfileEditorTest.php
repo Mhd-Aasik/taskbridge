@@ -78,7 +78,7 @@ class FreelancerProfileEditorTest extends TestCase
         Volt::test('freelancer.profile')->assertSet('headline', $profile->headline)
             ->assertSet('bio', $profile->bio)->assertSet('location', $profile->location)
             ->assertSet('portfolio_url', $profile->portfolio_url)->assertSet('hourly_rate', $profile->hourly_rate)
-            ->assertSet('skill_ids', [$skill->id])->assertSeeText('Profile visibility: Public.');
+            ->assertSet('skill_ids', [$skill->id])->assertSeeText('Profile visibility: Visible to Clients.');
     }
 
     #[DataProvider('visibilityStates')]

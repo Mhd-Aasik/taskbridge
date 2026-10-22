@@ -16,4 +16,24 @@ class FreelancerProfilePolicy
     {
         return $user->isFreelancer() && $profile->user_id === $user->id;
     }
+
+    public function preview(User $user, FreelancerProfile $profile): bool
+    {
+        return $this->update($user, $profile);
+    }
+
+    public function publish(User $user, FreelancerProfile $profile): bool
+    {
+        return $this->update($user, $profile);
+    }
+
+    public function browse(User $user): bool
+    {
+        return $user->isClient();
+    }
+
+    public function view(User $user, FreelancerProfile $profile): bool
+    {
+        return $user->isClient() && FreelancerProfile::query()->visibleToClients()->whereKey($profile->id)->exists();
+    }
 }

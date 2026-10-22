@@ -38,6 +38,7 @@
         <aside aria-label="Your account and preferences" class="min-w-0 space-y-6">
             <x-dashboard.account-card :user="$user" :reputation="$reputation" />
             <x-dashboard.account-actions />
+            <x-dashboard.panel title="Find your next collaborator"><div class="space-y-4 p-5 sm:p-6"><p class="tb-muted leading-7">Explore professional profiles shared with Clients, then post a project to receive proposals.</p><flux:button :href="route('client.freelancers.index')" wire:navigate>Find freelancers</flux:button></div></x-dashboard.panel>
         </aside>
     </div>
 </x-layouts.app>

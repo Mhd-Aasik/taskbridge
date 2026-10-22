@@ -1,13 +1,12 @@
 <?php
 
-use App\Models\FreelancerProfile;
+use App\Actions\Profiles\ChangeProfileVisibility;
 use App\Models\Skill;
-use App\Models\User;
+use App\Support\FreelancerProfileRules;
+use App\Support\FreelancerProfiles;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
@@ -20,6 +19,13 @@ new #[Layout('components.layouts.app'), Title('Freelancer profile')] class exten
     public string $portfolio_url = '';
     public string $hourly_rate = '';
     public array $skill_ids = [];
+    public bool $shareAccountPhoto = false;
+
+    #[Locked]
+    public string $visibilityRevision = '';
+
+    #[Locked]
+    public string $visibilityFeedback = '';
 
     #[Locked]
     public bool $saved = false;
@@ -35,6 +41,8 @@ new #[Layout('components.layouts.app'), Title('Freelancer profile')] class exten
             $this->portfolio_url = $profile->portfolio_url ?? '';
             $this->hourly_rate = $profile->hourly_rate ?? '';
             $this->skill_ids = $profile->skills()->pluck('skills.id')->all();
+            $this->shareAccountPhoto = $profile->share_account_photo;
+            $this->visibilityRevision = FreelancerProfiles::revision($profile);
         }
     }
 
@@ -45,28 +53,28 @@ new #[Layout('components.layouts.app'), Title('Freelancer profile')] class exten
 
     public function save(): void
     {
+        $this->resetValidation();
         $this->saved = false;
         $this->authorisedProfile();
 
-        $validated = $this->validate([
-            'headline' => ['required', 'string', 'max:120'],
-            'bio' => ['required', 'string', 'max:2000'],
-            'location' => ['nullable', 'string', 'max:120'],
-            'portfolio_url' => ['nullable', 'string', 'url:http,https', 'max:2048'],
-            'hourly_rate' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
-            'skill_ids' => ['required', 'array', 'min:1', 'max:10'],
-            'skill_ids.*' => ['required', 'integer', 'distinct', Rule::exists(Skill::class, 'id')],
-        ]);
+        $validated = FreelancerProfileRules::validate($this->only(['headline', 'bio', 'location', 'portfolio_url', 'hourly_rate', 'skill_ids']));
 
         DB::transaction(function () use ($validated): void {
             [$user, $profile] = $this->authorisedProfile(lock: true);
+            if (($profile && ! hash_equals(FreelancerProfiles::revision($profile), $this->visibilityRevision)) || (! $profile && $this->visibilityRevision !== '')) {
+                throw ValidationException::withMessages(['visibility' => 'Your saved profile or visibility changed. Reload before saving; your entered values have been retained.']);
+            }
             $details = Arr::only($validated, ['headline', 'bio', 'location', 'portfolio_url', 'hourly_rate']);
             foreach (['location', 'portfolio_url', 'hourly_rate'] as $field) {
                 $details[$field] = $details[$field] === '' ? null : $details[$field];
             }
 
             if ($profile) {
-                $profile->fill($details)->save();
+                $profile->fill($details);
+                $profile->profile_version++;
+                if (! $profile->saveOrFail()) {
+                    throw new \RuntimeException('The professional profile could not be saved.');
+                }
             } else {
                 $profile = $user->freelancerProfile()->create($details);
             }
@@ -75,27 +83,40 @@ new #[Layout('components.layouts.app'), Title('Freelancer profile')] class exten
         });
 
         $this->saved = true;
+        [, $profile] = $this->authorisedProfile();
+        $this->visibilityRevision = FreelancerProfiles::revision($profile);
     }
 
     protected function authorisedProfile(bool $lock = false): array
     {
-        $users = User::query()->whereKey(Auth::id());
-        if ($lock) {
-            $users->lockForUpdate();
-        }
-        $user = $users->first();
-        abort_unless($user, 403);
-        \App\Support\AccountAccess::ensure($user);
+        return FreelancerProfiles::owned($lock);
+    }
 
-        $profiles = $user->freelancerProfile();
-        if ($lock) {
-            $profiles->lockForUpdate();
-        }
-        $profile = $profiles->first();
+    public function publish(): void
+    {
+        $this->resetValidation();
+        $this->visibilityFeedback = '';
+        $profile = app(ChangeProfileVisibility::class)->publish($this->visibilityRevision);
+        $this->visibilityRevision = FreelancerProfiles::revision($profile);
+        $this->visibilityFeedback = 'Your saved profile is now visible to Clients.';
+    }
 
-        Gate::forUser($user)->authorize($profile ? 'update' : 'create', $profile ?? FreelancerProfile::class);
+    public function unpublish(): void
+    {
+        $this->resetValidation();
+        $this->visibilityFeedback = '';
+        $profile = app(ChangeProfileVisibility::class)->unpublish($this->visibilityRevision);
+        $this->visibilityRevision = FreelancerProfiles::revision($profile);
+        $this->visibilityFeedback = 'Your profile is private. Clients can no longer browse it or request its shared photo.';
+    }
 
-        return [$user, $profile];
+    public function savePhotoPreference(): void
+    {
+        $this->resetValidation();
+        $this->visibilityFeedback = '';
+        $profile = app(ChangeProfileVisibility::class)->photoConsent($this->shareAccountPhoto, $this->visibilityRevision);
+        $this->visibilityRevision = FreelancerProfiles::revision($profile);
+        $this->visibilityFeedback = $profile->share_account_photo ? 'Photo sharing enabled for your visible-to-Clients profile.' : 'Photo sharing disabled. Clients will see your initials.';
     }
 
     public function with(): array
@@ -105,6 +126,7 @@ new #[Layout('components.layouts.app'), Title('Freelancer profile')] class exten
         return [
             'skills' => Skill::query()->orderBy('name')->get(['id', 'name']),
             'isPublic' => $profile?->is_public ?? false,
+            'hasProfile' => $profile !== null,
         ];
     }
 }; ?>
@@ -116,13 +138,38 @@ new #[Layout('components.layouts.app'), Title('Freelancer profile')] class exten
             <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Freelancer profile</h1>
             <p class="tb-muted mt-2 max-w-xl text-sm leading-6">Introduce your work and the skills you bring to a collaboration.</p>
         </div>
-        <flux:button :href="route('settings.profile')" icon="cog-6-tooth" class="self-start" wire:navigate>Account settings</flux:button>
+        <div class="flex flex-wrap gap-3">
+            @if ($hasProfile)<flux:button :href="route('freelancer.profile.preview')" wire:navigate>Preview profile</flux:button>@endif
+            <flux:button :href="route('settings.profile')" icon="cog-6-tooth" class="self-start" wire:navigate>Account settings</flux:button>
+        </div>
     </div>
 
     <div class="tb-profile-notice flex items-start gap-3 rounded-xl border border-teal-200 p-4 dark:border-teal-900">
         <flux:icon.lock-closed class="mt-0.5 size-5 shrink-0" />
-        <p class="text-sm leading-6"><strong>Profile visibility: {{ $isPublic ? 'Public' : 'Private' }}.</strong> New profiles are private. Saving here does not change your profile visibility.</p>
+        <p class="text-sm leading-6"><strong>Profile visibility: {{ $isPublic ? 'Visible to Clients' : 'Private' }}.</strong> New profiles are private. @if ($isPublic) Saved changes to your published profile become visible to authenticated Clients. @else Saving here does not publish your profile. @endif</p>
     </div>
+
+    <x-dashboard.panel title="Profile visibility" description="Choose when authenticated Clients can discover your professional profile.">
+        <div class="space-y-5 p-5 sm:p-6">
+            <p class="tb-muted leading-7">Clients see your display name, headline, biography, skills, optional location, hourly rate, portfolio link, and released Freelancer reputation. Your account photo is shared only with your separate consent. This does not create an anonymously accessible directory.</p>
+            <p class="tb-muted leading-7">Preview and publish your saved profile. Save any edits below before publishing.</p>
+            <div class="flex flex-wrap gap-3">
+                @if ($isPublic)
+                    <flux:button wire:click="unpublish" wire:loading.attr="disabled" wire:target="publish,unpublish,savePhotoPreference,save">Unpublish profile</flux:button>
+                @else
+                    <flux:button wire:click="publish" variant="primary" wire:confirm="Publish your saved professional profile to authenticated Clients?" wire:loading.attr="disabled" wire:target="publish,unpublish,savePhotoPreference,save" :disabled="! $hasProfile">Publish profile</flux:button>
+                @endif
+                <span role="status" class="tb-muted" wire:loading wire:target="publish,unpublish,savePhotoPreference">Updating profile preference…</span>
+            </div>
+            <flux:error name="visibility" />
+            <form wire:submit="savePhotoPreference" class="space-y-3 border-t border-slate-200 pt-5 dark:border-slate-700">
+                <flux:checkbox wire:model="shareAccountPhoto" label="Show my account photo to Clients" :disabled="! $hasProfile" />
+                <p class="tb-muted text-sm leading-6">Optional and off by default. While enabled, replacing your account photo also updates the photo shared on your published profile. Removing consent or unpublishing stops subsequent Client photo requests.</p>
+                <flux:button type="submit" wire:loading.attr="disabled" wire:target="publish,unpublish,savePhotoPreference,save" :disabled="! $hasProfile">Save photo preference</flux:button>
+            </form>
+            <p role="status" aria-live="polite" aria-atomic="true" class="tb-profile-confirmation">{{ $visibilityFeedback }}</p>
+        </div>
+    </x-dashboard.panel>
 
     <form wire:submit="save" class="space-y-6">
         <fieldset wire:loading.attr="disabled" wire:target="save" class="min-w-0 space-y-6">

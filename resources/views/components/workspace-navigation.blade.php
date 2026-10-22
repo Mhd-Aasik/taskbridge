@@ -4,6 +4,7 @@
         <flux:navlist>
             <flux:navlist.item icon="squares-2x2" :href="route('dashboard')" :current="request()->routeIs('dashboard', '*.dashboard')" wire:navigate>Dashboard</flux:navlist.item>
             @if (auth()->user()->isClient())
+                <flux:navlist.item icon="users" :href="route('client.freelancers.index')" :current="request()->routeIs('client.freelancers.*')" wire:navigate>Find freelancers</flux:navlist.item>
                 <flux:navlist.item icon="folder" :href="route('client.projects.index')" :current="request()->routeIs('client.projects.*', 'projects.plan')" wire:navigate>Projects</flux:navlist.item>
             @endif
             @if (auth()->user()->isFreelancer())

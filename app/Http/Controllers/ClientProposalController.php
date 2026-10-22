@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ProposalStatus;
+use App\Models\FreelancerProfile;
 use App\Models\Project;
 use App\Models\Proposal;
 use App\Models\User;
@@ -67,6 +68,7 @@ class ClientProposalController extends Controller
             'statuses' => $statuses,
             'filterErrors' => $validator->errors(),
             'freelancerReputations' => ProjectReputation::forUsers($proposals?->pluck('freelancer_id')->unique()->all() ?? [], User::ROLE_FREELANCER),
+            'visibleProfiles' => FreelancerProfile::query()->visibleToClients()->whereIn('user_id', $proposals?->pluck('freelancer_id')->unique()->all() ?? [])->pluck('id', 'user_id')->all(),
         ], $valid ? 200 : 422);
     }
 
@@ -78,6 +80,7 @@ class ClientProposalController extends Controller
         Gate::forUser($user)->authorize('review', [$proposal, $project]);
 
         return view('client.proposals.show', ['project' => $project->load(['category', 'assignment.freelancer:id,name']), 'proposal' => $proposal,
+            'visibleProfileId' => FreelancerProfile::query()->visibleToClients()->where('user_id', $proposal->freelancer_id)->value('id'),
             'freelancerReputation' => ProjectReputation::forUsers([$proposal->freelancer_id], User::ROLE_FREELANCER)[$proposal->freelancer_id]]);
     }
 

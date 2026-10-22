@@ -74,7 +74,7 @@ class FreelancerProfileTest extends TestCase
         $profile = FreelancerProfile::factory()->create(['is_public' => 1]);
         $this->assertTrue($profile->fresh()->is_public);
 
-        $profile->update(['is_public' => 0]);
+        $profile->forceFill(['is_public' => 0])->save();
         $this->assertFalse($profile->fresh()->is_public);
         $this->assertFalse($profile->fresh()->toArray()['is_public']);
     }

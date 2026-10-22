@@ -6,6 +6,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliverableDownloadController;
 use App\Http\Controllers\DisputeDownloadController;
 use App\Http\Controllers\FreelancerAssignmentController;
+use App\Http\Controllers\FreelancerDiscoveryController;
+use App\Http\Controllers\FreelancerProfilePhotoController;
 use App\Http\Controllers\ProjectCoverController;
 use App\Http\Controllers\ProjectDiscoveryController;
 use App\Http\Controllers\ProjectPublicationController;
@@ -62,6 +64,13 @@ Route::middleware(['auth'])->group(function () {
 Volt::route('freelancer/profile', 'freelancer.profile')
     ->middleware(['auth', 'role:'.User::ROLE_FREELANCER])
     ->name('freelancer.profile.edit');
+
+Route::get('freelancer/profile/preview', [FreelancerDiscoveryController::class, 'preview'])->middleware(['auth', 'role:freelancer'])->name('freelancer.profile.preview');
+Route::middleware(['auth', 'role:client'])->prefix('client/freelancers')->name('client.freelancers.')->group(function () {
+    Route::get('/', [FreelancerDiscoveryController::class, 'index'])->name('index');
+    Route::get('{profile}', [FreelancerDiscoveryController::class, 'show'])->whereNumber('profile')->name('show');
+    Route::get('{profile}/photo', FreelancerProfilePhotoController::class)->whereNumber('profile')->name('photo');
+});
 
 Volt::route('admin/categories', 'admin.categories')->middleware(['auth', 'role:admin'])->name('admin.categories.index');
 Volt::route('admin/accounts', 'admin.accounts.index')->middleware(['auth', 'role:admin'])->name('admin.accounts.index');

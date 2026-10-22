@@ -11,10 +11,28 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 class AccountPhotos
 {
+    public function response(User $account): StreamedResponse
+    {
+        $headers = [
+            'Cache-Control' => 'private, no-store, max-age=0',
+            'Vary' => 'Cookie',
+            'X-Content-Type-Options' => 'nosniff',
+            'Content-Security-Policy' => "default-src 'none'; sandbox",
+        ];
+        abort_unless(self::ownsPath($account, $account->avatar_path), 404, '', $headers);
+        $disk = Storage::disk('avatars');
+        abort_unless($disk->exists($account->avatar_path), 404, '', $headers);
+        $mime = $disk->mimeType($account->avatar_path);
+        abort_unless(in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true), 404, '', $headers);
+
+        return $disk->response($account->avatar_path, 'profile-photo.'.pathinfo($account->avatar_path, PATHINFO_EXTENSION), ['Content-Type' => $mime, ...$headers]);
+    }
+
     /** @return array{contents: string, extension: string} */
     public function prepare(mixed $photo): array
     {

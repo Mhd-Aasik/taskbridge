@@ -32,6 +32,7 @@
 
         <x-dashboard.panel title="Submitted offer">
             <x-feedback.reputation :summary="$freelancerReputation" class="px-5 pt-5 sm:px-6 sm:pt-6" />
+            @if ($visibleProfileId)<div class="px-5 pt-4 sm:px-6"><flux:button :href="route('client.freelancers.show', $visibleProfileId)" wire:navigate>View profile</flux:button></div>@endif
             <x-proposals.review-offer :proposal="$proposal" :project="$project" class="p-5 sm:p-6" />
         </x-dashboard.panel>
         <x-dashboard.panel title="Cover letter">
