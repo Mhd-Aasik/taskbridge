@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use App\Actions\Accounts\ChangeAccountPassword;
+use App\Support\AccountAccess;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Livewire\Volt\Component;
@@ -28,12 +30,11 @@ new class extends Component {
             throw $e;
         }
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($validated): void {
-            $account = \App\Support\AccountAccess::account(lock: true);
-            $account->password = Hash::make($validated['password']);
-            if (! $account->save()) { throw new \RuntimeException('The password could not be saved.'); }
-            Auth::setUser($account);
-        });
+        $account = app(ChangeAccountPassword::class)->update($validated['current_password'], $validated['password']);
+        Auth::setUser($account);
+        request()->attributes->set('taskbridge.available_actor', $account);
+        Session::regenerate();
+        Session::put(AccountAccess::SESSION_KEY, ['id' => $account->id, 'version' => $account->access_version]);
 
         $this->reset('current_password', 'password', 'password_confirmation');
 

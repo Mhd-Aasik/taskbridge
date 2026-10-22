@@ -13,7 +13,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public function sendVerification(): void
     {
         if (Auth::user()->hasVerifiedEmail()) {
-            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+            Session::pull('url.intended');
+            $this->redirect(route('dashboard', absolute: false), navigate: true);
 
             return;
         }
@@ -36,12 +37,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
 <div class="mt-4 flex flex-col gap-6">
     <div class="text-center text-sm text-gray-600">
-        {{ __('Please verify your email address by clicking on the link we just emailed to you.') }}
+        {{ __('You can request a verification link for your current email address.') }}
     </div>
 
     @if (session('status') == 'verification-link-sent')
         <div class="font-medium text-center text-sm text-green-600">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
+            {{ __('A verification link has been sent to your current email address.') }}
         </div>
     @endif
 

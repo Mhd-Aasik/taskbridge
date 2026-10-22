@@ -170,13 +170,15 @@ class AccountSuspensionAccessTest extends TestCase
         $admin = $this->accountAdmin();
         $user = User::factory()->create();
         $this->changeAccount($user, true, ['reason' => 'INTERNAL-RECOVERY-REASON']);
-        $fields = array_flip(['suspended_at', 'suspended_by', 'suspension_reason', 'access_version']);
+        $fields = array_flip(['suspended_at', 'suspended_by', 'suspension_reason']);
+        $version = $user->fresh()->access_version;
         $before = array_intersect_key($user->fresh()->getAttributes(), $fields);
         Auth::logout();
         session()->flush();
         $token = Password::createToken($user);
         Volt::test('auth.reset-password', ['token' => $token])->set('email', $user->email)->set('password', 'new-password')->set('password_confirmation', 'new-password')->call('resetPassword')->assertHasNoErrors()->assertRedirect(route('login', absolute: false))->assertDontSee('INTERNAL-RECOVERY-REASON');
         $this->assertSame($before, array_intersect_key($user->fresh()->getAttributes(), $fields));
+        $this->assertSame($version + 1, $user->fresh()->access_version);
         $this->assertTrue(Hash::check('new-password', $user->fresh()->password));
         $this->assertGuest();
     }

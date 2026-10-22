@@ -9,6 +9,20 @@ Manual checks are deferred to the final project review. Continue development and
 
 These confirmations do not cover all devices, themes, or keyboard interactions in subsequent changes.
 
+## Workflow hardening review carried forward
+
+Activity history was checkpointed as `69f1021`; the audit continues on `feature/workflow-hardening`. See `workflow-audit.md` for traceability, confirmed fixes, lifecycle coverage and final automated results. No browser access was attempted for this audit.
+
+Final automated verification passed: **2,306 tests / 13,804 assertions**, zero failures/errors/skips, exit zero; affected authentication **51 / 393**; lifecycle scenarios **3 / 602**; existing JavaScript **13 passed**. Repository-wide Pint, all 10 changed PHP/compiled Blade syntax checks, whitespace and frontend build/manifest checks passed. MySQL hashes across 25 domain tables and all private-file hashes match the pre-hardening baseline; all three accounts remain active at access version zero. Four runtime sessions (two authenticated) are accounted for separately. These results do not complete any manual item below.
+
+- At final review, check signed email verification and already-verified shortcuts after a stale other-role destination. Confirm role-aware dashboard navigation and unchanged direct wrong-role denial.
+- Check password settings with two dedicated test sessions and a stale open form, recovery from a real delivered test email, expired/reused tokens, suspension preservation, fresh login, remember-me and retained current-session access. Automated tests cover these paths; no real development account was reset or revoked.
+- Verify production CSS loading, Flux/Livewire interactions and Light/Dark/System persistence after removal of the unused Vite entry. The build/manifest checks do not establish browser console health; the existing preload URL investigation remains pending.
+- Configure and test real delivery in a dedicated environment: local mail currently uses `log`. Verification remains optional; changing that policy requires a separate existing-account rollout. Verify HTTPS/public mail URLs, web/proxy upload limits, private-volume persistence/backups and any scanning requirement.
+- Exercise the three documented lifecycle scenarios across desktop/mobile, keyboard and both themes on dedicated test data. Real parallel MySQL execution remains pending and must use a disposable database/storage, never development records.
+
+These are deferred final-review items, not requests to interrupt automated development or statements that manual checks passed.
+
 ## Account verification checkpoint, 22 October 2026
 
 The existing complete SQLite `:memory:` account suite was recovered: **2,108 passed, 11,708 assertions, zero failures/errors/skips**, with a successful process exit. Application inputs are unchanged; the suite was not repeated. See `admin-accounts.md` for authentication/session safeguards, automated verification and local preservation evidence. Automated coverage does not mark any browser, keyboard, mobile, theme or parallel MySQL item below as complete.

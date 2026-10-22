@@ -67,7 +67,8 @@ new class extends Component {
         $user = \App\Support\AccountAccess::account();
 
         if ($user->hasVerifiedEmail()) {
-            $this->redirectIntended(default: route('dashboard', absolute: false));
+            Session::pull('url.intended');
+            $this->redirect(route('dashboard', absolute: false));
 
             return;
         }
