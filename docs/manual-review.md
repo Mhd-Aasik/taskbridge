@@ -2,6 +2,12 @@
 
 Manual checks are deferred to the final project review. Continue development and automated verification without waiting for browser checks. The previously denied browser preview must not be retried.
 
+## Setup and handoff review carried forward
+
+Start with the [documentation index](README.md) and [handoff verification](handoff-verification.md). The email work is checkpointed as `b86a6e0`; the handoff branch is `docs/project-handoff`. Fresh locked installs, guarded disposable MySQL migrations/repeat reference seeds, cache commands, a matching frontend build, automated loopback HTTP requests, 10 SQLite lifecycle/email tests (646 assertions) and 13 JavaScript tests were exercised. A disposable 35-table dump/restore matched row hashes and effective schema/constraints; private test bytes were compared by SHA-256. These are automated local checks, not browser/hosting approval or a production recovery test. The unchanged 2,314-test complete regression result is reused; the next stage owns the final full regression run.
+
+Remaining setup work: a supported first-Admin bootstrap/recovery mechanism; actual hosted HTTPS/proxy/cookies and web upload limits; external SMTP delivery/TLS/DNS and email-client rendering; encrypted off-host retention, real-key recovery and a controlled disaster cutover. Keep all existing browser/device/theme/keyboard and console checks below deferred. Optional email verification and external-payment-only scope remain unchanged. No manual check is requested now.
+
 ## Account email review carried forward
 
 See `account-email.md` for trusted-origin links, branded HTML/plain-text, request limits, safe SMTP failure handling and actual isolated loopback transport verification. Optional verification and current account access remain unchanged. Real provider authentication/TLS, delivery/inbox placement, email-client rendering, accessible action/fallback links and optional Profile resend controls still need final environment/browser review. No real recipient received a test message, and loopback capture is not external-delivery verification.
