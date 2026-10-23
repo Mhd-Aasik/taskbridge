@@ -1,5 +1,7 @@
 # Setup and handoff verification
 
+The documentation below was checkpointed as **`46a004d` — Document installation, user workflows and recovery**. The first-Admin gap described at that checkpoint is now addressed by [the console bootstrap](admin-bootstrap.md) on `fix/admin-bootstrap`. See the final verification section at the end for current results; the earlier installation/restore evidence remains historical.
+
 ## Checkpoint and scope
 
 The 14 account-email files were reviewed against their recorded source hashes, JUnit report and successful checks, then committed as **`b86a6e0` — Add secure branded account emails and SMTP verification**. Work continued on **`docs/project-handoff`**. No repository/ancestor AGENTS.md was found. Credentials, MIME captures, logs and disposable verification artifacts were excluded from the commit.
@@ -61,3 +63,34 @@ Read-only final checks matched all **25 original MySQL domain tables**, account/
 5. **CI and release automation:** existing workflows target main/develop, use PHP 8.4, use `npm i`/`npm install` rather than `npm ci`, and the old lint workflow configures Flux credentials unnecessarily for the locked free package. They were inspected, not executed or rewritten. The documented Windows lockfile setup is the exercised installation path. The legacy public welcome page and the planned capabilities listed in [workflow-audit.md](workflow-audit.md) remain outside this documentation step.
 
 The documentation is intentionally **uncommitted and unstaged** on `docs/project-handoff`; no application setup fix was required.
+
+## Bootstrap and final automated verification
+
+The supported first-account command is `php artisan taskbridge:bootstrap-admin`. Installation, hosting, the role guide, README and index now describe its interactive restrictions; there is no account creation against the running MySQL database. No migration, dependency change, mandatory verification, queue worker or new product workflow was introduced.
+
+The command uses hidden password/confirmation without a visible fallback, a default-No creation confirmation, server-controlled Admin/security fields and transactional insertion. Any Admin, including an unavailable account, blocks creation. The MySQL advisory lock is held through commit/rollback; SQLite acquires its writer reservation before checking. No existing account is promoted or replaced. See [admin-bootstrap.md](admin-bootstrap.md) for password rules, concurrency design and recovery limits.
+
+Current automated checks:
+
+| Check | Result |
+| --- | --- |
+| Complete SQLite `:memory:` regression suite | **2,330 passed / 13,994 assertions**, zero failures/errors/skips, exit 0; duration 754.16 seconds |
+| Focused bootstrap SQLite/console/HTTP tests | **16 passed / 81 assertions**, exit 0 |
+| Genuine MySQL 8.0.43 concurrency | **3/3 rounds passed**; each observed two distinct pending named-lock requests, exactly one first Admin and one refusal |
+| Actual piped CLI and `--no-interaction` | Both refused immediately with exit 1 using SQLite `:memory:`; no prompts, table access or account creation |
+| Existing JavaScript tests | **13 passed**, zero failures/skips/cancellations |
+| Repository-wide Pint | Passed in check mode |
+| New PHP syntax | Five files passed; no Blade inputs changed |
+| Frontend build | Passed; one nonempty CSS manifest entry `assets/app-N6nZSU65.css`, no empty JavaScript chunk |
+| Composer validation | `composer validate --strict` passed |
+| Installed Composer platform requirements | Passed, including development packages, on PHP 8.2.12 |
+| Locked Composer audit, all packages and runtime-only | Both completed successfully: **zero advisories and zero abandoned packages**, exit 0 |
+| Locked npm audit | Completed successfully: **zero vulnerabilities at all severities**, exit 0 |
+
+The final complete suite's JUnit, text output and captured exit status agree. All five new PHP/application/test/harness files match their pre-suite hashes; no application/test changes followed that run. No audit check was disabled to obtain a pass; no dependency upgrade was needed. Composer's lock has 79 runtime and 35 development packages. Runtime classification includes Laravel/Livewire/Flux and their dependencies; development includes PHPUnit, Pint, Pail, Sail, Faker, Mockery and Collision. npm declares its packages under `dependencies` rather than `devDependencies`; many (Vite, Tailwind, Rollup and related platform variants) are build tools, not a Node service deployed with TaskBridge. The npm lock audit reported 90 prod entries and zero dev entries; its total includes optional/platform packages, not only packages installed on Windows. Both complete audits cover development/build dependencies as well as runtime; zero findings required no risk exceptions.
+
+Preliminary bootstrap failures were fixture-comparison/test-console setup problems, corrected without relaxing authorization, password requirements or expected results. MySQL workers ran the actual creation action in separate processes/connections; terminal prompts are simulated only by SQLite prompt tests. Actual external SMTP delivery, hosted HTTPS/proxy/cookies, web upload limits, encrypted off-host retention/production restore and physical terminal/browser/email-client review remain pending. Existing optional verification, external-payment scope and all deferred checks are preserved.
+
+The final read-only preservation check matched all **25 MySQL domain tables and private-file hashes**. All three original accounts remain active at access version zero; runtime sessions remain four total, two authenticated. Original `.env`/APP_KEY and cached configuration files match their captured hashes and original file set. Mail remains `log`, sessions remain database-backed, and verification remains optional. No application migration, seed or account creation was run. The marked disposable MySQL instance, credentials, worker/barrier/results files and fixture storage were shut down and removed by the existing guarded cleanup; port 33079 and its test directory no longer exist. No real session was revoked or inspected.
+
+Final scope is **13 files**, all unstaged/uncommitted: `app/Actions/Accounts/BootstrapAdmin.php`, `app/Console/Commands/BootstrapAdminCommand.php`, `tests/Feature/Auth/BootstrapAdminTest.php`, `tests/MySql/bootstrap.php`, `tests/MySql/bootstrap-worker.php`, `README.md`, and `docs/{README,admin-bootstrap,handoff-verification,hosting,installation,manual-review,user-guide}.md`. No lockfile or environment change was needed. Tracked/untracked whitespace, documentation links/anchors and PowerShell blocks passed validation. The temporary compiled-view directory and actual-SMTP test capture resources were removed/confirmed absent after the suite. Final branch is `fix/admin-bootstrap`, HEAD `46a004d`; no further commit is made in this step.

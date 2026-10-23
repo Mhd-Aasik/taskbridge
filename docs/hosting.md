@@ -42,7 +42,7 @@ SMTP uses the actual variables in [account-email.md](account-email.md), includin
 
 ## Deployment and caches
 
-Use a reviewed release at a known commit, a protected maintenance window or equivalent release routing, and a consistent backup before applying schema changes. The following PowerShell sequence is a template for the **intended new release/environment**, not a command to run indiscriminately against the live checkout. Identity checks and backup approval precede it.
+Use a reviewed release at a known commit, a protected maintenance window or equivalent release routing, and a consistent backup before applying schema changes. On a fresh deployment, an authorized operator can use the interactive [first-Admin command](installation.md#first-administrator) after migrations and identity checks. It requires secure terminal access; automation must not inject credentials or bypass its interactive confirmation. Skip it on updates and when any Admin exists. The following PowerShell sequence is a template for the **intended new release/environment**, not a command to run indiscriminately against the live checkout. Identity checks and backup approval precede it.
 
 ```powershell
 composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
@@ -80,4 +80,4 @@ The migration history is additive, but a `down()` often drops columns/tables con
 
 With the shown configuration Laravel writes `storage/logs/laravel.log`; configure protected rotation/retention and monitoring. Restrict logs that can contain personal data or mail links. Do not publish debug exception pages, dump configuration or log credentials/tokens. Business and audit history are database records and must not be deleted as log housekeeping.
 
-On an incident, preserve evidence securely, put the affected release into controlled maintenance if needed, check database identity and disk health, and use the [recovery procedure](backup-recovery.md) in a disposable environment. Keep original uploads and environment/key; never rotate keys or wipe tables as troubleshooting. Suspension and password recovery revoke sessions without erasing history; they are not substitutes for a reviewed incident response. The missing first-Admin bootstrap remains a release setup gap.
+On an incident, preserve evidence securely, put the affected release into controlled maintenance if needed, check database identity and disk health, and use the [recovery procedure](backup-recovery.md) in a disposable environment. Keep original uploads and environment/key; never rotate keys or wipe tables as troubleshooting. Suspension and password recovery revoke sessions without erasing history; they are not substitutes for a reviewed incident response. Bootstrap cannot repair/replace an existing Admin; use normal password recovery for an existing account and a separately authorized incident process if that is unavailable.

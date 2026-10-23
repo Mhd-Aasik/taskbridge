@@ -104,7 +104,17 @@ Serve binds loopback for development and stays in the foreground (Ctrl+C stops i
 
 ### First administrator
 
-**Setup gap:** there is no first-Admin Artisan command, Admin seeder, role-changing UI or documented recovery bootstrap in this checkout. `/register` permits only Client and Freelancer. Seeders intentionally create no accounts. A fresh installation can exercise both participant roles, but cannot enter Admin pages until a separately authorized, reviewed provisioning mechanism is implemented. Do not promote a user with an ad hoc SQL/Tinker recipe, use a factory in production, or weaken registration. No real account was created/modified for this handoff.
+After migrations, an authorized operator can create the first Admin from a trusted interactive terminal in the intended installation:
+
+```powershell
+php artisan taskbridge:bootstrap-admin
+```
+
+Check the database identity before running this command. It prompts for name, a unique email, a hidden password and hidden confirmation. Use at least 12 characters with upper/lowercase letters, a number and a symbol; passwords may not exceed 72 bytes. It displays name/email/role and unverified status, then asks for explicit creation confirmation (default No). Passwords have no CLI arguments/options and must never be entered on the command line. If the terminal cannot hide input, creation fails safely.
+
+The command refuses if **any** Admin already exists, including an unavailable one. It does not promote/replace accounts, reset credentials, bypass suspension or provide Admin recovery. `--no-interaction` and piped/non-terminal execution fail without prompting or creating an account. Competing attempts are serialized on MySQL; only one first account can succeed. SQLite is also supported with a write transaction; other database drivers are refused. See [implementation and verification](admin-bootstrap.md).
+
+The account remains unverified (verification is optional), active and at access version zero; sign in through `/login` to reach the existing Admin dashboard. No default credentials, demonstration records or notification/email are created. `/register` still permits only Client and Freelancer and reference seeders still create no accounts. Existing installations with an Admin should not run bootstrap as an update step. No real account was created/modified during automated verification.
 
 ## Updating an existing installation
 

@@ -64,6 +64,8 @@ The Client explicitly completes each milestone. Attached tasks must be Done and 
 
 ## Admin workspace
 
+For a fresh installation with no Admin, an authorized console operator uses `php artisan taskbridge:bootstrap-admin` after migrations. This is an interactive setup command, with hidden password prompts and a final confirmation, not a public registration page. It refuses any existing Admin and cannot promote or recover an existing account. See [setup restrictions](installation.md#first-administrator). The new Admin uses normal login and optional verification.
+
 The Admin dashboard is `/admin/dashboard`. **Categories**, `/admin/categories` (`admin.categories.index`), supports creation, descriptive edits and separate activate/deactivate confirmations. Slugs remain stable, deletion is unavailable, and repeat reference seeding preserves edits. Deactivation blocks draft selection/publication, discovery, proposals and new acceptance in that category; it does not erase existing projects or disable assigned work. Real affected counts and immutable category audit history support each decision.
 
 **Accounts**, `/admin/accounts` (`admin.accounts.index`), searches/filter accounts and opens `/admin/accounts/{account}` for status and audit history. Confirmed suspension/reactivation applies to Clients/Freelancers only, with internal reasons. It revokes their old sessions/remember tokens while preserving work/history. Reactivation does not revive revoked sessions. Admin accounts have no status-changing controls; role editing, impersonation, password replacement and administrative deletion are not offered.

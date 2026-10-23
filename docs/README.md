@@ -6,7 +6,8 @@ Start with the [project README](../README.md). No documentation index existed in
 
 | Guide | Purpose |
 | --- | --- |
-| [Installation](installation.md) | Fresh Windows setup, existing-install updates, isolated checks, first-Admin gap |
+| [Installation](installation.md) | Fresh Windows setup, existing-install updates, isolated checks, first-Admin setup |
+| [Admin bootstrap](admin-bootstrap.md) | Console-only first account, validation, serialization and recovery limits |
 | [User guide](user-guide.md) | Role workflows, statuses, privacy and irreversible actions |
 | [Backup and recovery](backup-recovery.md) | Database/files/secrets, consistent capture, guarded disposable restore |
 | [Hosting](hosting.md) | Deployment configuration, persistence, permissions, mail and runtime requirements |
