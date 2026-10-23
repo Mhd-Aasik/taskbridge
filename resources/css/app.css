@@ -94,6 +94,63 @@ select:focus[data-flux-control] {
     }
 }
 
+/* Flux sticky sidebars scroll by default. Only navigation should scroll here. */
+.tb-sidebar[data-flux-sidebar] {
+    height: 100dvh;
+    min-height: 0;
+    max-height: 100dvh;
+    overflow: hidden;
+    color-scheme: dark;
+}
+
+.tb-sidebar .tb-sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #64748b #101f35;
+    scrollbar-gutter: stable;
+}
+
+.tb-sidebar .tb-sidebar-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.tb-sidebar .tb-sidebar-scroll::-webkit-scrollbar-track {
+    background: #101f35;
+}
+
+.tb-sidebar .tb-sidebar-scroll::-webkit-scrollbar-thumb {
+    background: #64748b;
+    border-radius: 999px;
+}
+
+.tb-sidebar .tb-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Keep account actions readable on navy, independent of the page theme. */
+.tb-sidebar .tb-sidebar-logout {
+    color: #cbd5e1;
+    background-color: transparent;
+}
+
+.tb-sidebar .tb-sidebar-logout:is(:hover, :focus-visible) {
+    color: #ffffff;
+    background-color: rgb(255 255 255 / 8%);
+}
+
+.tb-sidebar .tb-sidebar-scroll:focus-visible,
+.tb-sidebar .tb-sidebar-logout:focus-visible {
+    outline: 2px solid #5eead4;
+    outline-offset: -2px;
+}
+
+@media (forced-colors: active) {
+    .tb-sidebar .tb-sidebar-scroll {
+        scrollbar-color: auto;
+        scrollbar-width: auto;
+    }
+}
+
 .tb-sidebar [data-flux-navlist-item] {
     color: #cbd5e1;
     min-height: 44px;

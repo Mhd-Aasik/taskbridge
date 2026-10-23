@@ -16,7 +16,7 @@
                 <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
             </div>
 
-            <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <div class="tb-sidebar-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain" role="region" aria-label="Scrollable sidebar navigation" tabindex="0">
                 <x-workspace-navigation />
             </div>
 
@@ -31,7 +31,7 @@
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="mt-3">
                     @csrf
-                    <flux:button type="submit" variant="subtle" icon="arrow-right-start-on-rectangle" class="w-full justify-start! text-slate-300!">Log out</flux:button>
+                    <flux:button type="submit" variant="subtle" align="start" icon="arrow-right-start-on-rectangle" class="tb-sidebar-logout w-full">Log out</flux:button>
                 </form>
             </div>
         </flux:sidebar>
