@@ -19,6 +19,9 @@ new class extends Component {
     public bool $previewReady = false;
 
     #[Locked]
+    public bool $hasSavedPhoto = false;
+
+    #[Locked]
     public string $message = '';
 
     public function mount(): void
@@ -98,7 +101,10 @@ new class extends Component {
 
     public function with(): array
     {
-        return ['account' => $this->account()];
+        $account = $this->account();
+        $this->hasSavedPhoto = (bool) $account->avatar_path;
+
+        return ['account' => $account];
     }
 }; ?>
 
@@ -157,7 +163,7 @@ new class extends Component {
 
         <div class="flex flex-wrap items-center gap-3">
             <flux:button type="submit" variant="primary" :disabled="! $previewReady" x-bind:disabled="uploading || ! $wire.previewReady" wire:loading.attr="disabled" wire:target="photo,savePhoto,removePhoto">Save photo</flux:button>
-            <flux:button type="button" wire:click="removePhoto" :disabled="! $account->avatar_path" x-bind:disabled="uploading || @js(! $account->avatar_path)" wire:loading.attr="disabled" wire:target="photo,savePhoto,removePhoto">Remove photo</flux:button>
+            <flux:button type="button" wire:click="removePhoto" :disabled="! $hasSavedPhoto" x-bind:disabled="uploading || ! $wire.hasSavedPhoto" wire:loading.attr="disabled" wire:target="photo,savePhoto,removePhoto">Remove photo</flux:button>
         </div>
         <p role="status" aria-live="polite" aria-atomic="true" class="text-sm font-medium text-teal-800 dark:text-teal-200">{{ $message }}</p>
     </form>

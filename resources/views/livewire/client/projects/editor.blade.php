@@ -29,6 +29,9 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
     public bool $previewReady = false;
 
     #[Locked]
+    public bool $hasActiveCategories = false;
+
+    #[Locked]
     public ?int $projectId = null;
 
     public function mount(?Project $project = null): void
@@ -131,9 +134,11 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
     {
         [, $project] = $this->authorisedContext();
         $category = $project?->category;
+        $categories = Category::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        $this->hasActiveCategories = $categories->isNotEmpty();
 
         return [
-            'categories' => Category::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'categories' => $categories,
             'inactiveCategory' => $category && ! $category->is_active ? $category : null,
             'earliestDeadline' => ProjectDraftForm::earliestDeadline(),
             'savedProject' => $project,
@@ -244,7 +249,7 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
             </x-dashboard.panel>
         </fieldset>
         <div class="flex flex-wrap items-center gap-4">
-            <flux:button type="submit" variant="primary" wire:loading.attr="disabled" wire:target="save,cover" x-bind:disabled="uploading || @js($categories->isEmpty())" :disabled="$categories->isEmpty()">
+            <flux:button type="submit" variant="primary" wire:loading.attr="disabled" wire:target="save,cover" x-bind:disabled="uploading || ! $wire.hasActiveCategories" :disabled="! $hasActiveCategories">
                 <span wire:loading.remove wire:target="save">{{ $projectId ? 'Save changes' : 'Save draft' }}</span>
                 <span wire:loading wire:target="save" role="status">Saving draft...</span>
             </flux:button>
