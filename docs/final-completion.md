@@ -152,3 +152,77 @@ See [manual review](manual-review.md) for remaining page/device/theme/interactio
 coverage, physical-terminal bootstrap and environment limitations. External SMTP
 provider/mailbox ownership, hosted HTTPS/cookies/upload limits, encrypted/off-host
 retention and production recovery remain pending deployment verification.
+
+## Interrupted-session recovery verification — 24 October 2026
+
+Recovery found a clean `fix/final-completion` at **8d60002**, following **c97854f**,
+**b002857** and **73b4567**. The implementation, account correction, final suite,
+browser review and disposable-service cleanup had already completed. No existing
+implementation or demo records were recreated. No repository/ancestor AGENTS.md
+was found. Git ownership checks required a command-scoped `safe.directory` setting;
+no global Git configuration was changed.
+
+The recovered latest text/JUnit/exit reports agree on **2,349 tests / 14,302
+assertions**, zero failures/errors/skips, exit 0. JUnit contains 2,349 test cases,
+including the same-password/email-change regression. Application/test inputs last
+changed at 19:28:39 Asia/Colombo, before the final run began at approximately
+19:46; later tracked edits were documentation and font-license whitespace.
+The saved complete suite is reused, not described as newly executed. A new
+ignored manifest records SHA-256 hashes for 484 tracked application/test/build
+inputs. No pre-existing full-suite process remained running.
+
+Fresh MySQL inspection used the exact baseline database/server identity and an
+enforced read-only transaction. Both selected accounts uniquely match the intended
+names/emails/roles, validate through the authentication provider with the requested
+operator-supplied password, remain active and unverified, have access version 1,
+and have remember tokens different from the backup. Neither has an existing
+database session. This confirms the corrective checkpoint completed; no further
+password reset or session revocation was performed. Provider validation is distinct
+from browser login; role redirects, stale-session denial and optional verification
+are covered by isolated automated tests and the earlier scoped browser evidence.
+
+Original non-runtime rows, the unrelated Client's complete field hashes, original
+private file and environment/lockfiles match the protected backup. The build
+manifest intentionally differs from the pre-change baseline because fonts are now
+bundled. The retained dump still matches the SHA-256 recorded by the successful
+33-table restoration. No real Admin exists and none was created. Current demo
+records have eight valid 1200 × 760 covers and the intended 2 Draft / 3 Open /
+1 In Progress / 2 Completed distribution; only the three Open projects satisfy
+discovery eligibility.
+
+Read-only workflow inspection confirmed three accepted assignments with matching
+agreed budgets, nine tasks, six deliverable versions with matching stored-file
+SHA-256 values, five reviews, two payment reports, one acknowledgment, four released
+ratings and one private dispute. Completed examples have all tasks/milestones
+complete, approved latest versions and Client completion; the active example has
+Todo/In progress/Done tasks and an unreviewed revision. A matching demo rerun inside
+the read-only transaction left all 33 table snapshots and the manifest unchanged.
+There are currently 48 activities and 36 notifications; runtime/read-state counts
+are not fixed fixture invariants.
+
+Fresh JavaScript checks passed **13 tests**, repository-wide Pint passed, all nine
+changed non-Blade PHP files passed syntax checks, and strict Composer validation,
+locked platform checks and whitespace passed. The new Vite build reproduces
+`app-CgO014P4.css` and `instrument-sans-latin-variable-s12UeAcm.ttf`; both manifest
+assets are nonempty. Saved homepage/photo/publication screenshots were inspected;
+no new browser interactions or full accessibility sign-off are claimed. The
+original PHP application and MySQL listeners remain running; `/up` returned 200.
+
+Fresh focused SQLite regressions passed **49 tests / 386 assertions**, zero
+failures/errors/skips, exit 0, with complete JUnit and text reports. They cover
+demo idempotency/account isolation, assets/homepage, authentication, role redirects,
+password/session/remember-credential recovery and verification semantics. The
+sandbox could not open PHPUnit's configured bootstrap path; the completed run used
+the normal PHP executable outside that sandbox with explicit in-memory SQLite,
+array mail/session/cache and isolated compiled-view/cache paths. No tests used the
+application database. Recovery helper scripts remain excluded from commits and
+are removed after verification; sanitized evidence and input hashes remain ignored
+under `storage/logs`.
+
+Current audits remain incomplete: a network-enabled Composer retry ended with
+Packagist SSL/connection timeouts (exit 100). The sandbox npm attempt failed DNS
+resolution (exit 1); automatic approval review rejected its network-enabled retry
+because it would disclose dependency metadata to the npm registry without specific
+authorization. That rejected action was not retried or bypassed. No current clean
+audit is claimed. External SMTP, hosting/HTTPS, production recovery and the
+remaining manual-review coverage retain their separate pending status.

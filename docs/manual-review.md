@@ -6,6 +6,17 @@ Bootstrap is checkpointed as **`a87ef49` — Add safe first-admin bootstrap**. S
 
 ## Current evidence — 24 October 2026
 
+Interrupted-session recovery independently rechecked the final reports, selected
+account credential checkpoint, protected originals, covers/workflow records and an
+unchanged read-only demo rerun. The original application remains healthy. Existing
+isolated browser observations below are reused; recovery did not repeat browser
+mutations. Fresh focused SQLite checks passed **49 tests / 386 assertions**, and
+the build, 13 JavaScript tests, Pint, syntax and Composer/platform checks passed.
+Current audits remain incomplete: Composer timed out again, and
+automatic approval review blocked the network-enabled npm retry because dependency
+metadata would be sent to the registry without specific authorization. See the
+[recovery verification](final-completion.md#interrupted-session-recovery-verification--24-october-2026).
+
 The final complete isolated suite passed **2,349 tests / 14,302 assertions**, zero
 failures/errors/skips, exit 0. The latest frontend build and 13 JavaScript tests
 passed. Current audit retrieval failed (Composer registry timeout and npm connection

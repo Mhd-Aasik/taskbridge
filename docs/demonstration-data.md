@@ -77,7 +77,7 @@ normal confirmation and blind-release rules. No money is transferred.
 Initial setup produces four proposals, three assignments, nine tasks, six
 deliverable versions, five reviews, six participant messages, two payment reports,
 one receipt acknowledgment, four released ratings, one dispute, 48 activity events
-and 37 notifications. These are fixture initial counts, not permanent application
+and notifications. These are fixture initial counts, not permanent application
 statistics; subsequent interaction can change read state and permitted workflow.
 
 Every new project has an original 1200 × 760 WebP cover from
