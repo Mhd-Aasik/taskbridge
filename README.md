@@ -6,7 +6,8 @@ The checked-in locks currently resolve Laravel **12.70.0**, Livewire **4.4.7**, 
 
 ## Start here
 
-- [Installation and safe updates](docs/installation.md): Windows PowerShell, locked dependencies, MySQL, reference seeders, tests and the first-Admin gap.
+- [Installation and safe updates](docs/installation.md): Windows PowerShell, locked dependencies, MySQL, reference seeders, tests and supported first-Admin bootstrap.
+- [Local demonstration](docs/demonstration-data.md): explicit, guarded setup using existing participants, original covers and normal workflows.
 - [User guide](docs/user-guide.md): actual Client, Freelancer and Admin pages and restrictions.
 - [Backup and recovery](docs/backup-recovery.md): consistent backups and disposable restoration only.
 - [Hosting](docs/hosting.md): web root, storage, secrets, SMTP, deployment and runtime requirements.
@@ -18,4 +19,4 @@ Use `composer install` and `npm.cmd ci`, not dependency updates, for reproductio
 
 After fresh migrations, an authorized operator can run **`php artisan taskbridge:bootstrap-admin`** from an interactive terminal. It creates only the first Admin, refuses any existing Admin, never promotes an account, and prompts for a hidden password and explicit confirmation. Registration offers Client and Freelancer only; reference seeders create no accounts. See [first-Admin setup](docs/installation.md#first-administrator) and [bootstrap safeguards](docs/admin-bootstrap.md).
 
-The final complete SQLite regression result is **2,330 tests / 13,994 assertions**, zero failures, errors or skips, on `fix/admin-bootstrap` after documentation checkpoint `46a004d`. Bootstrap tests include normal Admin login/dashboard access, and three genuine MySQL contention rounds produced exactly one first Admin each. See the [verification record](docs/handoff-verification.md#bootstrap-and-final-automated-verification). Local SMTP capture verified serialization and links, not external delivery. No screenshots or browser checks are implied.
+The latest complete SQLite regression result is **2,349 tests / 14,302 assertions**, zero failures, errors or skips, on `fix/final-completion`. The frontend build and 13 JavaScript tests passed. Current dependency-audit requests failed at the registries; historical clean audits are not a current security guarantee. See [final local verification](docs/final-completion.md) for isolated browser coverage, preserved original data, local demo setup and remaining environment checks. Local SMTP capture verified serialization and links, not external delivery or mailbox ownership.

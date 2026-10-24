@@ -1,5 +1,11 @@
 # Workflow audit and hardening
 
+This is the historical hardening audit. Later [final local completion](final-completion.md)
+supersedes its suite totals, starter-home/preload findings, local demo preservation
+baseline and browser status only where new evidence is explicitly recorded.
+Scoped genuine MySQL and email verification are linked from the documentation
+index; the deferred product features below remain outside implemented scope.
+
 ## Scope and evidence
 
 Activity history was reviewed against its recorded source hashes and passing SQLite result (2,291 tests / 13,116 assertions), then checkpointed as `69f1021` (`Add private transactional project activity history`). This audit is on `feature/workflow-hardening`. Hardening changes remain unstaged and uncommitted.

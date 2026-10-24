@@ -1,14 +1,62 @@
 # Final review checklist
 
-Bootstrap is checkpointed as **`a87ef49` — Add safe first-admin bootstrap**. Final review preparation is on **`fix/final-ui-review`**. This document replaces accumulated per-feature checklists with current evidence and an ordered plan; historical results remain in the linked feature documents and Git history.
+Bootstrap is checkpointed as **`a87ef49` — Add safe first-admin bootstrap**. Sidebar and reactive-control fixes were checkpointed on `fix/final-ui-review`; the timeout investigation is **4761ad4**. Current final work is on **`fix/final-completion`**. Historical evidence below retains its date and scope.
 
-**Browser access remains denied.** Beginning final review does not authorize a browser, another browser, preview, remote browser or browser automation. The user-reported Freelancer desktop screenshot review below is limited visual evidence; this agent has performed no browser interaction. Physical-terminal review remains pending. Eventual state-changing review requires a separate disposable database/storage and dedicated accounts: never create fixtures, suspend/reset accounts, publish work or rewrite dates in the real application database.
+**The final-completion request authorized isolated browser testing.** Earlier denials were respected at their checkpoints; they no longer describe the new explicitly authorized review. Current agent interaction used only the permitted in-app browser, a guarded disposable MySQL database/private storage, dedicated `.test` accounts and loopback server. No browser mutations used the real application database. Physical-terminal bootstrap and full device/accessibility sign-off remain pending.
+
+## Current evidence — 24 October 2026
+
+The final complete isolated suite passed **2,349 tests / 14,302 assertions**, zero
+failures/errors/skips, exit 0. The latest frontend build and 13 JavaScript tests
+passed. Current audit retrieval failed (Composer registry timeout and npm connection
+reset, including a retry); earlier zero findings below are historical. See
+[final completion](final-completion.md) for backup, intended real demo changes,
+preservation, code fixes and exact automated scope.
+
+Actual isolated browser evidence so far:
+
+- Client role-aware login and logout; dashboard at desktop System/OS Dark and
+  390px Light, open mobile menu and working project navigation.
+- At 320px Light: readable draft fields without horizontal page overflow,
+  retained invalid-budget input/error, actual cover upload, draft save/reload,
+  owner review and confirmed publication with working cancellation focus.
+- At 768px Light: account settings upload/preview/save/replacement/removal and
+  refreshed initials/avatar; the discovered post-save enabled-button defect was
+  fixed and replacement/removal states were exercised again successfully.
+- Public TaskBridge home at desktop Light and its working login destination;
+  Freelancer login, dashboard Light/Dark, discovery and covered project detail,
+  actual proposal submission and read-only persisted offer. At 390px Dark,
+  assigned-project/planning/version-history pages, task status update (1/3 to 2/3
+  completed), private version download and open mobile menu worked without page
+  overflow on the measured planning view.
+- Disposable Admin login, desktop dashboard Light/Dark, account list, 390px Light
+  categories and scoped dispute list/detail were reviewed. System followed the
+  current OS Dark preference and persisted on reload; live OS-preference changes
+  remain untested. The real database had no Admin; browser fixtures do not
+  establish a real Admin login. Some navigation waits expired before the eventual
+  destination appeared; no application cause was confirmed.
+- Light persisted across refresh, Instrument Sans was loaded locally and checked
+  pages had no CSS style-preload tags. A single keyboard Tab/focus check passed;
+  this does not establish full keyboard, screen-reader or touch approval.
+
+Browser evidence files remain local under `storage/logs/final-screenshots`; they
+are not fabricated or committed private uploads. The full ordered checklist below
+describes what must be exercised beyond these specific observations. Mark neither
+all roles/themes nor whole workflows passed from a representative screenshot.
+
+The supplied later preload evidence identifies `/build/assets/app-*.css`; the
+redundant hints were reproduced and removed without suppressing console messages.
+The Chrome `injection-topics.js` CSP error is user-confirmed extension-origin;
+Edge `ai-drainage.js` remains unidentified. No CSP was weakened. The original
+60-second timeout remains **not reproduced; cause unconfirmed**. A preliminary
+isolated upload HTTP 500 was a corrected test-harness temporary-disk configuration
+issue, separate from the application Alpine/control findings.
 
 ## Evidence already available
 
 | Evidence | Actual coverage and limits |
 | --- | --- |
-| Latest complete suite | **2,330 tests / 13,994 assertions**, zero failures/errors/skips, exit 0. Bootstrap PHP files match recorded pre-suite hashes. HTTP/Volt rendering/policy tests are not browser, keyboard or layout approval. |
+| Earlier bootstrap complete suite | **2,330 tests / 13,994 assertions**, zero failures/errors/skips, exit 0 at that checkpoint; superseded by the current full suite above. HTTP/Volt tests are not browser approval. |
 | Bootstrap | **16 tests / 81 assertions**; validation, hashing, optional verification, login/Admin dashboard, cancellation/non-interactive refusal, existing-Admin refusal, protected fields and rollback. Three genuine two-process MySQL rounds each produced one first Admin and one refusal. Prompt tests simulate a terminal; physical hidden-input rendering is unreviewed. See [bootstrap](admin-bootstrap.md). |
 | Code/frontend checks | 13 JavaScript tests, repository-wide Pint, five new PHP syntax checks, whitespace, frontend build/manifest, Composer validation/platform checks passed. Locked Composer all/runtime-only and npm audits returned zero findings at that checkpoint. JavaScript tests use simulated geometry; source colour calculations do not prove rendered contrast or appearance. |
 | Local email/setup/recovery | Actual loopback SMTP capture used only `.test` recipients and exercised captured links. Isolated locked installation, migrations/reference seeds, caches, automated HTTP smoke and 35-table/file-hash restoration passed. These do not prove external delivery, production restore or browser/email-client rendering. See [email](account-email.md) and [verification](handoff-verification.md). |
@@ -39,9 +87,9 @@ For physical bootstrap review, run Artisan in a **separate temporary checkout co
 
 | Dimension | Pending checks |
 | --- | --- |
-| Desktop | Freelancer Light/Dark sidebar scrollbar, account footer and logout visibility were reviewed from screenshots only. Other-role visual checks, shorter/zoomed viewports and all-role full-page layout/interaction checks remain pending: footer reachability, one role badge, aligned cards/fields, readable text and no unexpected overflow. |
-| Mobile | Narrow phone portrait and landscape: open/close navigation, account/avatar/theme controls, dropdown/modal bounds, long content, tables/pagination, unclipped actions and no unintended horizontal scrolling. Record actual sizes. |
-| Light / Dark / System | All choices; System follows OS preference, changes while open where supported, persists across refresh/navigation/logout/login, avoids flashes. Check neutral Light surfaces/white cards/tinted inputs, slate text, teal actions, borders/errors/focus and approved Dark appearance. Source contrast calculations remain separate from rendered checks. |
+| Desktop | Current Client dashboard System/OS Dark and Freelancer/Admin Light/Dark representative views were reviewed at 1280 × 800. Full-page/short/zoomed layouts and all-role scrolling interactions remain pending. Earlier sidebar screenshot evidence remains scoped to its date. |
+| Mobile | Current 390px Client Light menu, Freelancer Dark assignment/planning/version history/menu and Admin Light categories/dispute views were reviewed; Client draft/review/publication was exercised at 320px and settings at 768px. Remaining widths/landscape, touch scrolling/dragging, all-role forms, long tables/pagination and full interaction coverage remain pending. |
+| Light / Dark / System | All three choices were selected in representative views; Light and System persistence were observed on refresh, with System following the current OS Dark preference. Live OS changes, theme flashes, every-role/page combinations and complete logout/login persistence remain pending. Source contrast calculations remain separate from rendered checks. |
 | Keyboard/assistive output | Tab/Shift+Tab order, visible focus, labelled controls, Enter/Space, dropdown Escape, modal initial focus/trap/cancel/focus return, skill/rating/status controls, mobile menu, errors/loading/success announcements and readable zoom. Attributes alone do not prove behavior. |
 | Forms/uploads | Required/boundary/type errors, retained values, separate saves, pending-upload protection, previews/cache refresh, retry/network feedback, double-submit protection and escaped text. Photos/covers: genuine JPEG/PNG/WebP ≤2 MB, ≤4096 × 4096. Deliverables: allowed content ≤10 MB, long filenames, malformed/archive/unsupported rejection. CLI PHP limits do not establish browser/proxy limits. |
 | Confirmations | Publication, acceptance, reviews, completion, payment/receipt, feedback, disputes, category/account status and notification mark-all: clear permanent effects/compared terms/target identity, cancellation without mutation, confirm/loading/retry, keyboard focus and announcements. |
@@ -92,7 +140,7 @@ Read-only preservation matched all **25 MySQL domain tables and private-file has
 
 **Extension-origin CSP error:** the normal-browser extension error remains a separate finding. Capture its exact message/source and reproduction conditions when browser review is authorized; do not attribute the confirmed application Alpine error to the extension. No CSP weakening or console suppression is part of this fix.
 
-The **earlier unused-preload warning remains unresolved without its exact resource URL**. Capture the full warning/initiator, resource type and navigation timing before deciding on a fix. Do not suppress warnings or add meaningless JavaScript. The empty Vite `app` chunk is a different issue: its redundant entry was removed, and the production manifest has one nonempty CSS entry. Neither the build nor the scoped Incognito follow-up identifies the earlier preload URL. Broader console verification remains pending.
+At this historical checkpoint the **unused-preload URL was still missing**. Later final-completion evidence identified `/build/assets/app-*.css` and reproduced redundant CSS hints; the current fix/evidence is recorded above. The empty JavaScript chunk was a separate already-corrected issue. Broader Chrome/Edge console verification remains pending; no warning suppression or meaningless JavaScript is used.
 
 **Deferred browser checks:** inspect the corrected settings controls in each role/theme and mobile Light layout; exercise no-photo/existing-photo state, choose/upload/error/cancel/save/replace/remove and repeated navigation/refresh, including loading protection and visible feedback. Check console origin with preserved logs and a fresh page separately. Mobile scrolling/menu, touch/keyboard/focus, System theme and remaining role visuals are still pending. No browser, preview or alternative automation was opened for this fix, and untested interactions are not marked passed.
 

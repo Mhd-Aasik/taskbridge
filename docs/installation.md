@@ -152,4 +152,13 @@ git diff --check
 
 Close this terminal afterward so test overrides do not leak into server/deployment commands. Fake storage stays within the disposable checkout. Run suites sequentially; shared fake-storage directories are not safe for overlapping runs. `AccountSmtpTest` starts a temporary loopback sink for `.test` addresses only; it has no relay and cleans up. Ordinary tests do not depend on a MySQL service. Real concurrency tests are separately opt-in; follow [their guarded harness](mysql-verification.md), never point them at the application database.
 
-The [handoff record](handoff-verification.md) distinguishes commands exercised now from the complete regression/build results reused from the unchanged checkpoint.
+The [handoff record](handoff-verification.md) and [latest local verification](final-completion.md) distinguish exercised commands, current automated/browser evidence and reused checkpoint results.
+
+## Optional local demonstration
+
+Fresh installation and reference seeding create no example accounts or projects.
+After a restorable backup, an authorized local operator may deliberately populate
+existing dedicated Client/Freelancer accounts using
+[`taskbridge:demo`](demonstration-data.md). It refuses production/external-mail
+configuration and tracks its eight projects privately. It is not an installation,
+update or production-seeding step and must never be used to reset history.

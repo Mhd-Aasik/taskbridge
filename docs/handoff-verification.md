@@ -56,11 +56,11 @@ Read-only final checks matched all **25 original MySQL domain tables**, account/
 
 ## Remaining setup blockers and deferred checks
 
-1. **First Admin:** no supported initial Admin provisioning/recovery mechanism exists. Fresh participant registration works, but Admin setup needs a separately reviewed implementation before handing a fresh deployment to an operator. Do not use production factories or ad hoc promotions.
+1. **First Admin (historical gap, now resolved below):** supported initial provisioning was absent at the documentation checkpoint. The later console-only bootstrap implementation below resolves provisioning, while Admin recovery remains deliberately outside its scope. Do not use production factories or ad hoc promotions.
 2. **Hosting and external mail:** provider credentials, sender/DNS/TLS, canonical HTTPS URL, proxy/cookie behavior and external delivery/inbox placement remain unconfigured/unverified. Email verification remains optional and requires no queue worker.
 3. **Operational recovery:** encrypted/off-host backup retention, real-key recovery, service cutover and recovery objectives remain pending. Only disposable local restoration was exercised.
 4. **Browser review:** mobile, keyboard, light/dark, upload/proxy limits, email-client rendering and console/preload investigation remain on [manual-review.md](manual-review.md). No browser was opened or previously denied access retried.
-5. **CI and release automation:** existing workflows target main/develop, use PHP 8.4, use `npm i`/`npm install` rather than `npm ci`, and the old lint workflow configures Flux credentials unnecessarily for the locked free package. They were inspected, not executed or rewritten. The documented Windows lockfile setup is the exercised installation path. The legacy public welcome page and the planned capabilities listed in [workflow-audit.md](workflow-audit.md) remain outside this documentation step.
+5. **CI and release automation:** existing workflows target main/develop, use PHP 8.4, use `npm i`/`npm install` rather than `npm ci`, and the old lint workflow configures Flux credentials unnecessarily for the locked free package. They were inspected, not executed or rewritten. The documented Windows lockfile setup is the exercised installation path. The legacy welcome page was outside this documentation checkpoint and is replaced in the later final-completion work; planned capabilities in [workflow-audit.md](workflow-audit.md) remain deferred.
 
 The documentation is intentionally **uncommitted and unstaged** on `docs/project-handoff`; no application setup fix was required.
 
@@ -93,4 +93,14 @@ Preliminary bootstrap failures were fixture-comparison/test-console setup proble
 
 The final read-only preservation check matched all **25 MySQL domain tables and private-file hashes**. All three original accounts remain active at access version zero; runtime sessions remain four total, two authenticated. Original `.env`/APP_KEY and cached configuration files match their captured hashes and original file set. Mail remains `log`, sessions remain database-backed, and verification remains optional. No application migration, seed or account creation was run. The marked disposable MySQL instance, credentials, worker/barrier/results files and fixture storage were shut down and removed by the existing guarded cleanup; port 33079 and its test directory no longer exist. No real session was revoked or inspected.
 
-Final scope is **13 files**, all unstaged/uncommitted: `app/Actions/Accounts/BootstrapAdmin.php`, `app/Console/Commands/BootstrapAdminCommand.php`, `tests/Feature/Auth/BootstrapAdminTest.php`, `tests/MySql/bootstrap.php`, `tests/MySql/bootstrap-worker.php`, `README.md`, and `docs/{README,admin-bootstrap,handoff-verification,hosting,installation,manual-review,user-guide}.md`. No lockfile or environment change was needed. Tracked/untracked whitespace, documentation links/anchors and PowerShell blocks passed validation. The temporary compiled-view directory and actual-SMTP test capture resources were removed/confirmed absent after the suite. Final branch is `fix/admin-bootstrap`, HEAD `46a004d`; no further commit is made in this step.
+Final scope at that stage was **13 files**: `app/Actions/Accounts/BootstrapAdmin.php`, `app/Console/Commands/BootstrapAdminCommand.php`, `tests/Feature/Auth/BootstrapAdminTest.php`, `tests/MySql/bootstrap.php`, `tests/MySql/bootstrap-worker.php`, `README.md`, and `docs/{README,admin-bootstrap,handoff-verification,hosting,installation,manual-review,user-guide}.md`. It was subsequently checkpointed as **a87ef49**. No lockfile or environment change was needed. Tracked/untracked whitespace, documentation links/anchors and PowerShell blocks passed validation. Temporary compiled views and actual-SMTP captures were removed/confirmed absent. Those preservation and audit statements describe that checkpoint, before the later authorized demo changes.
+
+## Final local completion
+
+The [24 October final-completion record](final-completion.md) is the current
+verification reference: **2,349 tests / 14,302 assertions**, zero failures/errors/
+skips, current build/JavaScript checks, the authorized demo data/account changes,
+33-table real-snapshot restoration in isolation and partial actual browser review.
+It also records current audit-network failures, rather than reusing an old clean
+audit as a new result. Existing MySQL concurrency and loopback SMTP results remain
+valid scoped evidence; they were not rerun against development records.
