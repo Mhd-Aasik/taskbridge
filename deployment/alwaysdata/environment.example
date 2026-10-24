@@ -1,0 +1,51 @@
+# Template only. Create the real file privately outside the release/public tree.
+# Replace every REPLACE value. Never copy the local installation's environment.
+APP_NAME=TaskBridge
+APP_ENV=production
+APP_KEY=REPLACE_WITH_NEW_DEPLOYMENT_KEY_GENERATED_PRIVATELY_ONCE
+APP_DEBUG=false
+APP_URL=https://REPLACE_ACCOUNT.alwaysdata.net
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+APP_TIMEZONE=UTC
+APP_MAINTENANCE_DRIVER=file
+BCRYPT_ROUNDS=12
+
+DB_CONNECTION=mysql
+DB_HOST=mysql-REPLACE_ACCOUNT.alwaysdata.net
+DB_PORT=3306
+DB_DATABASE=REPLACE_ACCOUNT_taskbridge
+DB_USERNAME=REPLACE_DATABASE_USER
+DB_PASSWORD="REPLACE_DATABASE_PASSWORD_PRIVATELY"
+# Leave DB_URL, DATABASE_URL and SESSION_CONNECTION unset.
+SESSION_DRIVER=database
+SESSION_COOKIE=taskbridge_demo_session
+SESSION_SECURE_COOKIE=true
+SESSION_HTTP_ONLY=true
+SESSION_SAME_SITE=lax
+SESSION_DOMAIN=null
+SESSION_LIFETIME=60
+CACHE_STORE=database
+CACHE_PREFIX=taskbridge_demo_
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=local
+BROADCAST_CONNECTION=log
+
+LOG_CHANNEL=daily
+LOG_LEVEL=warning
+LOG_DAILY_DAYS=3
+
+# Keep array until the sender and intended test recipient are confirmed.
+# After confirmation: MAIL_MAILER=smtp, MAIL_SCHEME=smtps, MAIL_PORT=465.
+# Host-native SMTP requires an actual mailbox/sender authorized for this account.
+MAIL_MAILER=array
+MAIL_SCHEME=smtps
+MAIL_HOST=smtp-REPLACE_ACCOUNT.alwaysdata.net
+MAIL_PORT=465
+MAIL_USERNAME=REPLACE_CONFIRMED_OWNED_MAILBOX
+MAIL_PASSWORD="REPLACE_SMTP_SECRET_PRIVATELY"
+MAIL_FROM_ADDRESS=REPLACE_CONFIRMED_OWNED_SENDER
+MAIL_FROM_NAME=TaskBridge
+# Do not set MAIL_URL unless intentionally replacing the individual SMTP settings.
+
+VITE_APP_NAME=TaskBridge

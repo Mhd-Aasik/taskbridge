@@ -22,3 +22,5 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/storage/framework/free-hosting-readiness/
+/storage/framework/alwaysdata-release-*/

@@ -2,6 +2,11 @@
 
 This is preparation, not a deployment record. No hosting account, running service, external mail provider or public site was changed during handoff. Use [installation](installation.md) for dependency requirements and [backup/recovery](backup-recovery.md) before any release.
 
+For the zero-cost university demonstration target, use the specific
+[Alwaysdata Free runbook](alwaysdata-free.md) and its
+[readiness evidence](free-hosting-verification.md). Those records distinguish
+measured local preparation from pending host, HTTPS and external-email checks.
+
 ## Web root, uploads and secrets
 
 Point the server document root to **`<release>/public`**, never the repository root. Serve Laravel through `public/index.php` with normal front-controller rewriting. Deny dotfiles, environment files, source directories, logs and backups at the web server. `vendor`, `storage`, `.git` and `bootstrap` must not be directly web-accessible. The public `/up` health route checks framework boot; it is not a complete database/private-storage/SMTP readiness probe.

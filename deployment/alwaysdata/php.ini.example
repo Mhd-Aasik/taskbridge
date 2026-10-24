@@ -1,0 +1,12 @@
+; Apply to the intended Alwaysdata account/site, then verify effective web settings.
+; Account RAM is shared: memory_limit is not a reserved allocation.
+memory_limit = 128M
+upload_max_filesize = 10M
+post_max_size = 16M
+max_execution_time = 60
+max_input_time = 60
+display_errors = Off
+log_errors = On
+expose_php = Off
+date.timezone = UTC
+; Keep the host's normal OPcache configuration; do not run extra PHP versions.
