@@ -15,6 +15,7 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\ValidationException;
 
@@ -33,6 +34,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // The blocking stylesheet already loads in the head. Repeated preload hints
+        // survive Livewire navigation even when its stylesheet is already present.
+        Vite::usePreloadTagAttributes(fn ($source, $url) => str_ends_with(parse_url($url, PHP_URL_PATH) ?? '', '.css') ? false : []);
         ResetPassword::createUrlUsing(fn ($user, $token) => app(AccountEmailLinks::class)->reset($user, $token));
         ResetPassword::toMailUsing(fn ($user, $token) => app(AccountEmailLinks::class)->message('reset', app(AccountEmailLinks::class)->reset($user, $token)));
         VerifyEmail::createUrlUsing(fn ($user) => app(AccountEmailLinks::class)->verify($user));
