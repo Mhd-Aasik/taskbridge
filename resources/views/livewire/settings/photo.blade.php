@@ -161,7 +161,9 @@ new class extends Component {
         <p x-show="uploading" x-cloak role="status" class="text-sm text-slate-700 dark:text-slate-200" x-text="'Uploading photo… ' + progress + '%'"></p>
         <p wire:loading wire:target="savePhoto,removePhoto" role="status" class="text-sm text-slate-700 dark:text-slate-200">Updating profile photo…</p>
 
-        <div class="flex flex-wrap items-center gap-3">
+        {{-- Replace controls when their saved/preview state changes so request cleanup
+             cannot restore an old disabled state over the new server-derived one. --}}
+        <div wire:key="photo-controls-{{ (int) $previewReady }}-{{ (int) $hasSavedPhoto }}" class="flex flex-wrap items-center gap-3">
             <flux:button type="submit" variant="primary" :disabled="! $previewReady" x-bind:disabled="uploading || ! $wire.previewReady" wire:loading.attr="disabled" wire:target="photo,savePhoto,removePhoto">Save photo</flux:button>
             <flux:button type="button" wire:click="removePhoto" :disabled="! $hasSavedPhoto" x-bind:disabled="uploading || ! $wire.hasSavedPhoto" wire:loading.attr="disabled" wire:target="photo,savePhoto,removePhoto">Remove photo</flux:button>
         </div>

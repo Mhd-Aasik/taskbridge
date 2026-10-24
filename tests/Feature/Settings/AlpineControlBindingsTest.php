@@ -113,6 +113,7 @@ class AlpineControlBindingsTest extends TestCase
         $firstPath = $user->fresh()->avatar_path;
         $states[] = ['wire' => $component->snapshot['data']];
         [, $savedButtons] = $this->photoControls($component->html());
+        $this->assertTrue($savedButtons['save']->hasAttribute('disabled'));
         $this->assertFalse($savedButtons['remove']->hasAttribute('disabled'));
         $this->assertStringNotContainsString($firstPath, $component->html());
         $this->assertStringNotContainsString($firstPath, json_encode($component->snapshot, JSON_THROW_ON_ERROR));
@@ -137,6 +138,7 @@ class AlpineControlBindingsTest extends TestCase
         $component->refresh()->assertSet('hasSavedPhoto', false);
         $states[] = ['wire' => $component->snapshot['data']];
         [, $removedButtons] = $this->photoControls($component->html());
+        $this->assertTrue($removedButtons['save']->hasAttribute('disabled'));
         $this->assertTrue($removedButtons['remove']->hasAttribute('disabled'));
         $this->assertNull($user->fresh()->avatar_path);
 

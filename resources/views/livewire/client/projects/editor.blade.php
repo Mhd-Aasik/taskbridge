@@ -248,7 +248,7 @@ new #[Layout('components.layouts.app'), Title('Project draft')] class extends Co
                 </div>
             </x-dashboard.panel>
         </fieldset>
-        <div class="flex flex-wrap items-center gap-4">
+        <div wire:key="project-actions-{{ (int) $hasActiveCategories }}" class="flex flex-wrap items-center gap-4">
             <flux:button type="submit" variant="primary" wire:loading.attr="disabled" wire:target="save,cover" x-bind:disabled="uploading || ! $wire.hasActiveCategories" :disabled="! $hasActiveCategories">
                 <span wire:loading.remove wire:target="save">{{ $projectId ? 'Save changes' : 'Save draft' }}</span>
                 <span wire:loading wire:target="save" role="status">Saving draft...</span>
