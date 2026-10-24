@@ -83,7 +83,7 @@ kept with the protected backup, not committed private data.
 | Existing JavaScript tests | **13 passed** |
 | Frontend build | Vite 6.4.4 passed; one nonempty CSS entry `assets/app-CgO014P4.css` and bundled Instrument Sans; no empty JavaScript entry |
 | Composer validation/platform | Strict validation and installed locked platform requirements passed on PHP 8.2.12 |
-| Current dependency audits | **Unavailable**: Composer Packagist SSL/connection timeout (exit 100), npm registry `ECONNRESET` (exit 1), including one retry. Historical zero-finding audits remain historical; no current clean-audit claim |
+| Current dependency audits | **Incomplete**: Composer Packagist SSL/connection timeout (exit 100); latest explicitly authorized npm registry audit returned `ECONNRESET` (exit 1), without a vulnerability report. Historical zero-finding audits remain historical; no current clean-audit claim |
 
 Repository-wide Pint, relevant PHP/compiled Blade syntax, whitespace and manifest/
 local documentation checks passed: nine PHP files, four compiled Blade templates,
@@ -219,10 +219,37 @@ application database. Recovery helper scripts remain excluded from commits and
 are removed after verification; sanitized evidence and input hashes remain ignored
 under `storage/logs`.
 
-Current audits remain incomplete: a network-enabled Composer retry ended with
+At this recovery checkpoint, audits remained incomplete: a network-enabled Composer retry ended with
 Packagist SSL/connection timeouts (exit 100). The sandbox npm attempt failed DNS
 resolution (exit 1); automatic approval review rejected its network-enabled retry
 because it would disclose dependency metadata to the npm registry without specific
 authorization. That rejected action was not retried or bypassed. No current clean
 audit is claimed. External SMTP, hosting/HTTPS, production recovery and the
 remaining manual-review coverage retain their separate pending status.
+
+## Explicitly authorized npm audit follow-up — 24 October 2026
+
+The user subsequently authorized sending this project's required dependency
+metadata to `https://registry.npmjs.org`, resolving the earlier approval limitation.
+The following read-only command was run with network access:
+
+```powershell
+npm.cmd audit --registry=https://registry.npmjs.org --json --fetch-retries=0 --fetch-timeout=30000
+```
+
+Actual result: **exit 1**, `read ECONNRESET` from
+`https://registry.npmjs.org/-/npm/v1/security/audits/quick`. The saved output contains
+an audit-endpoint error, not a completed vulnerability report. No vulnerability
+counts, severities or affected packages were returned; this establishes neither
+zero vulnerabilities nor confirmed findings. Impact assessment and package-specific
+fix proposals require a successful report. The remaining next step is to repeat
+the same metadata-only audit when registry connectivity is working.
+
+Only npm's audit operation was used; no source-file, credential, environment,
+database or private-upload transfer was performed. No dependency installation,
+lockfile change or `npm audit fix` command was run. Ignored local evidence is
+`storage/logs/authorized-npm-audit.json` and
+`storage/logs/authorized-npm-audit.exit.txt`. Composer was not rerun in this follow-up
+and remains **incomplete**, with its latest actual result still exit 100 due to
+registry SSL/connection timeouts. Prior successful tests/builds are reused because
+only documentation changed.

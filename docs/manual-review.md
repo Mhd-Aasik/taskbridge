@@ -12,15 +12,16 @@ unchanged read-only demo rerun. The original application remains healthy. Existi
 isolated browser observations below are reused; recovery did not repeat browser
 mutations. Fresh focused SQLite checks passed **49 tests / 386 assertions**, and
 the build, 13 JavaScript tests, Pint, syntax and Composer/platform checks passed.
-Current audits remain incomplete: Composer timed out again, and
-automatic approval review blocked the network-enabled npm retry because dependency
-metadata would be sent to the registry without specific authorization. See the
-[recovery verification](final-completion.md#interrupted-session-recovery-verification--24-october-2026).
+Current audits remain incomplete: Composer timed out again. After the user
+explicitly authorized npm dependency-metadata transfer, the network-enabled audit
+ran and failed with `read ECONNRESET`, exit 1, without a vulnerability report. The
+earlier approval limitation is resolved; registry connectivity remains the blocker.
+See the [authorized audit result](final-completion.md#explicitly-authorized-npm-audit-follow-up--24-october-2026).
 
 The final complete isolated suite passed **2,349 tests / 14,302 assertions**, zero
 failures/errors/skips, exit 0. The latest frontend build and 13 JavaScript tests
-passed. Current audit retrieval failed (Composer registry timeout and npm connection
-reset, including a retry); earlier zero findings below are historical. See
+passed. Current audit retrieval failed (Composer registry timeout and the explicitly
+authorized npm audit's connection reset); earlier zero findings below are historical. See
 [final completion](final-completion.md) for backup, intended real demo changes,
 preservation, code fixes and exact automated scope.
 
