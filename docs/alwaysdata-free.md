@@ -315,7 +315,9 @@ in [the readiness verification record](free-hosting-verification.md).
 ## Continuation for the existing taskbridge-aasik account
 
 Registration is complete according to the owner. Do not register another account.
-The following are concrete proposed values, **pending panel confirmation**:
+SSH identity and the database host below are now confirmed. Site paths and the
+canonical application origin remain prepared deployment targets, pending site
+configuration and real HTTPS verification:
 
 | Setting | Prepared value |
 | --- | --- |
@@ -334,14 +336,18 @@ The local dedicated Ed25519 key is outside Git at
 may be installed on the host. Its public fingerprint is
 `SHA256:Uyq+C/9wEGQxuibb9wV6z7KvciVmJG/zAYBuCm/8DiE`.
 The automation key has no passphrase; the private file has restricted explicit
-Windows ACLs for the owner, Administrators and SYSTEM. It has not been installed
-on the host. No existing key or global SSH configuration was overwritten.
+Windows ACLs for the owner, Administrators and SYSTEM. The owner subsequently
+installed the public key; fingerprint-verified SSH authentication has now succeeded.
+No existing key or global SSH configuration was overwritten.
 The separate client config `C:\Users\ab\.ssh\taskbridge-alwaysdata.config`
 selects only this key, refuses unknown host keys, disables agent forwarding and
 password fallback, and bounds connection attempts. Invoke it with
 `ssh -F C:/Users/ab/.ssh/taskbridge-alwaysdata.config taskbridge-alwaysdata`.
-It intentionally cannot connect until the panel fingerprint is verified and
-the corresponding server key is pinned in its dedicated known-hosts file.
+The server ED25519 fingerprint was compared with the authenticated panel and
+pinned in its dedicated known-hosts file:
+`SHA256:5i/vJYokzNsnXAeHkwzEm+3kxPQWwsRzwXFPQ7oOvNI`.
+This is the **server** fingerprint; the different fingerprint above identifies
+the local **client** key. The normal strict client configuration connects successfully.
 
 Sign in privately to the existing [administration panel](https://admin.alwaysdata.com).
 Confirm the selected account and its Free plan, quota usage/remaining capacity,
@@ -402,7 +408,7 @@ performance_schema harness at MariaDB. Delete only this identified disposable
 database/user/directory after reviewing the outcome and confirming identities.
 
 This script has passed syntax/format and refusal checks locally. **Its MariaDB
-execution and all host observations remain pending authenticated access.** It
+execution remains pending the approved release transfer and private scoped login.** It
 does not establish broad workflow/concurrency compatibility by itself.
 
 For the eventual production database, set `SESSION_DRIVER=database` and keep
@@ -418,3 +424,51 @@ compatibility and configuration verification. Preserve the same persistent key
 and private storage on subsequent updates. The backup/rollback procedures above
 apply to these concrete paths; confirm the protected off-host destination before
 cutover. No actual external email or public HTTPS workflow has been verified.
+
+## Authenticated host checkpoint — 25 October 2026
+
+The existing account is confirmed as **Free, EUR 0, 1 GB disk, 256 MB RAM,
+0.25 CPU**. The panel's consumption graphs returned N/A and `quota -s` supplied
+no numeric report. Before a release transfer, SSH measured **48 KiB** under the
+account home (including account files/mail, excluding the off-host backup mount),
+and the database list was empty. This establishes a large margin for the proposed
+roughly 60 MiB probe release; it is not a provider-generated remaining-quota figure.
+
+The panel selects PHP **8.4** with an empty custom ini; SSH runs **8.4.27** using
+`/home/taskbridge-aasik/admin/config/php/php.ini`. All 19 extensions checked by the
+CLI preflight, including GD/JPEG/PNG/WebP, PDO MySQL and zip, are native and present.
+Actual CLI settings are `memory_limit=256M`, upload/post limits `256M`, execution
+limit `0` and input limit `-1`. Home mode is `1770`, admin `0755`, admin/tmp `0770`.
+The conservative deployment ini remains prepared, not applied. Web-SAPI limits,
+worker memory/concurrency and external proxy/cookie behavior remain separate
+deployment checks; CLI findings must not be substituted for them.
+
+The panel reports MariaDB **11.8**; the database protocol handshake reports
+**11.8.9-MariaDB**. A credential-free OpenSSL MySQL STARTTLS probe verified the
+certificate chain and `mysql-taskbridge-aasik.alwaysdata.net` hostname with system
+trust roots: TLS 1.3 / TLS_AES_256_GCM_SHA384, verification OK. No TLS protection
+was disabled. Database credentials must still be supplied privately for SQL checks.
+
+Created only the new empty database
+`taskbridge-aasik_tbprobe_20261025_b4e912` (panel object 499030), annotated as
+disposable qualification. It initially grants no user rights. The prepared new
+user `taskbridge-aasik_tbp_b4e912` is restricted to this database and requires SSL;
+its creation/password submission remains the owner's private step. The protected
+outside-Git environment `C:\Users\ab\.ssh\taskbridge-probe-20261025-b4e912.env`
+contains a new temporary key and the password placeholder to replace privately.
+It uses the system CA bundle and array mail. Do not copy the running local `.env`.
+
+The panel also contains the existing mailbox `taskbridge-aasik@alwaysdata.net`
+and lists `smtp-taskbridge-aasik.alwaysdata.net`. This provides a concrete sender
+candidate without buying a domain. Sender authorization, private mailbox/SMTP
+credentials and the intended consenting recipient must be confirmed before mail
+is enabled. No mailbox settings or external mail have been changed.
+
+The release-transfer request was stopped by automatic approval review, which
+requires explicit approval for the application/dependency payload and destination.
+The ready archive is 9,524,926 bytes, excludes the local environment/database/
+uploads, and targets only the non-public
+`/home/taskbridge-aasik/taskbridge-probes/20261025-b4e912` directory. No release
+archive or probe environment has been uploaded. Actual application host preflight
+and guarded MariaDB migration/workflow qualification remain pending that approval
+and the private scoped database password. Existing public sites are untouched.

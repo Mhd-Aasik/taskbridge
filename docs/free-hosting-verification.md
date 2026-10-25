@@ -287,3 +287,105 @@ subsequent `ls-remote` confirmed both refs at
 was used. This publication includes the three earlier readiness commits. This
 documentation follow-up records that observed result; host/mail completion gates
 are unchanged.
+
+## Authenticated host and local-runtime follow-up — 25 October 2026
+
+Continued clean `chore/free-hosting-readiness` from **6572116**, without repeating
+the successful unchanged npm/Composer audits, release build or heavy suite.
+
+The owner installed the dedicated public key. The authenticated Alwaysdata panel
+confirmed account/user `taskbridge-aasik`, SSH host
+`ssh-taskbridge-aasik.alwaysdata.net` and server ED25519 fingerprint
+`SHA256:5i/vJYokzNsnXAeHkwzEm+3kxPQWwsRzwXFPQ7oOvNI`. The network handshake
+matched exactly before key authentication, and the key was pinned in the separate
+known-hosts file. SSH authentication and subsequent normal strict-config commands
+succeeded. Windows `ssh-keyscan` failed on its unsupported hybrid KEX method;
+the standard SSH client completed a secure curve25519 handshake instead. No host
+key/certificate verification was disabled and no unverified key was accepted.
+
+The panel confirms **Free / EUR 0 / 1 GB disk / 256 MB RAM / 0.25 CPU**. Usage
+graphs displayed N/A; the host quota command returned no numeric remaining-quota
+report. Before resource preparation, the home tree measured **48 KiB** and the
+database list was empty, leaving a large measured margin within the confirmed
+plan capacity. This is an accounting estimate, not a live provider quota counter.
+
+Actual native CLI runtime: **PHP 8.4.27**, all 19 required extensions present,
+GD JPEG/PNG/WebP supported, memory **256M**, upload/post **256M**, execution limit
+**0**, input limit **-1**. The loaded ini is the account's managed PHP ini; the
+panel selects the 8.4 family and has no custom overrides. Home/admin/admin-tmp
+permissions are **1770 / 0755 / 0770**. Web-SAPI effective limits, worker RSS,
+concurrency and external HTTPS/proxy behavior remain unverified deployment checks.
+No account PHP setting was changed. Evidence is in ignored
+`storage/logs/hosting-qualification-runtime-{initial,complete}.txt`.
+
+The panel reports MariaDB **11.8**; an unauthenticated protocol handshake obtained
+the actual server string **11.8.9-MariaDB**. This establishes server identity/version,
+not successful SQL qualification. A credential-free MySQL STARTTLS check verified
+the server certificate chain and hostname with system roots: **TLS 1.3,
+TLS_AES_256_GCM_SHA384, verification OK**, exit 0. Evidence:
+`storage/logs/hosting-qualification-database-tls.txt`.
+
+Created only the uniquely identified empty database
+**taskbridge-aasik_tbprobe_20261025_b4e912** (panel object 499030), annotation
+`Disposable TaskBridge qualification 20261025-b4e912. No production data.` It has
+zero assigned users initially. A new SSL-required user form is prepared solely
+for this database; private password entry/submission remains the owner's step.
+No unrelated database/user/site was modified and no paid service was activated.
+The outside-Git probe environment has a fresh temporary encryption key, a password
+placeholder and restricted Windows ACLs. Its contents were not displayed.
+
+### Local dependency alignment and HTTP recovery
+
+Ran **composer install --prefer-dist --no-interaction --no-progress** from the
+committed lockfile, including local dev dependencies. Actual result: **exit 0;
+zero installs, one update, zero removals**, Livewire **4.4.7 -> 4.4.8**, followed
+by successful optimized autoload/package discovery. The lockfile hash did not
+change. Local installed metadata, composer.lock and the retained release now all
+report **4.4.8**. No unrestricted update or new audit was run. Evidence:
+`storage/logs/hosting-qualification-composer-install.*`.
+
+Focused authentication/profile/photo tests passed **52 tests / 360 assertions**,
+exit 0, in 268.47 seconds, using the repository's isolated SQLite test configuration
+and array mail/session/cache. These do not substitute for MariaDB checks. Evidence:
+`storage/logs/hosting-qualification-local-regression.*`.
+
+Before restarting, the original listener established TCP but returned zero bytes
+for `/up` and `/favicon.ico`: HTTP 000 / curl exit 28 after eight seconds each.
+Existing server diagnostics show several historical 60-second timeouts at different
+autoload locations. A short-lived comparison server with the same application
+returned `/up` **200 in 1.650036 s** and favicon **200 in 0.006809 s**. That new
+diagnostic process was then stopped by its exact PID.
+
+Verified the original chain: artisan supervisor **13884**, command wrapper **8232**,
+and listener **12156**, with the child command pointing to this TaskBridge router.
+Only those identified processes were stopped; the user's parent terminal and
+unrelated processes were preserved. After confirming the port was free, started
+a hidden replacement bound only to **127.0.0.1:8000**, with separate protected log
+files. Replacement supervisor/wrapper/listener are **20212 / 10828 / 9200**.
+Actual post-start checks: `/up` **200 in 0.884635 s**, favicon **200 in 0.004209 s**,
+curl exit 0 for both. No execution limit was raised. The original low-level stall
+cause remains unproven; Livewire is not asserted as its cause. See ignored
+`hosting-qualification-{server-comparison,restart-complete,local-server-processes}.txt/json`
+and local server logs under `storage/logs`.
+
+All **17 protected files** still match their saved hashes after install, tests and
+restart, including `.env`, demo manifest and durable private files. No local
+database migration, account/password modification or private-data transfer occurred.
+The original local application key remains unchanged.
+
+### Qualification transfer gate
+
+Prepared a **9,524,926-byte** archive of the retained verified release, excluding
+environment files, local database/private uploads, Git metadata, node_modules,
+tests, secret config caches and public storage links. Automatic approval review
+rejected its transfer because explicit approval for this application/dependency
+payload and destination was not established. The action was not bypassed; no
+release archive or probe environment was sent. The owner has been asked to approve
+the exact transfer to the private probe directory and privately complete the scoped
+database login. The guarded MariaDB migrations/constraints/transactions/workflow
+probe has **not run** and remains incomplete, as does application host preflight.
+
+The panel exposes an existing `taskbridge-aasik@alwaysdata.net` mailbox and SMTP
+host, providing an owned-account sender candidate. Credentials, sender approval,
+test recipient and real delivery remain pending. No SMTP login or message send,
+public TaskBridge activation or HTTPS application verification was performed.
