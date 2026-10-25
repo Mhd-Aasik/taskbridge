@@ -2,9 +2,15 @@
 
 Later deployment-readiness work on 25 October is recorded separately in
 [free-hosting verification](free-hosting-verification.md): npm and Composer audits
-now succeeded, Livewire is patched to 4.4.8 and a low-memory photo-processing guard
+now succeeded, the lockfile/release have Livewire 4.4.8 and a low-memory photo-processing guard
 was added. Results below retain their original checkpoint/date; they do not imply
 Alwaysdata, MariaDB, hosted HTTPS or external-email verification.
+
+The continuation in that record covers the existing `taskbridge-aasik` account,
+dedicated SSH preparation, actual local timeout diagnostics and authorized GitHub
+publication. Local vendor still contains Livewire 4.4.7; authenticated host checks
+and public/mail activation remain pending. Credentials and private files are not
+part of the readiness publication.
 
 Work continued on `fix/final-completion` after checkpoint **4761ad4**, which records
 the read-only intermittent Livewire delay investigation. This record supersedes

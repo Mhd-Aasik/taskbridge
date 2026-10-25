@@ -10,6 +10,7 @@ if (PHP_SAPI !== 'cli') {
 }
 
 $offline = in_array('--offline', $argv, true);
+$mailDisabled = in_array('--mail-disabled', $argv, true);
 $root = dirname(__DIR__, 2);
 $failures = [];
 $check = function (bool $ok, string $label) use (&$failures): void {
@@ -51,7 +52,9 @@ try {
         $check(is_file($file) && filesize($file) > 0, 'nonempty manifest asset');
     }
     $check(! is_file($root.'/public/hot') && ! file_exists($root.'/public/storage'), 'no development hot file or public storage link');
-    if (! $offline) {
+    if (! $offline && $mailDisabled) {
+        $check(config('mail.default') === 'array', 'external email disabled pending sender and recipient approval');
+    } elseif (! $offline) {
         $check(config('mail.default') === 'smtp', 'SMTP configured after sender confirmation');
         $sender = (string) config('mail.from.address');
         $check(filter_var($sender, FILTER_VALIDATE_EMAIL) !== false && ! str_contains(strtolower($sender), 'replace'), 'confirmed SMTP sender configured (ownership requires separate confirmation)');

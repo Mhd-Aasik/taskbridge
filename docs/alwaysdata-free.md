@@ -1,7 +1,8 @@
 # Alwaysdata Free university demonstration
 
-Readiness work only, checked 25 October 2026. No account, mailbox, DNS record,
-remote database or public website was created or changed. Do not upload the local
+Readiness work only, checked 25 October 2026. The owner subsequently reported the
+existing account `taskbridge-aasik`; see the continuation below. No mailbox, DNS
+record, remote database or public website was created or changed by this work. Do not upload the local
 `.env`, database, recovery backup, demo manifest or private uploads. This guide
 extends [hosting](hosting.md), [email](account-email.md) and
 [backup/recovery](backup-recovery.md); it does not authorize deployment.
@@ -294,8 +295,9 @@ restore/cutover. Maintain maintenance until verified; resume only the intended s
 
 ## Inputs and deployment checks still needed
 
-- Alwaysdata account name, confirmation of Free/non-profit eligibility and supplied
-  HTTPS address; SSH/SFTP access via a private credential/key mechanism.
+- Panel confirmation of Free/non-profit eligibility, remaining quota and the
+  supplied HTTPS address for the reported account `taskbridge-aasik`; SSH/SFTP
+  access via a private credential/key mechanism.
 - Exact PHP patch, web-SAPI GD/WebP/zip/extensions, effective upload limits and
   account resource usage; actual proxy/scheme behavior.
 - New MariaDB database/user, exact server version and permitted privileges, with
@@ -309,3 +311,110 @@ restore/cutover. Maintain maintenance until verified; resume only the intended s
 
 Measured preparation evidence and outstanding compatibility results are recorded
 in [the readiness verification record](free-hosting-verification.md).
+
+## Continuation for the existing taskbridge-aasik account
+
+Registration is complete according to the owner. Do not register another account.
+The following are concrete proposed values, **pending panel confirmation**:
+
+| Setting | Prepared value |
+| --- | --- |
+| SSH host / port | `ssh-taskbridge-aasik.alwaysdata.net:22` |
+| SSH user | `taskbridge-aasik` |
+| Canonical origin | `https://taskbridge-aasik.alwaysdata.net` |
+| Site root | `/home/taskbridge-aasik/taskbridge/current/public` |
+| Versioned releases | `/home/taskbridge-aasik/taskbridge/releases/COMMIT` |
+| Persistent environment | `/home/taskbridge-aasik/taskbridge/shared/.env` |
+| Persistent private files | `/home/taskbridge-aasik/taskbridge/shared/storage/app/private` |
+| Database host | `mysql-taskbridge-aasik.alwaysdata.net:3306` |
+| Mail transport before approval | `MAIL_MAILER=array` |
+
+The local dedicated Ed25519 key is outside Git at
+`C:\Users\ab\.ssh\taskbridge-alwaysdata-20261025_ed25519`; only the `.pub` file
+may be installed on the host. Its public fingerprint is
+`SHA256:Uyq+C/9wEGQxuibb9wV6z7KvciVmJG/zAYBuCm/8DiE`.
+The automation key has no passphrase; the private file has restricted explicit
+Windows ACLs for the owner, Administrators and SYSTEM. It has not been installed
+on the host. No existing key or global SSH configuration was overwritten.
+The separate client config `C:\Users\ab\.ssh\taskbridge-alwaysdata.config`
+selects only this key, refuses unknown host keys, disables agent forwarding and
+password fallback, and bounds connection attempts. Invoke it with
+`ssh -F C:/Users/ab/.ssh/taskbridge-alwaysdata.config taskbridge-alwaysdata`.
+It intentionally cannot connect until the panel fingerprint is verified and
+the corresponding server key is pinned in its dedicated known-hosts file.
+
+Sign in privately to the existing [administration panel](https://admin.alwaysdata.com).
+Confirm the selected account and its Free plan, quota usage/remaining capacity,
+SSH user/host and server fingerprints under Remote access > SSH/SFTP.
+[Alwaysdata documents that fingerprint location](https://help.alwaysdata.com/en/docs/web-hosting/remote-access/ssh/).
+Compare the panel's SHA256 fingerprint against the SSH server key before trusting
+it; a network `ssh-keyscan` result alone is not verification. Install only the
+dedicated public key for the confirmed SSH user. Never paste a password, OTP,
+private key or database/SMTP secret into documentation or chat.
+
+For the one private access handoff: sign in, select `taskbridge-aasik`, open
+Remote Access > SSH/SFTP > **SSH Keys** (key icon) for the confirmed user, select
+**Add a SSH Key**, and paste the complete single line from the local `.pub` file.
+Save that public key only. These are the host's
+[documented public-key installation steps](https://help.alwaysdata.com/en/docs/web-hosting/remote-access/ssh/use-keys/).
+Leave the panel signed in so its account/quota and server fingerprint can be
+verified before any SSH authentication or resource creation.
+
+After access and quota are confirmed, copy the curated release into a unique
+**non-public probe directory**, without a configured public site. Run
+`php deployment/alwaysdata/inspect-runtime.php` there. This read-only script
+reports native extensions, CLI limits and directory permissions without booting
+the app or reading its environment. Also inspect the account's selected web PHP
+version/ini settings in the panel; CLI observations do not establish web limits.
+Use the host's CLI PHP selection for subsequent commands and compare it with the
+web version. No web diagnostic route or phpinfo page should be published.
+
+Only then create a uniquely named database/user limited to this disposable probe,
+using the exact name permitted by the panel, such as
+`taskbridge-aasik_tbprobe_20261025_a1b2c3`. The required naming pattern ends in
+`_tbprobe_YYYYMMDD_HEX6`. This example is not an allocated database. Store its
+credentials and an ephemeral probe encryption key privately in the isolated
+directory, with `APP_ENV=production`, `APP_DEBUG=false`, the expected HTTPS origin,
+`DB_CONNECTION=mysql`, array mail/cache/sessions and sync queue. Do not reuse the
+local or future production database or encryption key. Remove database URL
+overrides and stale config caches. Set `umask 077`, create
+`.taskbridge-disposable` containing **only that exact database name**, then run:
+
+```sh
+# Replace the example with the exact new, empty database confirmed in the panel.
+timeout 90s php deployment/alwaysdata/mariadb-compatibility.php --disposable=taskbridge-aasik_tbprobe_20261025_a1b2c3
+```
+
+The probe refuses a missing/mismatched marker, wrong database, non-MariaDB engine,
+unsupported server family or nonempty database before running migrations. It
+never creates/drops a database or calls migrate:fresh/rollback. It runs the
+checked-in migrations, checks InnoDB, enforces actual rating CHECK/FK constraints,
+exercises the mysql driver's duplicate classification, savepoint rollback,
+bounded GET_LOCK and two-connection FOR UPDATE exclusion, and uses the real
+proposal submission/acceptance actions with idempotent notification/activity
+checks. Synthetic workflow records roll back; schema remains for inspection.
+One synthetic category is briefly committed to test row locking and then removed
+on success. A failure may leave probe-only schema/records for review. The outer
+90-second deadline, eight-second statement limit, two-second row-lock wait and
+one-second advisory wait bound shared-host work. Do not repeat it in the same
+nonempty database, run the heavy test suite or point the MySQL-specific
+performance_schema harness at MariaDB. Delete only this identified disposable
+database/user/directory after reviewing the outcome and confirming identities.
+
+This script has passed syntax/format and refusal checks locally. **Its MariaDB
+execution and all host observations remain pending authenticated access.** It
+does not establish broad workflow/concurrency compatibility by itself.
+
+For the eventual production database, set `SESSION_DRIVER=database` and keep
+`MAIL_MAILER=array` until mail approval. The read-only database preflight now
+supports `php deployment/alwaysdata/preflight.php --database=EXACT_DATABASE --mail-disabled`:
+it still checks the database/session configuration and explicitly requires array
+mail. Omit `--mail-disabled` only after the sender, secret and test recipient have
+been approved and SMTP is configured. Neither mode sends a message.
+
+Public site creation/activation, Force HTTPS changes, production database/account
+creation, new production APP_KEY and strong deployed credentials remain pending
+compatibility and configuration verification. Preserve the same persistent key
+and private storage on subsequent updates. The backup/rollback procedures above
+apply to these concrete paths; confirm the protected off-host destination before
+cutover. No actual external email or public HTTPS workflow has been verified.

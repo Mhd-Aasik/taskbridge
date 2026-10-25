@@ -6,6 +6,8 @@ configured remote `https://github.com/Mhd-Aasik/taskbridge.git`. Work continues 
 public deployment, remote infrastructure change, purchase or external email was
 performed. The local environment, dependencies, accounts and durable uploads are
 preserved; the proposed lockfile patch is installed only in isolated verification.
+This opening describes the original preparation. The continuation at the end
+records the later account/access work and authorized GitHub publication separately.
 
 ## Dependency audits and minimal correction
 
@@ -162,3 +164,112 @@ HTTPS address, proxy/cookie/CSRF behavior, host upload limits, real resource usa
 and protected off-host backup/restoration remain unverified. Exact account inputs,
 operating commands and the proposed storage budget are in the
 [Alwaysdata runbook](alwaysdata-free.md).
+
+## Continuation — existing account and authorized publication
+
+Recovered clean `chore/free-hosting-readiness` at **59f04aa**, preserving
+**a954d3f**, **fa19944** and **59f04aa**. The owner reported the existing account
+**taskbridge-aasik** and authorized bounded host checks in a uniquely identified
+disposable database, plus normal GitHub publication. A successful fetch found
+`origin/main` still at **cb0350e**, an ancestor of the readiness branch.
+Registration, successful unchanged audits, dependency installs and the heavy suite
+were not repeated. Actual saved audit results remain **npm exit 0 / zero
+vulnerabilities** and **Composer locked audit exit 0 / no advisories**.
+
+No authenticated panel session was available. The login page was observed, then
+browser recovery timed out. Expected SSH details, Free plan, remaining quota,
+actual PHP/web limits, MariaDB version and server fingerprint are therefore
+**not panel-verified**. No SSH authentication, remote database/user creation,
+host upload, site change, public activation or real email was performed. Published
+plan documentation is a planning input, not an observation of this account.
+
+A dedicated Ed25519 key was created outside Git without overwriting another key;
+its private contents were never displayed. Explicit Windows ACLs restrict it to
+the owner, Administrators and SYSTEM. The separate strict SSH client configuration
+passed `ssh -G`, selects only this key, refuses unknown host keys and disables
+agent forwarding/password fallback. Public-key installation and independent
+panel-to-server fingerprint comparison remain pending; no host key was trusted
+by TOFU. Paths, public-key fingerprint and the concrete account deployment plan
+are in [the account continuation](alwaysdata-free.md#continuation-for-the-existing-taskbridge-aasik-account).
+
+### Local timeout and dependency comparison
+
+Current inspection found **local vendor Livewire 4.4.7**, **composer.lock 4.4.8**
+and **isolated release vendor 4.4.8**. The locked audit passes and verified release
+use the patched version; the preserved local vendor is still mismatched. No local
+dependency installation or configuration was changed to conceal this difference.
+
+Two bounded probes in the user's network context established TCP connections to
+the existing server, but **both `/up` and `/favicon.ico` returned HTTP 000, zero
+bytes, curl exit 28 after eight seconds**. The original PHP server processes were
+observed and preserved. A prior log records a 60-second fatal timeout in Composer's
+class loader; that location does not establish the cause. No execution limit was
+increased.
+
+A disposable read-only CLI diagnostic used array session/cache/mail, separate
+cache paths, a **15-second PHP limit** and **25-second process deadline**, without
+a database operation or listener. In the user's context:
+
+| Install | Console boot | Internal /up | Managed PHP peak |
+| --- | --- | --- | --- |
+| Preserved local vendor | 10.389 s | 200 at 12.433 s | 27,262,976 bytes / 26 MiB |
+| Isolated production release | 5.922 s | 200 at 6.500 s | 25,165,824 bytes / 24 MiB |
+
+Earlier restricted-context attempts exceeded diagnostic bounds; they are not host
+or application incompatibility findings. Both dependency sets can complete CLI
+boot. The existing HTTP-server timeout remains unresolved; neither its listening
+port nor the Livewire mismatch is asserted as its cause. Ignored evidence:
+`storage/logs/hosting-resume-{health-user,static-user,root-user-boot,release-user-boot}*`.
+
+### Prepared checks, preservation and remaining gates
+
+Added CLI-only `inspect-runtime.php` and guarded `mariadb-compatibility.php` under
+`deployment/alwaysdata/`. The former reports extensions/limits/permissions without
+reading environment secrets. The latter requires an exact disposable name,
+matching private marker, selected-database identity, actual supported MariaDB and
+initially empty database before migrations. It checks InnoDB, real rating CHECK/FK
+constraints, 23000/1062 unique classification, savepoints, advisory locks,
+two-connection row-lock exclusion and real synthetic proposal actions with
+idempotent notification/activity writes. Schema remains for inspection; it never
+creates/drops databases or runs the heavy suite. The runbook bounds execution at
+90 seconds, statements at eight seconds and row locks at two seconds. **Actual
+MariaDB execution is pending; these are prepared checks, not compatibility passes.**
+
+The database preflight now supports `--mail-disabled` with `--database=...`, retains
+database-session/schema checks and explicitly requires array mail. The isolated
+offline check passed (exit 0). Full-mode checks against a deliberately unavailable
+loopback database exited 1 as intended: array mail passed its mail gate and SMTP
+failed that gate. These are negative checks, not successful database preflights;
+no email was sent. See ignored `hosting-resume-preflight-*.txt` and
+`hosting-resume-preflight-modes.json` under `storage/logs`.
+
+All three CLI scripts passed PHP syntax; the deployment directory passed Pint and
+Git whitespace checks passed. The mutating probe refused both an unsafe target
+and a valid-looking name without its marker (exit 2 before application/database
+access). Existing full-suite and photo-memory results above were reused.
+
+All **346 compared tracked runtime/source files** hash-match the retained release.
+The application/dependency/asset build remains the verified **fa19944** base with
+reviewed deployment-tool overlays. `RELEASE_COMMIT` still identifies that base;
+the artifact is not relabeled as a new archive. Updated curated footprint:
+**7,764 files / 41,330,326 logical bytes / approximately 61,943,808 bytes in 4 KiB
+file blocks** (39.4 / 59.1 MiB). It contains no environment, Git metadata,
+node_modules, tests, hot file, public-storage link, secret config cache or probe
+marker. Build the final reviewed revision with the existing builder before any
+later production transfer; these tool/doc changes do not require another audit.
+
+All **17 protected files**, including the local environment, demo manifest and
+durable private uploads, still match their saved hashes. No local database,
+account or demo-password change was performed. Pattern scanning and review of the
+readiness changes found no credentials or forbidden tracked runtime data; five
+matches were reviewed placeholder examples. Evidence remains in ignored
+`storage/logs/hosting-resume-secret-review.json`. Outside-Git SSH files and runtime
+diagnostic evidence are excluded from publication.
+
+Still needed: authenticated panel access, public-key installation and verified
+server fingerprint; actual Free/quota/runtime confirmation and scoped disposable
+database credentials; then production database/configuration, a new privately
+generated deployment key, separate strong deployed accounts and protected off-host
+backup destination. Mail additionally needs an owned authorized sender, private
+SMTP credentials and an approved recipient. **Public deployment, external TLS,
+cookie/private-download workflows and external delivery remain incomplete.**
