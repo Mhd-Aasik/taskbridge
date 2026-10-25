@@ -389,3 +389,49 @@ The panel exposes an existing `taskbridge-aasik@alwaysdata.net` mailbox and SMTP
 host, providing an owned-account sender candidate. Credentials, sender approval,
 test recipient and real delivery remain pending. No SMTP login or message send,
 public TaskBridge activation or HTTPS application verification was performed.
+
+## Approved private transfer and host application preflight
+
+The owner explicitly approved transferring the named application/dependency
+archive and the new private probe environment to the isolated Alwaysdata directory.
+The approved action then succeeded; the earlier automatic-review transfer gate
+is resolved. Only the prepared release and its newly generated temporary probe
+environment were sent. No running local `.env`, database records, accounts,
+private uploads or recovery backup were transferred.
+
+The **9,524,926-byte** archive's remote SHA256 matched the local SHA256 before
+extraction. Exact target:
+`/home/taskbridge-aasik/taskbridge-probes/20261025-b4e912`. Its identity marker
+matches `taskbridge-aasik_tbprobe_20261025_b4e912`. Directory mode is **0700**,
+including private storage and writable caches; the probe `.env` is **0600**.
+Read-only inspection of managed Apache configuration confirmed the existing
+document root is **/home/taskbridge-aasik/www/**. The probe is outside that web
+root, and no site configuration or public activation changed. Evidence:
+`storage/logs/hosting-qualification-transfer.txt`,
+`hosting-qualification-archive.sha256` and `hosting-qualification-web-root.txt`.
+
+On the actual PHP **8.4.27** host, the release runtime inspector confirmed all
+native extensions and writable private/cache directories. Production platform
+requirements passed with **composer --no-interaction --no-plugins --no-scripts
+check-platform-reqs --no-dev**. This performed no install, update or repeated audit.
+Installed release Livewire reports **4.4.8**.
+
+Ran **timeout 30s php -d memory_limit=128M
+deployment/alwaysdata/preflight.php --offline** under `/usr/bin/time`. Actual
+result: **exit 0**, every applicable check passed, **1.63 seconds / 56,032 KiB
+peak RSS (54.7 MiB)**. It verified production/debug settings, configured HTTPS
+origin, the new temporary key, secure-cookie settings, mysql driver, sync queue,
+19 native extensions, GD formats, private writable storage, nonempty compiled
+assets and absence of a public storage link/hot file. The origin/cookie checks
+inspect configuration, not a public HTTPS request. Database, database sessions
+and SMTP configuration were explicitly skipped. Actual footprint of the probe
+directory is **70,560 KiB / 68.9 MiB**, including the compressed archive and probe
+environment. This is measured filesystem usage, not a provider quota counter or
+a concurrency/load test. Evidence: `storage/logs/hosting-qualification-host-preflight.*`.
+
+The scoped database password is still a placeholder, and the owner has been given
+the precise private-entry step. No invalid-password connection was attempted and
+the mutating MariaDB probe has **not run**. Its empty-database/identity guards,
+SQL migration/constraint/transaction/locking/workflow checks and the subsequent
+full read-only `--mail-disabled` database preflight remain incomplete. No heavy
+suite, public application activation, SMTP login or external message was run.

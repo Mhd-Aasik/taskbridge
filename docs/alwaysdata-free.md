@@ -408,7 +408,8 @@ performance_schema harness at MariaDB. Delete only this identified disposable
 database/user/directory after reviewing the outcome and confirming identities.
 
 This script has passed syntax/format and refusal checks locally. **Its MariaDB
-execution remains pending the approved release transfer and private scoped login.** It
+execution remains pending the private scoped login.** The approved transfer and
+actual host offline/platform preflight have since succeeded. The script
 does not establish broad workflow/concurrency compatibility by itself.
 
 For the eventual production database, set `SESSION_DRIVER=database` and keep
@@ -464,11 +465,30 @@ candidate without buying a domain. Sender authorization, private mailbox/SMTP
 credentials and the intended consenting recipient must be confirmed before mail
 is enabled. No mailbox settings or external mail have been changed.
 
-The release-transfer request was stopped by automatic approval review, which
-requires explicit approval for the application/dependency payload and destination.
-The ready archive is 9,524,926 bytes, excludes the local environment/database/
-uploads, and targets only the non-public
-`/home/taskbridge-aasik/taskbridge-probes/20261025-b4e912` directory. No release
-archive or probe environment has been uploaded. Actual application host preflight
-and guarded MariaDB migration/workflow qualification remain pending that approval
-and the private scoped database password. Existing public sites are untouched.
+The initial release-transfer request was stopped by automatic approval review.
+The owner then explicitly approved the exact archive/probe-environment payload
+and destination. The **9,524,926-byte** archive and new private probe environment
+were transferred only to
+`/home/taskbridge-aasik/taskbridge-probes/20261025-b4e912`; SHA256 matched before
+extraction. The running local environment, database and uploads were excluded.
+The directory and writable application directories are `0700`; its `.env` is
+`0600`. Managed Apache configuration confirms the existing web document root is
+`/home/taskbridge-aasik/www/`, so the probe is outside it. No site was activated
+or changed.
+
+Actual host `composer check-platform-reqs --no-dev` passed, with plugins/scripts
+disabled and no dependency installation or audit. The prepared CLI preflight
+passed **offline**, using a 128M PHP limit and a 30-second external deadline:
+**1.63 seconds / 56,032 KiB peak RSS (54.7 MiB)**. It verifies production/debug
+settings, native extensions, private writable storage, secure-cookie configuration,
+sync queue and matching built assets. Its database/session/SMTP checks explicitly
+remain skipped. The release reports Livewire **4.4.8**. The whole probe directory
+uses **70,560 KiB (68.9 MiB)**, including the compressed archive and private
+configuration; this is filesystem usage, not the unavailable provider quota counter.
+
+The private database password remains a placeholder. Complete the prepared scoped
+SSL-required user and the outside-Git probe environment privately, then transfer
+that updated environment only into this marked directory with mode `0600`.
+Recheck database identity/emptiness and run the existing bounded MariaDB probe
+before the full `--mail-disabled` database preflight. **Guarded SQL qualification,
+web-SAPI behavior, public activation and external email remain incomplete.**

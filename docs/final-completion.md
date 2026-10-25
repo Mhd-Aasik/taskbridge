@@ -10,8 +10,9 @@ The continuation in that record covers the existing `taskbridge-aasik` account,
 dedicated SSH preparation, actual local timeout diagnostics and authorized GitHub
 publication. A later locked Composer install aligned local vendor with Livewire
 4.4.8, 52 focused tests passed and a controlled restart restored local HTTP health.
-Fingerprint-verified SSH and native host checks succeeded; application/MariaDB
-qualification and public/mail activation remain pending. Credentials and private files are not
+Fingerprint-verified SSH, native host checks and the actual offline/platform
+preflight succeeded; MariaDB SQL qualification and public/mail activation remain
+pending. Credentials and private files are not
 part of the readiness publication.
 
 Work continued on `fix/final-completion` after checkpoint **4761ad4**, which records
