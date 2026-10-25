@@ -1,5 +1,11 @@
 # Final local completion — 24 October 2026
 
+Later deployment-readiness work on 25 October is recorded separately in
+[free-hosting verification](free-hosting-verification.md): npm and Composer audits
+now succeeded, Livewire is patched to 4.4.8 and a low-memory photo-processing guard
+was added. Results below retain their original checkpoint/date; they do not imply
+Alwaysdata, MariaDB, hosted HTTPS or external-email verification.
+
 Work continued on `fix/final-completion` after checkpoint **4761ad4**, which records
 the read-only intermittent Livewire delay investigation. This record supersedes
 older statements that browser access was still denied or that the latest suite

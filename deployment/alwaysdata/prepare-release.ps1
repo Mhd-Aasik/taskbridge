@@ -40,8 +40,8 @@ try {
     $env:CACHE_STORE = 'array'
     $env:QUEUE_CONNECTION = 'sync'
     $env:VITE_APP_NAME = 'TaskBridge'
-    $env:APP_CONFIG_CACHE = Join-Path $workRoot 'bootstrap/cache/config.php'
-    $env:APP_ROUTES_CACHE = Join-Path $workRoot 'bootstrap/cache/routes-v7.php'
+    $env:APP_CONFIG_CACHE = 'bootstrap/cache/config.php'
+    $env:APP_ROUTES_CACHE = 'bootstrap/cache/routes-v7.php'
     $env:VIEW_COMPILED_PATH = Join-Path $workRoot 'storage/framework/views'
     $env:LARAVEL_STORAGE_PATH = Join-Path $workRoot 'storage'
     Set-Location $workRoot

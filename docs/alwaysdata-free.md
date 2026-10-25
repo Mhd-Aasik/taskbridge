@@ -86,6 +86,14 @@ application caps. Compare the actual measured release with the allowance before
 upload; keep backups off-host to avoid consuming the small quota. Monitor the panel's
 total usage and `du -sk` on the account, not only the release tree.
 
+The locally prepared runtime measured **39.4 MiB logical / about 59.1 MiB of
+estimated 4 KiB file blocks per release**, before database/private data. See the
+[exact measurements and scope](free-hosting-verification.md#production-release-footprint-and-checks).
+Directory/inode overhead, host account files and actual quota accounting are not
+included in that estimate. Check available quota for the temporary matched backup
+set as well as the live release before creating a host-side backup; retain it
+off-host after protected transfer and validation.
+
 Photos/covers accept at most 2 MiB and 4096 × 4096 pixels. Covers preflight a
 conservative decoded-image estimate and resize to at most 1600 × 1000; a 4096-square
 cover needs roughly 300 MiB by that estimate and is intentionally rejected under

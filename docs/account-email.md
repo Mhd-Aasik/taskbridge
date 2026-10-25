@@ -1,5 +1,12 @@
 # TaskBridge account emails
 
+For the 25 October university hosting preparation, see the
+[Alwaysdata SMTP plan](alwaysdata-free.md#zero-cost-smtp-preparation): included
+host SMTP with an authorized owned mailbox, or an explicitly confirmed personal
+Gmail sender eligible for a dedicated app password. Credentials remain private;
+sender/recipient confirmation, actual external delivery and real HTTPS reset-link
+verification are still pending. Neither local demo Gmail identity is assumed owned.
+
 ## Scope and checkpoint
 
 MySQL verification was checkpointed as `12f3bdc` (`Add isolated MySQL concurrency verification`). The eight harness scripts, two documents and successful result records were reviewed; credentials, messages, runtime logs and disposable files were excluded. Account email work is on `feature/account-email`, intentionally unstaged/uncommitted.

@@ -1,5 +1,10 @@
 # Final review checklist
 
+The 25 October [hosting-readiness follow-up](free-hosting-verification.md) records
+successful current audits, the Livewire patch and later photo-memory regression
+checks. Hosted MariaDB/HTTPS and external delivery remain pending; earlier browser
+observations below have not been relabelled as deployment verification.
+
 Bootstrap is checkpointed as **`a87ef49` — Add safe first-admin bootstrap**. Sidebar and reactive-control fixes were checkpointed on `fix/final-ui-review`; the timeout investigation is **4761ad4**. Current final work is on **`fix/final-completion`**. Historical evidence below retains its date and scope.
 
 **The final-completion request authorized isolated browser testing.** Earlier denials were respected at their checkpoints; they no longer describe the new explicitly authorized review. Current agent interaction used only the permitted in-app browser, a guarded disposable MySQL database/private storage, dedicated `.test` accounts and loopback server. No browser mutations used the real application database. Physical-terminal bootstrap and full device/accessibility sign-off remain pending.

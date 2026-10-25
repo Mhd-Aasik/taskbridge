@@ -30,7 +30,9 @@ try {
     $check(config('session.secure') === true && config('session.http_only') === true && config('session.same_site') === 'lax' && config('session.domain') === null, 'secure host-only session cookie');
     $check(config('database.default') === 'mysql', 'mysql PDO driver selected for MariaDB');
     $check(config('queue.default') === 'sync', 'no background queue requirement');
-    $check($offline || config('session.driver') === 'database', 'database session revocation backend');
+    if (! $offline) {
+        $check(config('session.driver') === 'database', 'database session revocation backend');
+    }
     foreach (['ctype', 'curl', 'dom', 'fileinfo', 'filter', 'gd', 'hash', 'iconv', 'json', 'mbstring', 'openssl', 'PDO', 'pdo_mysql', 'Phar', 'session', 'tokenizer', 'xml', 'xmlwriter', 'zip'] as $extension) {
         $check(extension_loaded($extension) || ($offline && in_array($extension, ['ctype', 'mbstring'], true)), 'extension '.$extension);
     }
@@ -49,8 +51,8 @@ try {
         $check(is_file($file) && filesize($file) > 0, 'nonempty manifest asset');
     }
     $check(! is_file($root.'/public/hot') && ! file_exists($root.'/public/storage'), 'no development hot file or public storage link');
-    $check($offline || config('mail.default') === 'smtp', 'SMTP configured after sender confirmation');
     if (! $offline) {
+        $check(config('mail.default') === 'smtp', 'SMTP configured after sender confirmation');
         $sender = (string) config('mail.from.address');
         $check(filter_var($sender, FILTER_VALIDATE_EMAIL) !== false && ! str_contains(strtolower($sender), 'replace'), 'confirmed SMTP sender configured (ownership requires separate confirmation)');
         $check(config('mail.mailers.smtp.scheme') === 'smtps' && (int) config('mail.mailers.smtp.port') === 465, 'implicit TLS SMTP configured');
@@ -67,6 +69,8 @@ try {
         $tables = DB::select('SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = ?', ['BASE TABLE']);
         $check(count($tables) >= 33 && array_all_compatible($tables), 'application tables use InnoDB');
         $check(DB::table('migrations')->count() === count(glob($root.'/database/migrations/*.php')), 'all checked-in migrations applied');
+    } else {
+        echo 'SKIP live database, database sessions and SMTP configuration in offline mode.'.PHP_EOL;
     }
     echo $offline ? 'OFFLINE ONLY: database, web TLS/proxy, cookies and external mail remain unverified.'.PHP_EOL : 'CLI checks complete: web TLS/proxy, cookies, private endpoints and external delivery still require deployment verification.'.PHP_EOL;
 } catch (Throwable) {
