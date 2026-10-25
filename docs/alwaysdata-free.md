@@ -1,8 +1,9 @@
 # Alwaysdata Free university demonstration
 
 Readiness work only, checked 25 October 2026. The owner subsequently reported the
-existing account `taskbridge-aasik`; see the continuation below. No mailbox, DNS
-record, remote database or public website was created or changed by this work. Do not upload the local
+existing account `taskbridge-aasik`; the continuation below records authenticated
+host inspection and the authorized private disposable database/release probe.
+Public application activation and external email remain pending. Do not upload the local
 `.env`, database, recovery backup, demo manifest or private uploads. This guide
 extends [hosting](hosting.md), [email](account-email.md) and
 [backup/recovery](backup-recovery.md); it does not authorize deployment.
@@ -407,8 +408,9 @@ nonempty database, run the heavy test suite or point the MySQL-specific
 performance_schema harness at MariaDB. Delete only this identified disposable
 database/user/directory after reviewing the outcome and confirming identities.
 
-This script has passed syntax/format and refusal checks locally. **Its MariaDB
-execution remains pending the private scoped login.** The approved transfer and
+This script has passed syntax/format and refusal checks locally. **Its first host
+attempt stopped at authentication, before migrations; SQL qualification remains
+incomplete.** The approved transfer and
 actual host offline/platform preflight have since succeeded. The script
 does not establish broad workflow/concurrency compatibility by itself.
 
@@ -448,15 +450,16 @@ The panel reports MariaDB **11.8**; the database protocol handshake reports
 **11.8.9-MariaDB**. A credential-free OpenSSL MySQL STARTTLS probe verified the
 certificate chain and `mysql-taskbridge-aasik.alwaysdata.net` hostname with system
 trust roots: TLS 1.3 / TLS_AES_256_GCM_SHA384, verification OK. No TLS protection
-was disabled. Database credentials must still be supplied privately for SQL checks.
+was disabled. The private probe environment is now populated, but the dedicated
+database user must be created before SQL checks can authenticate.
 
 Created only the new empty database
 `taskbridge-aasik_tbprobe_20261025_b4e912` (panel object 499030), annotated as
 disposable qualification. It initially grants no user rights. The prepared new
-user `taskbridge-aasik_tbp_b4e912` is restricted to this database and requires SSL;
-its creation/password submission remains the owner's private step. The protected
+user form `taskbridge-aasik_tbp_b4e912` is restricted to this database and requires
+SSL; its creation/password submission remains the owner's private step. The protected
 outside-Git environment `C:\Users\ab\.ssh\taskbridge-probe-20261025-b4e912.env`
-contains a new temporary key and the password placeholder to replace privately.
+contains a new temporary key and the owner's privately saved probe password.
 It uses the system CA bundle and array mail. Do not copy the running local `.env`.
 
 The panel also contains the existing mailbox `taskbridge-aasik@alwaysdata.net`
@@ -486,9 +489,26 @@ remain skipped. The release reports Livewire **4.4.8**. The whole probe director
 uses **70,560 KiB (68.9 MiB)**, including the compressed archive and private
 configuration; this is filesystem usage, not the unavailable provider quota counter.
 
-The private database password remains a placeholder. Complete the prepared scoped
-SSL-required user and the outside-Git probe environment privately, then transfer
-that updated environment only into this marked directory with mode `0600`.
-Recheck database identity/emptiness and run the existing bounded MariaDB probe
-before the full `--mail-disabled` database preflight. **Guarded SQL qualification,
-web-SAPI behavior, public activation and external email remain incomplete.**
+The password placeholder is confirmed gone without displaying its value. The
+updated probe environment was transferred only into this marked directory with
+mode `0600`; private local/remote SHA256 comparison matched, with neither contents
+nor digest values displayed.
+
+The first guarded SQL attempt used the existing 90-second deadline and a 128M PHP
+limit. It passed the mysql-driver check but exited **1** on the initial database
+identity query: **SQLSTATE HY000, driver code 1045**. It took **3.91 seconds /
+60,384 KiB peak RSS (59.0 MiB)**. No migrations or synthetic workflow writes ran.
+Authenticated panel inspection then showed only the default `taskbridge-aasik`
+user, with zero database permissions; the dedicated probe user was absent even
+after the owner's creation reply. This is an authentication/setup failure, not a
+confirmed migration or MariaDB incompatibility. The Add user form is prepared
+again with the exact scoped name, SSL required and rights only on the disposable
+database. The owner must privately enter the same saved probe password and submit
+that form. Do not change or grant rights to the default user for this probe.
+
+After the new user visibly exists, recheck identity/emptiness with the existing
+bounded MariaDB probe before the full `--mail-disabled` database preflight. Do not
+repeat the mutating probe if a later attempt has already populated the schema.
+**Guarded SQL qualification, web-SAPI behavior, public activation and external
+email remain incomplete.** Evidence: `storage/logs/hosting-qualification-mariadb.*`
+and `hosting-qualification-environment-transfer.json`.

@@ -435,3 +435,46 @@ the mutating MariaDB probe has **not run**. Its empty-database/identity guards,
 SQL migration/constraint/transaction/locking/workflow checks and the subsequent
 full read-only `--mail-disabled` database preflight remain incomplete. No heavy
 suite, public application activation, SMTP login or external message was run.
+
+## Private credential transfer and first SQL attempt — 25 October 2026
+
+This supersedes the preceding password-placeholder/not-attempted checkpoint.
+After the owner's saved-file reply, verified privately that the active password
+is nonempty and no longer the placeholder. Checked the exact disposable database,
+scoped user, array-mail setting and system CA path without displaying the password
+or environment contents. Transferred only that newly prepared probe environment
+to the approved marked directory, using verified/pinned SSH and an atomic rename;
+mode **0600** was checked. Local/remote SHA256 comparison matched and emitted only
+a boolean, not the digests. Evidence:
+`storage/logs/hosting-qualification-environment-transfer.json`.
+
+Ran the existing guarded command:
+
+```sh
+timeout 90s php -d memory_limit=128M deployment/alwaysdata/mariadb-compatibility.php --disposable=taskbridge-aasik_tbprobe_20261025_b4e912
+```
+
+Actual result: **exit 1**, mysql-driver check passed, then the initial database
+identity query failed with **SQLSTATE HY000 / driver code 1045**. `/usr/bin/time`
+reported **3.91 seconds / 60,384 KiB peak RSS (59.0 MiB)**. Exception messages,
+SQL bindings, passwords and DSNs were not printed. Failure occurred before the
+emptiness check, migrations or synthetic writes, so no schema/workflow/constraint
+compatibility result can be claimed. This is an authentication/setup failure,
+not evidence that migrations are incompatible. Evidence:
+`storage/logs/hosting-qualification-mariadb.txt` and `.exit.txt`.
+
+Authenticated panel inspection showed only the default database user
+`taskbridge-aasik` and zero assigned databases. The required scoped user
+`taskbridge-aasik_tbp_b4e912` was absent. After the owner requested form help,
+brought the prepared Add user form into view with its exact name, SSL required
+and all rights on only `taskbridge-aasik_tbprobe_20261025_b4e912`. The password
+field was left empty for private entry/submission. A subsequent creation reply
+was checked against a refreshed users list; the scoped user was still absent.
+No further login retry, unrelated user modification or permission expansion was
+performed. Private creation of that exact user with the already saved probe
+password remains the essential input before another bounded attempt.
+
+The guarded SQL qualification and full database preflight remain **incomplete**.
+Existing successful audits, tests, platform/offline preflight and local HTTP
+recovery results are reused; no dependency/application changes were made in this
+follow-up. Public application activation and all external mail remain pending.
