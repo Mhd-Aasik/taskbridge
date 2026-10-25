@@ -273,3 +273,17 @@ generated deployment key, separate strong deployed accounts and protected off-ho
 backup destination. Mail additionally needs an owned authorized sender, private
 SMTP credentials and an approved recipient. **Public deployment, external TLS,
 cookie/private-download workflows and external delivery remain incomplete.**
+
+### GitHub publication result
+
+After the checks and secret review, **addaa4a** committed the guarded host tooling
+and updated readiness records. Remote ancestry was refreshed and both remote
+and local `main` were ancestors. Local `main` was advanced without changing the
+working checkout. A **normal atomic push succeeded** to
+`https://github.com/Mhd-Aasik/taskbridge.git`: `main` advanced from **cb0350e** to
+**addaa4a**, and `chore/free-hosting-readiness` was created at **addaa4a**. A
+subsequent `ls-remote` confirmed both refs at
+`addaa4af57567804dab472ccb96556fb820660d0`. No force-push or remote-history overwrite
+was used. This publication includes the three earlier readiness commits. This
+documentation follow-up records that observed result; host/mail completion gates
+are unchanged.
