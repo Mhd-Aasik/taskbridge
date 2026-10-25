@@ -81,9 +81,10 @@ class DeliverableFilesTest extends TestCase
 
     public function test_ten_mebibyte_boundary_and_actual_bytes_are_checked_independently_of_reported_size(): void
     {
-        // Newer fileinfo identifies a large unbroken run of "a" bytes as SIMH tape data.
+        // A UTF-8 BOM keeps fileinfo consistent; long ASCII runs can look like SIMH tape data.
         $line = "Plain text line\n";
-        $bytes = str_repeat($line, intdiv(10 * 1024 * 1024, strlen($line)));
+        $bytes = "\xef\xbb\xbf".str_repeat($line, intdiv(10 * 1024 * 1024, strlen($line)));
+        $bytes = substr($bytes, 0, 10 * 1024 * 1024);
         $this->assertSame('text/plain', (new finfo(FILEINFO_MIME_TYPE))->buffer($bytes));
         $prepared = app(DeliverableFiles::class)->prepare($this->upload($bytes, 'maximum.txt'));
         $this->assertSame(10 * 1024 * 1024, $prepared['byte_size']);
