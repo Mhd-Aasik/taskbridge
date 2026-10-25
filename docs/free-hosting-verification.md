@@ -478,3 +478,67 @@ The guarded SQL qualification and full database preflight remain **incomplete**.
 Existing successful audits, tests, platform/offline preflight and local HTTP
 recovery results are reused; no dependency/application changes were made in this
 follow-up. Public application activation and all external mail remain pending.
+
+## Completed disposable MariaDB qualification — 25 October 2026
+
+The owner subsequently created the scoped database user. This checkpoint
+supersedes the preceding authentication/setup gate. The existing private
+environment still has a nonempty password with no placeholder, the expected
+database/user/CA path and array mail; its password and contents were not displayed.
+
+Before any migrations, performed a bounded read-only connection check on the
+actual host. It confirmed the exact TCP host/port, no database URL/socket override,
+configured and authenticated `taskbridge-aasik_tbp_b4e912` user, exact database
+`taskbridge-aasik_tbprobe_20261025_b4e912`, readable system CA and PDO certificate
+verification explicitly enabled. Active SQL TLS is **TLS 1.3 /
+TLS_AES_256_GCM_SHA384**. Actual server grants require SSL and grant rights only
+on the exact database with escaped underscores, plus global USAGE. Alwaysdata's
+all-rights grant includes a grant option confined to that schema. The initial
+read-only checker rejected that option unnecessarily; sanitized grant metadata
+showed no additional database/global rights, and the checker was corrected to
+enforce the requested scope. Neither raw grant authentication clauses nor password
+hashes were printed. The corrected guard passed and confirmed **zero tables**
+before invoking the one-shot migration probe.
+
+Ran the existing guarded MariaDB command with a **90-second deadline / 128M PHP
+limit**. Actual result **exit 0**, **8.21 seconds / 74,696 KiB peak RSS (72.9 MiB)**
+on **11.8.9-MariaDB**. Checks passed for:
+
+- All **27 release migrations**, resulting in **33 InnoDB tables**.
+- Bounded advisory-lock acquisition and exclusion of a second connection.
+- Real proposal submission/acceptance actions and idempotent replay, including
+  transactional activity/notification writes.
+- Rating range and self-review CHECK enforcement (MariaDB 4025), FK enforcement
+  (1452), and Laravel's unique-conflict classification (SQLSTATE 23000 / 1062).
+- Savepoint rollback, outer synthetic-workflow rollback and two-connection
+  `FOR UPDATE` exclusion with the intended two-second lock wait (1205).
+
+Then ran the full read-only preflight with
+`--database=taskbridge-aasik_tbprobe_20261025_b4e912 --mail-disabled`: **exit 0**,
+**2.15 seconds / 61,652 KiB peak RSS (60.2 MiB)**. All applicable production,
+cookie configuration, native extension, private writable storage, built-asset,
+sync queue, database-session configuration, exact database, engine and migration
+checks passed. Mail remained **array**, and no SMTP login or send occurred.
+
+Final SQL inspection used an enforced read-only transaction and confirmed
+**33 tables, 27/27 migrations and zero rows in every non-migration table**. The
+temporary committed lock-test category was removed; synthetic workflow records
+were rolled back. The schema/user/private probe remain available for inspection;
+do not repeat the mutating one-shot against this nonempty schema. Probe directory
+and environment modes remain **0700 / 0600**. Release disk usage remains
+**70,560 KiB (68.9 MiB)**. MariaDB's `DATA_LENGTH + INDEX_LENGTH` reports
+**1,785,856 bytes (1.70 MiB)**, excluding provider log/metadata overhead; precise
+provider remaining quota is still unavailable.
+
+Ignored evidence: `storage/logs/hosting-qualification-mariadb-qualified.*`,
+`hosting-qualification-database-preflight.*`,
+`hosting-qualification-connection-guard.*` (initial stricter guard), and
+`hosting-qualification-grant-metadata.txt` (sanitized privilege metadata only).
+No production/local database, account, upload, key or site was changed by this
+qualification. Existing successful audits/local regressions are reused because
+application and dependencies are unchanged. These are actual MariaDB smoke
+results, not SQLite/MySQL extrapolation or broad load/concurrency verification.
+
+Bounded MariaDB qualification and database CLI preflight are now **complete**.
+Public activation, web-SAPI/HTTPS/cookies/private-download checks, internet-facing
+credentials, production backup/restore and external email remain **pending**.

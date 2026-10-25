@@ -11,12 +11,14 @@ dedicated SSH preparation, actual local timeout diagnostics and authorized GitHu
 publication. A later locked Composer install aligned local vendor with Livewire
 4.4.8, 52 focused tests passed and a controlled restart restored local HTTP health.
 Fingerprint-verified SSH, native host checks and the actual offline/platform
-preflight succeeded; MariaDB SQL qualification and public/mail activation remain
-pending. The later private password transfer matched its local source, but the
-first guarded MariaDB attempt failed authentication (driver code 1045) before any
-migrations. The scoped database user is absent from the authenticated panel and
-still needs private creation; this is not a completed compatibility check.
-Credentials and private files are not part of the readiness publication.
+preflight succeeded. After the owner created the scoped user, certificate-verified
+TLS and exact database grants passed before migrations. The bounded MariaDB
+11.8.9 qualification now passes: 27 migrations, 33 InnoDB tables, constraint,
+transaction, locking and proposal-workflow smoke checks, followed by a successful
+mail-disabled database preflight. No synthetic application rows remain. This
+supersedes the initial authentication failure (1045). Public activation, deployed
+web/backup verification and external email remain pending. Credentials and private
+files are not part of the readiness publication.
 
 Work continued on `fix/final-completion` after checkpoint **4761ad4**, which records
 the read-only intermittent Livewire delay investigation. This record supersedes

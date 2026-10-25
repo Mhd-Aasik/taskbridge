@@ -408,10 +408,10 @@ nonempty database, run the heavy test suite or point the MySQL-specific
 performance_schema harness at MariaDB. Delete only this identified disposable
 database/user/directory after reviewing the outcome and confirming identities.
 
-This script has passed syntax/format and refusal checks locally. **Its first host
-attempt stopped at authentication, before migrations; SQL qualification remains
-incomplete.** The approved transfer and
-actual host offline/platform preflight have since succeeded. The script
+This script has passed syntax/format and refusal checks locally. **The guarded
+host qualification now passes on MariaDB 11.8.9**, after the owner created the
+scoped SSL-required user. The first authentication failure is historical; the
+successful run and final read-only inspection are recorded below. The script
 does not establish broad workflow/concurrency compatibility by itself.
 
 For the eventual production database, set `SESSION_DRIVER=database` and keep
@@ -450,14 +450,19 @@ The panel reports MariaDB **11.8**; the database protocol handshake reports
 **11.8.9-MariaDB**. A credential-free OpenSSL MySQL STARTTLS probe verified the
 certificate chain and `mysql-taskbridge-aasik.alwaysdata.net` hostname with system
 trust roots: TLS 1.3 / TLS_AES_256_GCM_SHA384, verification OK. No TLS protection
-was disabled. The private probe environment is now populated, but the dedicated
-database user must be created before SQL checks can authenticate.
+was disabled. The subsequent authenticated SQL connection also confirmed
+**TLS 1.3 / TLS_AES_256_GCM_SHA384** with PDO server-certificate verification
+explicitly enabled and the system CA bundle.
 
 Created only the new empty database
 `taskbridge-aasik_tbprobe_20261025_b4e912` (panel object 499030), annotated as
-disposable qualification. It initially grants no user rights. The prepared new
-user form `taskbridge-aasik_tbp_b4e912` is restricted to this database and requires
-SSL; its creation/password submission remains the owner's private step. The protected
+disposable qualification. It initially granted no user rights. The owner has now
+created `taskbridge-aasik_tbp_b4e912`; actual authentication and server-reported
+grants confirm rights only on this exact database and server-enforced SSL.
+Underscores in the database grant are escaped, so they are not wildcard grants.
+Alwaysdata's all-rights setting includes a schema-scoped grant option; there are
+no global privileges beyond USAGE. Raw grant authentication clauses/hashes were
+not displayed. The protected
 outside-Git environment `C:\Users\ab\.ssh\taskbridge-probe-20261025-b4e912.env`
 contains a new temporary key and the owner's privately saved probe password.
 It uses the system CA bundle and array mail. Do not copy the running local `.env`.
@@ -494,21 +499,43 @@ updated probe environment was transferred only into this marked directory with
 mode `0600`; private local/remote SHA256 comparison matched, with neither contents
 nor digest values displayed.
 
-The first guarded SQL attempt used the existing 90-second deadline and a 128M PHP
+The initial guarded SQL attempt used the existing 90-second deadline and a 128M PHP
 limit. It passed the mysql-driver check but exited **1** on the initial database
 identity query: **SQLSTATE HY000, driver code 1045**. It took **3.91 seconds /
 60,384 KiB peak RSS (59.0 MiB)**. No migrations or synthetic workflow writes ran.
-Authenticated panel inspection then showed only the default `taskbridge-aasik`
-user, with zero database permissions; the dedicated probe user was absent even
-after the owner's creation reply. This is an authentication/setup failure, not a
-confirmed migration or MariaDB incompatibility. The Add user form is prepared
-again with the exact scoped name, SSL required and rights only on the disposable
-database. The owner must privately enter the same saved probe password and submit
-that form. Do not change or grant rights to the default user for this probe.
+At that checkpoint the scoped user was absent. This authentication/setup gate is
+now resolved; it was not a migration or MariaDB incompatibility.
 
-After the new user visibly exists, recheck identity/emptiness with the existing
-bounded MariaDB probe before the full `--mail-disabled` database preflight. Do not
-repeat the mutating probe if a later attempt has already populated the schema.
-**Guarded SQL qualification, web-SAPI behavior, public activation and external
-email remain incomplete.** Evidence: `storage/logs/hosting-qualification-mariadb.*`
+Before migrations, read-only checks confirmed the exact configured/authenticated
+user and database, TCP host/port with no URL/socket override, readable CA bundle,
+active certificate-verified TLS, SSL-required user, grants only on the exact
+escaped disposable database, and zero tables. The first read-only grant guard
+also rejected the schema-scoped grant option unnecessarily; sanitized metadata
+confirmed it did not widen database scope, and that extra restriction was removed.
+
+The existing one-shot MariaDB script then passed **all checks, exit 0**, under
+the same 90-second deadline and 128M PHP limit: **8.21 seconds / 74,696 KiB peak
+RSS (72.9 MiB)**. All **27 migrations / 33 InnoDB tables** applied. Actual CHECK
+and FK constraints, duplicate classification, savepoint/outer rollback, advisory
+and two-connection row locking, proposal submission/acceptance and idempotent
+notifications/activity passed.
+
+The full read-only `preflight.php --database=taskbridge-aasik_tbprobe_20261025_b4e912
+--mail-disabled` then passed **exit 0**, **2.15 seconds / 61,652 KiB peak RSS
+(60.2 MiB)**. Final inspection used a read-only transaction and confirmed **zero
+rows across all non-migration tables**; only the 27 migration records remain.
+Schema, scoped user and private probe directory are retained for inspection. Do
+not rerun the one-shot probe against this now-populated schema.
+
+The private release footprint remains **70,560 KiB (68.9 MiB)**. MariaDB reports
+**1,785,856 bytes (1.70 MiB)** for table data plus indexes; this excludes provider
+logs/overhead and is not an exact remaining-account quota counter. Directory and
+environment modes remain `0700` / `0600`. Evidence:
+`storage/logs/hosting-qualification-mariadb-qualified.*`,
+`hosting-qualification-database-preflight.*`, `hosting-qualification-grant-metadata.txt`
 and `hosting-qualification-environment-transfer.json`.
+
+**The bounded MariaDB qualification and database CLI preflight are complete.
+Web-SAPI behavior, public HTTPS activation, deployed accounts/private-endpoint
+checks, production backup/restore and external email remain pending.** No heavy
+suite, public site change, SMTP login or message send was performed.
