@@ -53,7 +53,7 @@ try {
     if (! $offline) {
         $sender = (string) config('mail.from.address');
         $check(filter_var($sender, FILTER_VALIDATE_EMAIL) !== false && ! str_contains(strtolower($sender), 'replace'), 'confirmed SMTP sender configured (ownership requires separate confirmation)');
-        $check(config('mail.mailers.smtp.scheme') === 'smtps' && (int) config('mail.mailers.smtp.port') === 465, 'host-native implicit TLS SMTP configured');
+        $check(config('mail.mailers.smtp.scheme') === 'smtps' && (int) config('mail.mailers.smtp.port') === 465, 'implicit TLS SMTP configured');
     }
     if (! $offline) {
         $databaseOption = array_values(array_filter($argv, fn (string $value): bool => str_starts_with($value, '--database=')));

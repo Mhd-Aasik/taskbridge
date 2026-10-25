@@ -44,6 +44,12 @@ class AccountPhotos
 
         $contents = file_get_contents($photo->getRealPath());
         $information = @getimagesizefromstring($contents);
+        // Compressed uploads can require several raster/encoder buffers in GD.
+        // Refuse before decoding rather than exhausting a small hosting worker.
+        $estimatedBytes = $information[0] * $information[1] * 16 + strlen($contents) * 4 + 16 * 1024 * 1024;
+        if ($estimatedBytes > $this->availableMemoryBytes()) {
+            throw ValidationException::withMessages(['photo' => 'This photo needs too much memory to process safely. Choose a smaller image and try again.']);
+        }
         $warning = false;
         set_error_handler(function () use (&$warning): bool {
             $warning = true;
@@ -146,6 +152,23 @@ class AccountPhotos
         DB::afterCommit(fn () => $this->deleteOwnedFile($account, $oldPath));
 
         return $account;
+    }
+
+    protected function availableMemoryBytes(): int
+    {
+        $limit = trim((string) ini_get('memory_limit'));
+        $bytes = (int) $limit;
+        if ($bytes < 0) {
+            return 384 * 1024 * 1024;
+        }
+        $multiplier = match (strtoupper(substr($limit, -1))) {
+            'G' => 1024 ** 3,
+            'M' => 1024 ** 2,
+            'K' => 1024,
+            default => 1,
+        };
+
+        return max(0, min(384 * 1024 * 1024, $bytes * $multiplier - memory_get_usage(true)));
     }
 
     public static function ownsPath(User $account, ?string $path): bool

@@ -91,14 +91,32 @@ conservative decoded-image estimate and resize to at most 1600 × 1000; a 4096-s
 cover needs roughly 300 MiB by that estimate and is intentionally rejected under
 128M. Deliverables accept 10 MiB; images have a decoded-memory guard and a
 40-megapixel ceiling, and ZIP expansion is independently bounded. Account photos
-decode/re-encode without resizing; compressed size alone does not predict their
-native GD memory. Use demonstration images at most 1600 pixels on the long side,
+decode/re-encode without resizing and now perform the same conservative pre-decode
+memory check. Compressed size alone does not predict their native GD memory.
+Use demonstration images at most 1600 pixels on the long side,
 avoid concurrent image uploads and measure actual web worker RSS before permitting
 larger public traffic. `post_max_size=16M`, `upload_max_filesize=10M` and a 128M PHP
 limit are initial demo settings, not a load-test result. Account-wide worker/Apache/
 OPcache memory and simultaneous requests can still exceed 256 MB. Polling tabs also
 consume the one-quarter CPU allowance. Keep the demo audience small and observe
 the actual account's resource graph.
+
+Source compatibility review: migrations use InnoDB foreign keys and CHECK
+constraints, actions acquire row locks within transactions, Admin bootstrap uses
+GET_LOCK/RELEASE_LOCK, and duplicate handling recognizes the mysql driver's 1062 /
+SQLSTATE 23000 unique violations. Those facilities exist in the documented MariaDB
+families ([constraints](https://mariadb.com/docs/server/reference/sql-statements/data-definition/constraint),
+[locking](https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/for-update),
+[duplicate error](https://mariadb.com/docs/server/reference/error-codes/mariadb-error-codes-1000-to-1099/e1062)),
+but source inspection does not prove the deployed schema or concurrent
+behavior. Local Windows MariaDB 11.8.9 initialization did not complete in two guarded
+attempts; no migrations/workflows ran on that engine. **MariaDB compatibility is
+still an explicit deployment gate.** Before release, qualify a new disposable
+MariaDB database on the actual host: all migrations, enforced foreign-key/CHECK
+violations, duplicate/retry handling, accepted assignment terms, revision/review,
+completion/payment/feedback and password/session revocation. The existing MySQL
+race harness uses MySQL-specific performance_schema lock observations and must not
+be relabelled a MariaDB pass or pointed at a production database.
 
 ## Later host setup (instructions, not executed)
 
@@ -197,6 +215,18 @@ paid trial is required or authorized here. Availability of an owned sender is
 still an input, not an assumption that any `@alwaysdata.net` address may be used.
 If no owned mailbox is available, leave external mail pending rather than inventing
 a sender. Never use the local demo Gmail addresses without ownership confirmation.
+
+If the user has no owned domain/mailbox on the host, a zero-cost alternative is an
+explicitly confirmed personal Gmail account controlled by the user, using
+`smtp.gmail.com:465`, `MAIL_SCHEME=smtps`, that exact mailbox as both SMTP username
+and From address, and a dedicated app password stored only in the protected host
+environment. Google's [app-password guidance](https://support.google.com/accounts/answer/185833)
+requires 2-Step Verification; some organization, security-key-only or Advanced
+Protection accounts cannot use it. Do not use the normal Google password, weaken
+2-Step Verification or add a new OAuth integration for this deployment. Sender
+eligibility, Google's current sending limits and the host's outbound SMTP/TLS
+connection must be confirmed before enabling it. This is a prepared option, not
+evidence of a successful SMTP connection or delivery.
 
 After confirmation, configure `MAIL_MAILER=smtp`, `MAIL_SCHEME=smtps`, port 465,
 the actual SMTP host, mailbox secret and authorized From address in the protected

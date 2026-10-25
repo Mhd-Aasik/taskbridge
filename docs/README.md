@@ -12,6 +12,8 @@ Start with the [project README](../README.md). No documentation index existed in
 | [User guide](user-guide.md) | Role workflows, statuses, privacy and irreversible actions |
 | [Backup and recovery](backup-recovery.md) | Database/files/secrets, consistent capture, guarded disposable restore |
 | [Hosting](hosting.md) | Deployment configuration, persistence, permissions, mail and runtime requirements |
+| [Alwaysdata Free](alwaysdata-free.md) | University demo limits, isolated release build, persistent storage, HTTPS and owned-sender SMTP preparation |
+| [Free-hosting verification](free-hosting-verification.md) | Actual audits, release/resource measurements and remaining host-side verification gates |
 | [Account email](account-email.md) | SMTP variables, trusted links, expiry, optional verification and delivery limits |
 | [Handoff verification](handoff-verification.md) | Current commands actually exercised, cleanup, preservation and setup gaps |
 | [Manual review](manual-review.md) | Deferred browser/device/accessibility/environment checklist |

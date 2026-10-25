@@ -134,6 +134,31 @@ class AccountPhotoTest extends TestCase
         $this->assertNotNull($user->fresh()->avatar_path);
     }
 
+    public function test_insufficient_processing_memory_preserves_the_existing_photo_and_php_limit(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $saved = app(AccountPhotos::class)->replace($user, $this->photo());
+        $path = $saved->avatar_path;
+        $bytes = Storage::disk('avatars')->get($path);
+        $limit = ini_get('memory_limit');
+        $this->app->bind(AccountPhotos::class, fn () => new class extends AccountPhotos
+        {
+            protected function availableMemoryBytes(): int
+            {
+                return 0;
+            }
+        });
+
+        Volt::test('settings.photo')->set('photo', $this->photo())->call('savePhoto')
+            ->assertHasErrors('photo')->assertSee('Choose a smaller image');
+
+        $this->assertSame($path, $user->fresh()->avatar_path);
+        $this->assertSame($bytes, Storage::disk('avatars')->get($path));
+        $this->assertSame([$path], Storage::disk('avatars')->allFiles());
+        $this->assertSame($limit, ini_get('memory_limit'));
+    }
+
     public function test_no_upload_is_required_for_other_account_updates_and_is_required_to_save_a_photo(): void
     {
         $user = User::factory()->create();

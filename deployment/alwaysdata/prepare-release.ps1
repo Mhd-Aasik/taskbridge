@@ -29,7 +29,7 @@ foreach ($name in $names) { $saved[$name] = [Environment]::GetEnvironmentVariabl
 $previous = Get-Location
 try {
     # Package discovery/build cannot select the running application's configuration.
-    foreach ($name in $names) { [Environment]::SetEnvironmentVariable($name, $null, 'Process') }
+    foreach ($name in $names) { Remove-Item -LiteralPath "Env:$name" -ErrorAction SilentlyContinue }
     $env:APP_ENV = 'production'
     $env:APP_DEBUG = 'false'
     $env:APP_URL = 'https://build.example.test'
@@ -40,6 +40,10 @@ try {
     $env:CACHE_STORE = 'array'
     $env:QUEUE_CONNECTION = 'sync'
     $env:VITE_APP_NAME = 'TaskBridge'
+    $env:APP_CONFIG_CACHE = Join-Path $workRoot 'bootstrap/cache/config.php'
+    $env:APP_ROUTES_CACHE = Join-Path $workRoot 'bootstrap/cache/routes-v7.php'
+    $env:VIEW_COMPILED_PATH = Join-Path $workRoot 'storage/framework/views'
+    $env:LARAVEL_STORAGE_PATH = Join-Path $workRoot 'storage'
     Set-Location $workRoot
     & composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
     if ($LASTEXITCODE -ne 0) { throw 'Production dependencies failed' }
@@ -72,6 +76,9 @@ try {
     Write-Output "Prepared locally: $releaseRoot"
 } finally {
     Set-Location $previous
-    foreach ($name in $names) { [Environment]::SetEnvironmentVariable($name, $saved[$name], 'Process') }
+    foreach ($name in $names) {
+        if ($null -eq $saved[$name]) { Remove-Item -LiteralPath "Env:$name" -ErrorAction SilentlyContinue }
+        else { [Environment]::SetEnvironmentVariable($name, $saved[$name], 'Process') }
+    }
 }
 # Work/cache directories are retained for inspection. No upload or remote change occurs.
