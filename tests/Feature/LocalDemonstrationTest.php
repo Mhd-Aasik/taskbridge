@@ -136,7 +136,8 @@ class LocalDemonstrationTest extends TestCase
             $user->refresh();
             $this->assertTrue(Hash::check('local-test-password', $user->password));
             $this->assertNull($user->email_verified_at);
-            $this->assertSame(1, $user->access_version);
+            // Password reset and email change are separate credential checkpoints.
+            $this->assertSame(2, $user->access_version);
             $this->assertDatabaseMissing('sessions', ['user_id' => $user->id]);
         }
         $snapshot = [$client->getAttributes(), $freelancer->getAttributes()];
@@ -169,7 +170,7 @@ class LocalDemonstrationTest extends TestCase
             $user->saveOrFail();
         }
         app(LocalDemoAccounts::class)->update($this->changes($client, $freelancer));
-        $this->assertSame(1, $client->fresh()->access_version);
-        $this->assertSame(1, $freelancer->fresh()->access_version);
+        $this->assertSame(2, $client->fresh()->access_version);
+        $this->assertSame(2, $freelancer->fresh()->access_version);
     }
 }

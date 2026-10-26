@@ -125,10 +125,12 @@ class ProjectActivityPagesTest extends TestCase
     #[DataProvider('participantRoles')]
     public function test_historical_access_escaped_names_safe_metadata_and_only_working_destinations(string $role): void
     {
-        $assignment = ProjectAssignment::factory()->create();
+        $client = User::factory()->create(['role' => 'client', 'name' => '<script>actor</script>', 'email' => 'private@client.test']);
+        $freelancer = User::factory()->create(['role' => 'freelancer', 'email' => 'private@freelancer.test']);
+        $project = Project::factory()->create(['client_id' => $client->id]);
+        $proposal = Proposal::factory()->create(['project_id' => $project->id, 'freelancer_id' => $freelancer->id]);
+        $assignment = ProjectAssignment::factory()->create(['proposal_id' => $proposal->id]);
         $assignment->project->forceFill(['title' => '<script>project</script>', 'status' => ProjectStatus::Completed])->save();
-        $assignment->project->client->forceFill(['name' => '<script>actor</script>', 'email' => 'private@client.test'])->save();
-        $assignment->freelancer->forceFill(['email' => 'private@freelancer.test'])->save();
         foreach (Event::cases() as $event) {
             if ($event !== Event::Published) {
                 $activity = $this->shared($assignment, $event, now());

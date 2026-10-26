@@ -20,7 +20,7 @@ class EnsureAccountAvailable
 
             return $next($request);
         }
-        $current = User::query()->select(['id', 'role', 'suspended_at', 'access_version'])->find($actor->id);
+        $current = User::query()->select(['id', 'role', 'email_verified_at', 'suspended_at', 'access_version'])->find($actor->id);
         $stamp = $request->session()->get(AccountAccess::SESSION_KEY, ['id' => $actor->id, 'version' => 0]);
         if (is_array($stamp) && ($stamp['id'] ?? null) !== $actor->id) {
             $stamp = ['id' => $actor->id, 'version' => 0];
@@ -43,7 +43,19 @@ class EnsureAccountAvailable
         // Persist the baseline stamp for pre-feature sessions; never upgrade an old stamp.
         $request->session()->put(AccountAccess::SESSION_KEY, $stamp);
         $actor->role = $current->role;
+        $actor->email_verified_at = $current->email_verified_at;
         $request->attributes->set('taskbridge.available_actor', $current);
+
+        if (config('auth.require_verified_email') && ! $current->hasVerifiedEmail()
+            && ! $request->routeIs('verification.notice', 'verification.verify', 'verification.send', 'logout')) {
+            // No generic Livewire/update/upload exception: verification uses ordinary
+            // CSRF-protected POST, so unverified component snapshots cannot mutate data.
+            if ($request->expectsJson() || $request->hasHeader('X-Livewire') || $request->routeIs('livewire.upload-file', 'livewire.preview-file')) {
+                abort(403, 'Verify your email address before accessing TaskBridge.');
+            }
+
+            return redirect()->route('verification.notice');
+        }
 
         return $next($request);
     }

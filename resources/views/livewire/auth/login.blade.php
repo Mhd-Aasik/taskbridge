@@ -50,7 +50,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         // Discard destinations captured before authentication; resolve the saved role afresh.
         Session::pull('url.intended');
-        $this->redirect(route('dashboard', absolute: false), navigate: true);
+        $destination = config('auth.require_verified_email') && ! Auth::user()->fresh()->hasVerifiedEmail()
+            ? 'verification.notice' : 'dashboard';
+        $this->redirect(route($destination, absolute: false), navigate: true);
     }
 
     /**

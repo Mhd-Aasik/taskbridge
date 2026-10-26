@@ -5,6 +5,7 @@ namespace Tests\Feature\Auth;
 use App\Actions\Accounts\BootstrapAdmin;
 use App\Console\Commands\BootstrapAdminCommand;
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
@@ -40,7 +41,7 @@ class BootstrapAdminTest extends TestCase
         return array_replace(['name' => 'First Admin', 'email' => 'admin@taskbridge.test', 'password' => self::PASSWORD, 'password_confirmation' => self::PASSWORD], $overrides);
     }
 
-    public function test_console_creates_only_the_first_admin_with_hashed_password_and_optional_verification(): void
+    public function test_console_creates_only_the_first_admin_with_hashed_password_and_restricted_verification(): void
     {
         $client = User::factory()->create(['role' => 'client']);
         $freelancer = User::factory()->create(['role' => 'freelancer']);
@@ -60,7 +61,11 @@ class BootstrapAdminTest extends TestCase
         $this->assertSame(0, $admin->access_version);
         $this->assertSame($before, [$client->fresh()->getAttributes(), $freelancer->fresh()->getAttributes()]);
         $this->assertDatabaseCount('users', 3);
-        Volt::test('auth.login')->set('email', $admin->email)->set('password', self::PASSWORD)->call('login')->assertHasNoErrors()->assertRedirect(route('dashboard', absolute: false));
+        Volt::test('auth.login')->set('email', $admin->email)->set('password', self::PASSWORD)->call('login')->assertHasNoErrors()->assertRedirect(route('verification.notice', absolute: false));
+        $this->get(route('admin.dashboard'))->assertRedirectToRoute('verification.notice');
+        // This synthetic Admin must follow its genuine signed verification route.
+        $url = (new VerifyEmail)->toMail($admin)->actionUrl;
+        $this->get($url)->assertRedirect();
         $this->get(route('dashboard'))->assertRedirectToRoute('admin.dashboard');
         $this->get(route('admin.dashboard'))->assertOk();
         $this->get(route('client.dashboard'))->assertForbidden();

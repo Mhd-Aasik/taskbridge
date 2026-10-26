@@ -227,10 +227,10 @@ class ClientProposalReviewTest extends TestCase
     {
         Storage::fake('avatars');
         $letter = "First line.\n<script>alert('unsafe')</script> & plain text.\n".str_repeat('Details. ', 50)."\nFinal line.";
-        $proposal = $this->proposal(['cover_letter' => $letter]);
+        $freelancer = User::factory()->create(['role' => 'freelancer', 'name' => 'Samara <script>name</script>', 'email' => 'private-freelancer@example.test']);
+        $proposal = $this->proposal(['cover_letter' => $letter, 'freelancer_id' => $freelancer->id]);
         $proposal->project->update(['title' => '<img src=x onerror=alert(1)> Private brief']);
         $freelancer = $proposal->freelancer;
-        $freelancer->update(['name' => 'Samara <script>name</script>', 'email' => 'private-freelancer@example.test']);
         $this->actingAs($freelancer);
         $freelancer = app(AccountPhotos::class)->replace($freelancer, UploadedFile::fake()->image('private.png'));
         $profile = FreelancerProfile::factory()->create([

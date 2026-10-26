@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Actions\Proposals\AcceptProposal;
 use App\Enums\ProjectStatus;
 use App\Models\FreelancerProfile;
+use App\Models\Project;
 use App\Models\ProjectAssignment;
 use App\Models\Proposal;
 use App\Models\User;
@@ -119,9 +120,11 @@ class FreelancerAssignmentPagesTest extends TestCase
     public function test_private_client_and_competing_data_are_excluded_and_text_is_escaped(): void
     {
         Storage::fake('avatars');
-        $assignment = ProjectAssignment::factory()->create(['agreed_budget' => '9999999999.99']);
+        $client = User::factory()->create(['role' => 'client', 'name' => '<script>Client</script>', 'email' => 'private-client@example.test']);
+        $project = Project::factory()->create(['client_id' => $client->id]);
+        $proposal = Proposal::factory()->create(['project_id' => $project->id]);
+        $assignment = ProjectAssignment::factory()->create(['proposal_id' => $proposal->id, 'agreed_budget' => '9999999999.99']);
         $client = $assignment->project->client;
-        $client->update(['name' => '<script>Client</script>', 'email' => 'private-client@example.test']);
         $this->actingAs($client);
         $client = app(AccountPhotos::class)->replace($client, UploadedFile::fake()->image('private.png'));
         $profile = FreelancerProfile::factory()->create(['user_id' => $client->id, 'bio' => 'Private account biography']);

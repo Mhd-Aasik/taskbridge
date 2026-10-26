@@ -1,5 +1,9 @@
 # Alwaysdata Free university demonstration
 
+For the subsequent email-first registration feature and its SMTP/Admin-safe
+enforcement gates, see [the release review](email-first-registration.md). That
+feature has not been deployed; historical readiness entries below are preserved.
+
 Readiness work only, checked 25 October 2026. The owner subsequently reported the
 existing account `taskbridge-aasik`; the continuation below records authenticated
 host inspection and the authorized private disposable database/release probe.

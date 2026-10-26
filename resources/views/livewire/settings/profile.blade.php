@@ -56,6 +56,16 @@ new class extends Component {
         });
         Auth::setUser($user);
 
+        if ($user->wasChanged('email') && config('auth.require_verified_email')) {
+            // Preserve the current user's restricted session while revoking stale ones.
+            Auth::login($user);
+            session()->regenerate();
+            session()->forget('url.intended');
+            $this->redirectRoute('verification.notice');
+
+            return;
+        }
+
         $this->dispatch('profile-updated', name: $user->name);
     }
 
@@ -97,7 +107,7 @@ new class extends Component {
                     <flux:error name="verification" />
                     <div>
                         <p class="tb-muted mt-2 text-sm">
-                            {{ __('Your email address is unverified. Verification is optional.') }}
+                            {{ __('Your email address is unverified. Verify it before accessing your workspace.') }}
 
                             <button
                                 type="button"

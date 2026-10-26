@@ -14,7 +14,7 @@ class AccountAccess
     public const EXPIRED = 'Your session has ended. Please log in again.';
 
     /** No global User scope: suspended authors must remain available in history. */
-    public static function allows(User $actor, bool $fresh = false): bool
+    public static function allows(User $actor, bool $fresh = false, bool $requireVerification = true): bool
     {
         if (! $actor->isActive()) {
             return false;
@@ -24,9 +24,12 @@ class AccountAccess
         // Mutation contexts always bypass it after obtaining their account locks.
         $current = $fresh ? null : request()->attributes->get('taskbridge.available_actor');
         if (! $current instanceof User || $current->id !== $actor->id || $current->getConnection()->getName() !== $actor->getConnection()->getName()) {
-            $current = User::on($actor->getConnectionName())->select(['id', 'suspended_at', 'access_version'])->find($actor->id);
+            $current = User::on($actor->getConnectionName())->select(['id', 'suspended_at', 'access_version', 'email_verified_at'])->find($actor->id);
         }
         if (! $current || ! $current->isActive() || (int) $actor->access_version !== $current->access_version) {
+            return false;
+        }
+        if ($requireVerification && config('auth.require_verified_email') && ! $current->hasVerifiedEmail()) {
             return false;
         }
         $authenticated = Auth::user();
@@ -50,13 +53,24 @@ class AccountAccess
 
     public static function account(bool $lock = false): User
     {
+        return self::resolve($lock, true);
+    }
+
+    /** Only verification/recovery handlers may use this restricted identity. */
+    public static function verificationAccount(bool $lock = false): User
+    {
+        return self::resolve($lock, false);
+    }
+
+    private static function resolve(bool $lock, bool $requireVerification): User
+    {
         $query = User::query()->whereKey(Auth::id());
         if ($lock) {
             $query->lockForUpdate();
         }
         $actor = $query->first();
         abort_unless($actor, 403);
-        self::ensure($actor);
+        abort_unless(self::allows($actor, fresh: true, requireVerification: $requireVerification), 403, self::UNAVAILABLE);
 
         return $actor;
     }

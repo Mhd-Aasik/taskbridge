@@ -2,12 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Models\PendingRegistration;
 use App\Models\User;
+use App\Notifications\CompleteRegistration;
 use App\Services\AccountPhotos;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Volt;
 use Tests\TestCase;
@@ -18,14 +22,21 @@ class AccountStatusIntegrityTest extends TestCase
 
     public function test_registration_and_profile_extra_input_cannot_set_system_status_or_roles(): void
     {
+        Notification::fake();
         $forged = ['suspended_at' => '2030-01-01', 'suspended_by' => 999999, 'suspension_reason' => 'Forged internal data', 'access_version' => 999, 'role' => 'admin'];
-        Volt::test('auth.register')->set('name', 'Fresh client')->set('email', 'safe@example.test')->set('role', 'client')->set('password', 'password')->set('password_confirmation', 'password')->call('register', $forged)->assertHasNoErrors();
+        Volt::test('auth.register')->set('name', 'Fresh client')->set('email', 'safe@example.test')->set('role', 'client')->call('register', $forged)->assertHasNoErrors();
+        $this->assertDatabaseCount('users', 0);
+        $notification = Notification::sent(new AnonymousNotifiable, CompleteRegistration::class)->sole();
+        parse_str(parse_url($notification->setupUrl, PHP_URL_FRAGMENT), $parameters);
+        $pending = PendingRegistration::sole();
+        $this->post(route('registration.complete', $pending->id), ['email' => $pending->email, 'setup_token' => $parameters['token'], 'password' => 'VerifiedPassword123!', 'password_confirmation' => 'VerifiedPassword123!', 'suspended_at' => $forged['suspended_at'], 'access_version' => 999])->assertRedirectToRoute('login');
         $user = User::where('email', 'safe@example.test')->sole();
         $this->assertTrue($user->isActive());
         $this->assertSame(0, $user->access_version);
         $this->assertSame('client', $user->role);
         $this->assertNull($user->suspended_by);
         $this->assertNull($user->suspension_reason);
+        $this->actingAs($user);
         Volt::test('settings.profile')->set('name', 'Updated client')->set('email', $user->email)->call('updateProfileInformation', $forged)->assertHasNoErrors();
         $this->assertSame('Updated client', $user->fresh()->name);
         $this->assertTrue($user->fresh()->isActive());

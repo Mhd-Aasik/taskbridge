@@ -4,6 +4,9 @@ APP_NAME=TaskBridge
 APP_ENV=production
 APP_KEY=REPLACE_WITH_NEW_DEPLOYMENT_KEY_GENERATED_PRIVATELY_ONCE
 APP_DEBUG=false
+TASKBRIDGE_REQUIRE_VERIFIED_EMAIL=false
+# Enable only after SMTP delivery and the existing Admin verification are confirmed.
+# Follow docs/email-first-registration.md; never backfill email_verified_at.
 APP_URL=https://REPLACE_ACCOUNT.alwaysdata.net
 APP_LOCALE=en
 APP_FALLBACK_LOCALE=en
@@ -39,6 +42,7 @@ LOG_DAILY_DAYS=3
 # After confirmation: MAIL_MAILER=smtp, MAIL_SCHEME=smtps, MAIL_PORT=465.
 # Host-native SMTP requires an actual mailbox/sender authorized for this account.
 MAIL_MAILER=array
+MAIL_REQUIRE_TLS=true
 MAIL_SCHEME=smtps
 MAIL_HOST=smtp-REPLACE_ACCOUNT.alwaysdata.net
 MAIL_PORT=465
