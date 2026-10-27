@@ -18,7 +18,7 @@ class VerifyEmailController extends Controller
     {
         $request->session()->pull('url.intended');
         DB::transaction(function () use ($request): void {
-            $account = AccountAccess::account(lock: true);
+            $account = AccountAccess::verificationAccount(lock: true);
             abort_unless((string) $account->id === (string) $request->route('id') && hash_equals(sha1($account->getEmailForVerification()), (string) $request->route('hash')), 403);
             if (! $account->hasVerifiedEmail() && $account->markEmailAsVerified()) {
                 event(new Verified($account));

@@ -15,6 +15,20 @@ jobs:
     runs-on: ubuntu-latest
     environment: Testing
 
+    services:
+      mariadb:
+        image: mariadb:11.8
+        env:
+          MARIADB_DATABASE: taskbridge_ci_registration
+          MARIADB_USER: taskbridge_ci
+          MARIADB_PASSWORD: ci-only-disposable-password
+          MARIADB_ROOT_PASSWORD: ci-only-disposable-root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,6 +37,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.4
+          extensions: mbstring, gd, exif, pdo_sqlite, pdo_mysql, intl, zip
           tools: composer:v2
           coverage: xdebug
 
@@ -33,7 +48,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Node Dependencies
-        run: npm i
+        run: npm ci --no-audit --no-fund
 
       - name: Create SQLite Database
         run: touch database/database.sqlite
@@ -50,5 +65,13 @@ jobs:
       - name: Build Assets
         run: npm run build
 
+      - name: Test secure account-link initialization
+        run: node --test tests/JavaScript/*.test.mjs
+
       - name: Run Tests
         run: ./vendor/bin/phpunit
+
+      - name: Test concurrent registration on disposable MariaDB
+        env:
+          TASKBRIDGE_RACE_MYSQL: '1'
+        run: ./vendor/bin/phpunit tests/Feature/Auth/RegistrationConcurrencyTest.php

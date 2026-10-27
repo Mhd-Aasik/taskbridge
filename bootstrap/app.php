@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureAccountAvailable;
 use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\EnsureVerifiedEmail;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,8 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', EnsureAccountAvailable::class);
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
+            'verified' => EnsureVerifiedEmail::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->dontFlash(['password', 'password_confirmation', 'current_password', 'setup_token', 'token']);
     })->create();

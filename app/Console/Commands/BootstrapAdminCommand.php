@@ -40,7 +40,7 @@ class BootstrapAdminCommand extends Command
                 'password_confirmation' => $this->secret('Confirm password', false),
             ];
             $values = $bootstrap->validate($input);
-            $this->table(['Name', 'Email', 'Role', 'Email verification'], [[$values['name'], $values['email'], 'Admin', 'Unverified (optional)']]);
+            $this->table(['Name', 'Email', 'Role', 'Email verification'], [[$values['name'], $values['email'], 'Admin', 'Unverified - verify before enabling production enforcement']]);
             if (! $this->confirm('Create this first Admin account?', false)) {
                 $this->info('Cancelled. No account was created.');
 

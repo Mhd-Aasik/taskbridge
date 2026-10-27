@@ -3,6 +3,10 @@
 use App\Models\User;
 
 return [
+    // Production rollout is explicit: stage the release with enforcement off,
+    // verify SMTP and the existing Admin, then enable it after the readiness gate.
+    'require_verified_email' => env('TASKBRIDGE_REQUIRE_VERIFIED_EMAIL', env('APP_ENV', 'production') !== 'production'),
+    'registration' => ['expire' => 60],
 
     /*
     |--------------------------------------------------------------------------

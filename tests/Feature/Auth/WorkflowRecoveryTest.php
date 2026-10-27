@@ -34,7 +34,7 @@ class WorkflowRecoveryTest extends TestCase
     }
 
     #[DataProvider('roles')]
-    public function test_optional_verification_mail_to_signed_link_consumes_another_roles_intended_destination(string $role): void
+    public function test_required_verification_mail_to_signed_link_consumes_another_roles_intended_destination(string $role): void
     {
         $user = User::factory()->unverified()->create(['role' => $role]);
         $this->actingAs($user)->withSession(['url.intended' => route($role === 'client' ? 'freelancer.projects.index' : 'client.projects.index')]);

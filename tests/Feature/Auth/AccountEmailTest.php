@@ -47,6 +47,8 @@ class AccountEmailTest extends TestCase
 
     public function test_verification_resend_throttle_is_shared_by_both_pages(): void
     {
+        // During the explicitly staged production transition both legacy pages exist.
+        config(['auth.require_verified_email' => false]);
         Notification::fake();
         $user = User::factory()->unverified()->create();
         $this->actingAs($user);
@@ -79,7 +81,7 @@ class AccountEmailTest extends TestCase
         Volt::test('settings.profile')->set('name', $user->name)->set('email', 'changed@taskbridge.test')->call('updateProfileInformation')->assertHasNoErrors();
         $this->assertNull($user->fresh()->email_verified_at);
         $this->get($url)->assertForbidden();
-        $this->get(route('client.dashboard'))->assertOk(); // Verification remains optional.
+        $this->get(route('client.dashboard'))->assertRedirectToRoute('verification.notice');
     }
 
     public function test_tampered_reset_token_cannot_change_account_state(): void

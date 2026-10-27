@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Actions\Accounts\RegisterByEmail;
 use App\Actions\Accounts\SendAccountEmail;
+use App\Models\PendingRegistration;
 use App\Models\User;
 use App\Support\AccountAccess;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,6 +18,53 @@ class AccountSmtpTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_branded_setup_mail_is_captured_locally_and_creates_no_account_before_completion(): void
+    {
+        $directory = storage_path('framework/testing/smtp-'.bin2hex(random_bytes(8)));
+        mkdir($directory, 0700, true);
+        $server = new Process([PHP_BINARY, base_path('tests/Support/smtp-capture.php'), $directory]);
+        $server->start();
+        try {
+            $deadline = microtime(true) + 10;
+            while (! is_file($directory.'/ready')) {
+                $this->assertTrue($server->isRunning() && microtime(true) < $deadline);
+                usleep(10000);
+            }
+            config(['app.url' => 'http://trusted.taskbridge.test', 'mail.default' => 'smtp', 'mail.mailers.smtp' => ['transport' => 'smtp', 'host' => '127.0.0.1', 'port' => (int) file_get_contents($directory.'/ready'), 'scheme' => 'smtp', 'timeout' => 2, 'auto_tls' => false, 'require_tls' => false], 'mail.from' => ['address' => 'security@taskbridge.test', 'name' => 'TaskBridge']]);
+            Mail::purge('smtp');
+            app(RegisterByEmail::class)->begin(['name' => 'Captured Identity', 'email' => 'new@taskbridge.test', 'role' => 'freelancer'], '192.0.2.40');
+            $files = glob($directory.'/*.eml');
+            $this->assertCount(1, $files);
+            $raw = file_get_contents($files[0]);
+            $parsed = CapturedAccountEmail::parse($raw);
+            foreach (['plain', 'html'] as $part) {
+                foreach (['TaskBridge', '60 minutes', 'If you did not request', 'copy and paste'] as $text) {
+                    $this->assertStringContainsString($text, $parsed[$part]);
+                }
+            }
+            $this->assertStringContainsString('Subject: Finish setting up your TaskBridge account', $raw);
+            $this->assertStringContainsString('To: new@taskbridge.test', $raw);
+            $this->assertSame(1, preg_match('/href="(http:\/\/trusted\.taskbridge\.test\/register\/setup\/[^"]+)"/', $parsed['html'], $matches));
+            $url = html_entity_decode($matches[1]);
+            parse_str(parse_url($url, PHP_URL_FRAGMENT), $parameters);
+            $this->assertEmpty(parse_url($url, PHP_URL_QUERY));
+            $this->assertStringContainsString($url, $parsed['plain']);
+            $this->get(explode('#', $url)[0])->assertOk();
+            $this->assertDatabaseCount('users', 0);
+            $pending = PendingRegistration::sole();
+            $this->post(route('registration.complete', $pending->id), ['email' => $pending->email, 'setup_token' => $parameters['token'], 'password' => 'CapturedPassword123!', 'password_confirmation' => 'CapturedPassword123!'])->assertRedirectToRoute('login');
+            $this->assertTrue(User::sole()->hasVerifiedEmail());
+            $this->assertCount(1, glob($directory.'/*.eml'));
+        } finally {
+            $server->stop(1);
+            Mail::purge('smtp');
+            foreach (glob($directory.'/*') as $path) {
+                unlink($path);
+            }
+            rmdir($directory);
+        }
+    }
+
     public function test_actual_loopback_smtp_multipart_messages_and_captured_links_work(): void
     {
         $directory = storage_path('framework/testing/smtp-'.bin2hex(random_bytes(8)));
@@ -28,7 +77,7 @@ class AccountSmtpTest extends TestCase
                 $this->assertTrue($server->isRunning() && microtime(true) < $until, 'Loopback SMTP did not become ready.');
                 usleep(10000);
             }
-            config(['app.url' => 'http://trusted.taskbridge.test', 'mail.default' => 'smtp', 'mail.mailers.smtp' => ['transport' => 'smtp', 'host' => '127.0.0.1', 'port' => (int) file_get_contents($directory.'/ready'), 'scheme' => 'smtp', 'timeout' => 2, 'auto_tls' => false], 'mail.from' => ['address' => 'security@taskbridge.test', 'name' => 'TaskBridge']]);
+            config(['app.url' => 'http://trusted.taskbridge.test', 'mail.default' => 'smtp', 'mail.mailers.smtp' => ['transport' => 'smtp', 'host' => '127.0.0.1', 'port' => (int) file_get_contents($directory.'/ready'), 'scheme' => 'smtp', 'timeout' => 2, 'auto_tls' => false, 'require_tls' => false], 'mail.from' => ['address' => 'security@taskbridge.test', 'name' => 'TaskBridge']]);
             Mail::purge('smtp');
             $user = User::factory()->unverified()->create(['email' => 'recipient@taskbridge.test', 'role' => 'freelancer']);
             Volt::test('auth.forgot-password')->set('email', $user->email)->call('sendPasswordResetLink')->assertHasNoErrors();
@@ -64,9 +113,9 @@ class AccountSmtpTest extends TestCase
             $this->assertTrue($user->fresh()->hasVerifiedEmail());
             $this->get(route('dashboard'))->assertRedirectToRoute('freelancer.dashboard');
             auth()->logout();
-            parse_str(parse_url($reset, PHP_URL_QUERY), $parameters);
-            $this->get($reset)->assertOk();
-            Volt::test('auth.reset-password', ['token' => basename(parse_url($reset, PHP_URL_PATH))])->set('email', $parameters['email'])->set('password', 'smtp-tested-password')->set('password_confirmation', 'smtp-tested-password')->call('resetPassword')->assertHasNoErrors();
+            parse_str(parse_url($reset, PHP_URL_FRAGMENT), $parameters);
+            $this->get(explode('#', $reset)[0])->assertOk();
+            $this->post(route('password.update'), ['token' => $parameters['token'], 'email' => $parameters['email'], 'password' => 'smtp-tested-password', 'password_confirmation' => 'smtp-tested-password'])->assertRedirectToRoute('login');
             $this->assertSame(1, $user->fresh()->access_version);
             // Real transport failure, not a fake dispatcher, is also handled safely.
             $server->stop(1);
