@@ -37,6 +37,37 @@ Final PR checks are the authoritative full-suite/MariaDB/linter results; do not
 approve deployment from local results alone. Use the PR's checks and matching head
 revision, not an earlier workflow notification.
 
+The base feature commit `346a752` subsequently passed the actual full CI suite
+(2,373 tests / 14,555 assertions), the separate two-process race on MariaDB
+11.8.9 (1 test / 28 assertions), and lint:
+[tests](https://github.com/Mhd-Aasik/taskbridge/actions/runs/40394507686),
+[lint](https://github.com/Mhd-Aasik/taskbridge/actions/runs/40394507594).
+
+## Verification-link follow-up
+
+The private console successfully sent the two authorized messages: both were
+accepted by Gmail SMTP. Saved DPAPI credential decryption, format and restricted
+ACL checks passed without printing or modifying the credential. No further sends
+were performed; inbox receipt is distinct from transport acceptance.
+
+Bounded, host-side comparisons of the actual verification access logs showed the
+original link was correctly signed and unexpired, with a 302 sign-in redirect.
+Later 403 requests had an extra closing parenthesis after the correct 64-character
+signature. No key, signature, full verification URL, password or other users' log
+records were exported. The strict signature validator is preserved unchanged.
+
+The login flow now resumes only an unexpired, correctly signed verification URL
+on the exact trusted origin/path for the authenticated user's ID and current
+email. Login itself does not verify ownership. Wrong-account, changed-email,
+foreign-host (even correctly signed), expired, altered, fragmented, extra-query,
+nonstring and other private-route destinations remain discarded. The focused
+auth regression passed **41 tests / 319 assertions**; final head checks remain
+authoritative on [PR #2](https://github.com/Mhd-Aasik/taskbridge/pull/2).
+
+The last live check still reported an unverified Admin. Live release `edbb67e`
+and capture-only mail configuration are unchanged; new live signups cannot use
+the PR's email-first flow until a separately reviewed rollout is approved.
+
 ## Production and mail gates
 
 A read-only pinned-SSH inspection confirmed the unchanged live `edbb67e` release,

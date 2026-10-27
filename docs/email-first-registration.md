@@ -54,6 +54,14 @@ execution; uncertain outcomes must be inspected, never automatically repeated.
 SMTP acceptance is not inbox delivery. Receive the genuine verification message,
 follow it while signed in as Admin, then confirm the saved verification timestamp.
 
+The new release resumes a valid canonical signed verification link after login
+only when it belongs to that same account and current email. Other destinations,
+expired/altered links and foreign hosts are discarded. Login itself never marks
+email verified. The old live release requires reopening the email link after login.
+An observed live rejection was caused by a copied closing parenthesis appended to
+the signature; strict rejection is retained. Use the original email button or the
+exact unmodified link, and never share the link in chat.
+
 Future private settings (not applied):
 
 ```dotenv

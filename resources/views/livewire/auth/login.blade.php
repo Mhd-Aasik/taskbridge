@@ -48,9 +48,16 @@ new #[Layout('components.layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        // Discard destinations captured before authentication; resolve the saved role afresh.
-        Session::pull('url.intended');
-        $destination = config('auth.require_verified_email') && ! Auth::user()->fresh()->hasVerifiedEmail()
+        $account = Auth::user()->fresh();
+        $verification = app(\App\Support\AccountEmailLinks::class)->verificationAfterLogin($account, Session::pull('url.intended'));
+        if ($verification !== null) {
+            // Resume only a valid, canonical signed link bound to this account.
+            // Opening that authenticated route still performs all verification checks.
+            $this->redirect($verification);
+            return;
+        }
+        // Discard every other captured destination and resolve the saved role afresh.
+        $destination = config('auth.require_verified_email') && ! $account->hasVerifiedEmail()
             ? 'verification.notice' : 'dashboard';
         $this->redirect(route($destination, absolute: false), navigate: true);
     }
