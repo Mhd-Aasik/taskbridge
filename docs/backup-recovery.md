@@ -1,5 +1,10 @@
 # Backup and recovery (Windows)
 
+Current live status is recorded in [deployment completion](deployment-completion.md):
+revision `67c9ab660811` is deployed with verified SMTP, mandatory verification before
+login, preserved Admin/data and a passed-and-cleaned genuine signup test. Dated
+pending statements below retain their original historical scope.
+
 Treat a backup as a matched set: **MySQL database + durable private uploads + protected environment/key + source commit/lockfiles/build manifest**. Database rows alone cannot reconstruct files; files alone cannot reconstruct ownership or immutable history. Store backups outside the web root/repository, on encrypted access-controlled storage with a documented retention policy and a second protected/off-host copy. Keep access to secrets narrower than access to source. Do not commit backup SQL, `.env`, mail captures or private uploads.
 
 ## Consistent capture

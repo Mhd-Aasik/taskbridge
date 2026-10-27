@@ -1,5 +1,10 @@
 # Setup and handoff verification
 
+Current live status is recorded in [deployment completion](deployment-completion.md):
+revision `67c9ab660811` is deployed with verified SMTP, mandatory verification before
+login, preserved Admin/data and a passed-and-cleaned genuine signup test. Dated
+pending statements below retain their original historical scope.
+
 The documentation below was checkpointed as **`46a004d` — Document installation, user workflows and recovery**. The first-Admin gap described at that checkpoint is now addressed by [the console bootstrap](admin-bootstrap.md) on `fix/admin-bootstrap`. See the final verification section at the end for current results; the earlier installation/restore evidence remains historical.
 
 ## Checkpoint and scope

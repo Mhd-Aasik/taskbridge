@@ -1,9 +1,11 @@
 # Email-first registration release review
 
-Prepared for PR/CI review only. The live baseline remains
-`edbb67e3bdd99f9f3087982b9e5a964502119c88` at
-`https://taskbridge-aasik.alwaysdata.net`. This task does not authorize deploying
-the feature or changing live authentication policy.
+The owner-approved release `67c9ab6608114aedc6bb5b83528646c4ed83fb59` is deployed
+at `https://taskbridge-aasik.alwaysdata.net` with SMTP and verification before login
+enabled. The existing Admin is verified and its password is preserved. Actual
+genuine-email setup/login and guarded test-account cleanup passed; see
+[deployment completion](deployment-completion.md). The preparation sequence below
+is retained for future reviewed deployments; it does not authorize another rollout.
 
 ## Flow and security
 

@@ -1,5 +1,10 @@
 # Email-first registration verification record
 
+Current live status is recorded in [deployment completion](deployment-completion.md):
+revision `67c9ab660811` is deployed with verified SMTP, mandatory verification before
+login, preserved Admin/data and a passed-and-cleaned genuine signup test. Dated
+pending statements below retain their original historical scope.
+
 The later clarification requires verification before successful login. The
 follow-up replaces restricted authenticated verification and signed-GET mutation
 with guest-only, single-use-token CSRF POST verification for existing accounts.

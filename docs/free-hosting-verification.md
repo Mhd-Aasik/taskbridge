@@ -1,5 +1,10 @@
 # Free-hosting readiness evidence — 25 October 2026
 
+Current live status is recorded in [deployment completion](deployment-completion.md):
+revision `67c9ab660811` is deployed with verified SMTP, mandatory verification before
+login, preserved Admin/data and a passed-and-cleaned genuine signup test. Dated
+pending statements below retain their original historical scope.
+
 Starting checkout: clean `main` at **cb0350e**, tracking `origin/main`, with the
 configured remote `https://github.com/Mhd-Aasik/taskbridge.git`. Work continues on
 `chore/free-hosting-readiness`; no repository/ancestor AGENTS.md was found. No push,

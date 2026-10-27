@@ -1,5 +1,10 @@
 # Hosting and release operations
 
+Current live status is recorded in [deployment completion](deployment-completion.md):
+revision `67c9ab660811` is deployed with verified SMTP, mandatory verification before
+login, preserved Admin/data and a passed-and-cleaned genuine signup test. Dated
+pending statements below retain their original historical scope.
+
 This is preparation, not a deployment record. No hosting account, running service, external mail provider or public site was changed during handoff. Use [installation](installation.md) for dependency requirements and [backup/recovery](backup-recovery.md) before any release.
 
 For the zero-cost university demonstration target, use the specific
