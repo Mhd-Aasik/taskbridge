@@ -4,9 +4,9 @@ namespace Tests\Feature\Auth;
 
 use App\Actions\Accounts\RegisterByEmail;
 use App\Actions\Accounts\SendAccountEmail;
+use App\Models\EmailVerificationToken;
 use App\Models\PendingRegistration;
 use App\Models\User;
-use App\Support\AccountAccess;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Volt\Volt;
@@ -81,8 +81,7 @@ class AccountSmtpTest extends TestCase
             Mail::purge('smtp');
             $user = User::factory()->unverified()->create(['email' => 'recipient@taskbridge.test', 'role' => 'freelancer']);
             Volt::test('auth.forgot-password')->set('email', $user->email)->call('sendPasswordResetLink')->assertHasNoErrors();
-            $this->actingAs($user);
-            Volt::test('auth.verify-email')->call('sendVerification')->assertHasNoErrors();
+            $this->post(route('verification.send'), ['email' => $user->email])->assertRedirectToRoute('verification.notice');
             $messages = glob($directory.'/*.eml');
             $this->assertCount(2, $messages);
             $urls = [];
@@ -109,7 +108,13 @@ class AccountSmtpTest extends TestCase
             }
             $reset = $urls[0];
             $verification = $urls[1];
-            $this->get($verification)->assertRedirect();
+            parse_str(parse_url($verification, PHP_URL_FRAGMENT), $verificationParams);
+            $this->get(explode('#', $verification)[0])->assertOk();
+            $this->assertNull($user->fresh()->email_verified_at);
+            $record = EmailVerificationToken::sole();
+            $this->post(route('verification.complete', $record->id), ['email' => $user->email, 'token' => $verificationParams['token']])->assertRedirectToRoute('login');
+            $this->assertGuest();
+            Volt::test('auth.login')->set('email', $user->email)->set('password', 'password')->call('login')->assertHasNoErrors();
             $this->assertTrue($user->fresh()->hasVerifiedEmail());
             $this->get(route('dashboard'))->assertRedirectToRoute('freelancer.dashboard');
             auth()->logout();
@@ -123,9 +128,9 @@ class AccountSmtpTest extends TestCase
             $this->travel(61)->seconds();
             $user = $user->fresh();
             $user->forceFill(['email_verified_at' => null])->save();
-            $this->actingAs($user);
-            session()->put(AccountAccess::SESSION_KEY, ['id' => $user->id, 'version' => $user->access_version]);
-            Volt::test('auth.verify-email')->call('sendVerification')->assertHasErrors('verification');
+            $before = $user->fresh()->getAttributes();
+            $this->post(route('verification.send'), ['email' => $user->email])->assertRedirectToRoute('verification.notice');
+            $this->assertSame($before, $user->fresh()->getAttributes());
             auth()->logout();
             $other = User::factory()->create(['email' => 'another@taskbridge.test']);
             Volt::test('auth.forgot-password')->set('email', $other->email)->call('sendPasswordResetLink')->assertHasNoErrors()->assertSee(SendAccountEmail::RESET_STATUS);

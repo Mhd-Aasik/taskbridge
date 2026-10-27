@@ -2,6 +2,7 @@
 
 // Synthetic identities only; never accepts a deployment database or environment.
 use App\Actions\Accounts\RegisterByEmail;
+use App\Actions\Accounts\VerifyExistingEmail;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +33,11 @@ while (! is_file($directory.'/go')) {
     usleep(10000);
 }
 try {
-    app(RegisterByEmail::class)->complete($data['id'], ['email' => 'race@taskbridge.test', 'setup_token' => $data['token'], 'password' => 'ConcurrentPassword'.$number.'!', 'password_confirmation' => 'ConcurrentPassword'.$number.'!']);
+    if (($data['flow'] ?? 'registration') === 'existing-verification') {
+        app(VerifyExistingEmail::class)->complete($data['id'], ['email' => 'race@taskbridge.test', 'token' => $data['token']]);
+    } else {
+        app(RegisterByEmail::class)->complete($data['id'], ['email' => 'race@taskbridge.test', 'setup_token' => $data['token'], 'password' => 'ConcurrentPassword'.$number.'!', 'password_confirmation' => 'ConcurrentPassword'.$number.'!']);
+    }
     echo 'created';
 } catch (ValidationException) {
     echo 'rejected';

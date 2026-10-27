@@ -1,5 +1,29 @@
 # Email-first registration verification record
 
+The later clarification requires verification before successful login. The
+follow-up replaces restricted authenticated verification and signed-GET mutation
+with guest-only, single-use-token CSRF POST verification for existing accounts.
+Historical test results below remain evidence for their recorded revisions only.
+The final deployment review must use the subsequent verified main revision.
+
+Clarification implementation: the auth provider rejects unverified password,
+remember-me and restored-session login before normal access. Existing-account
+verification uses the new `email_verification_tokens` table, a public throttled
+request form, fragment tokens and an unauthenticated CSRF POST. It preserves the
+existing password/role and checks current email, access version and suspension.
+GET (including old signed routes) cannot verify. Setup also finishes as a guest.
+The updated isolated auth suite passed 114 tests / 1,159 assertions, including
+both independent-process races on SQLite; a separate cross-purpose token test
+passed 1 test / 6 assertions. JavaScript tests, frontend build and Pint passed.
+CI repeats both races on disposable MariaDB before integration.
+
+Production SMTP preparation is complete: the privately saved credential passed
+authentication from Alwaysdata using verified TLS 1.3 / TLS_AES_256_GCM_SHA384,
+with hostname/certificate checking and zero additional messages. The previous
+two approved message acceptances and genuine Admin verification are reused.
+No live SMTP/configuration, Admin password, APP_KEY or authentication-policy
+change is part of this preparation.
+
 Prepared 27 October 2026 on `feature/email-first-registration`, based on
 `edbb67e3bdd99f9f3087982b9e5a964502119c88`, in an isolated worktree. No dependency
 lockfile changes, unchanged audits, production migrations or policy changes.

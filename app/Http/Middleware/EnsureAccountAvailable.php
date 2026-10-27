@@ -46,12 +46,15 @@ class EnsureAccountAvailable
         $actor->email_verified_at = $current->email_verified_at;
         $request->attributes->set('taskbridge.available_actor', $current);
 
-        if (config('auth.require_verified_email') && ! $current->hasVerifiedEmail()
-            && ! $request->routeIs('verification.notice', 'verification.verify', 'verification.send', 'logout')) {
-            // No generic Livewire/update/upload exception: verification uses ordinary
-            // CSRF-protected POST, so unverified component snapshots cannot mutate data.
+        if (config('auth.require_verified_email') && ! $current->hasVerifiedEmail()) {
+            Auth::guard('web')->logoutCurrentDevice();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
             if ($request->expectsJson() || $request->hasHeader('X-Livewire') || $request->routeIs('livewire.upload-file', 'livewire.preview-file')) {
                 abort(403, 'Verify your email address before accessing TaskBridge.');
+            }
+            if ($request->routeIs('verification.notice', 'verification.verify', 'verification.send', 'verification.confirm', 'verification.complete', 'logout')) {
+                return $next($request);
             }
 
             return redirect()->route('verification.notice');

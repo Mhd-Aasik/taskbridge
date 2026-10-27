@@ -3,28 +3,18 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Support\AccountAccess;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class VerifyEmailController extends Controller
 {
     /**
-     * Mark the authenticated user's email address as verified.
+     * Legacy signed GET is read-only; ownership is completed by the guest token POST.
      */
-    public function __invoke(EmailVerificationRequest $request): RedirectResponse
+    public function __invoke(Request $request): RedirectResponse
     {
         $request->session()->pull('url.intended');
-        DB::transaction(function () use ($request): void {
-            $account = AccountAccess::verificationAccount(lock: true);
-            abort_unless((string) $account->id === (string) $request->route('id') && hash_equals(sha1($account->getEmailForVerification()), (string) $request->route('hash')), 403);
-            if (! $account->hasVerifiedEmail() && $account->markEmailAsVerified()) {
-                event(new Verified($account));
-            }
-        }, 3);
 
-        return redirect()->route('dashboard', ['verified' => 1]);
+        return redirect()->route('verification.notice')->with('status', 'Request a new verification email and confirm it before signing in. Opening this old link has not verified an account.');
     }
 }

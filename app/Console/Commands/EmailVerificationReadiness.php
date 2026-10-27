@@ -32,6 +32,7 @@ class EmailVerificationReadiness extends Command
             $this->gate(($smtp['require_tls'] ?? false) === true, 'SMTP must require TLS.');
             $this->gate(filter_var(config('mail.from.address'), FILTER_VALIDATE_EMAIL) !== false, 'Configure the owned sender.');
             $this->gate(Schema::hasTable('pending_registrations'), 'Apply the additive pending-registration migration first.');
+            $this->gate(Schema::hasTable('email_verification_tokens'), 'Apply the additive existing-account verification-token migration first.');
             $this->gate(! $this->option('enforced') || config('auth.require_verified_email'), 'The final enforcement switch is not enabled.');
             $this->info('Configuration and verified-Admin gates passed. No mail sent; no data changed.');
             $this->warn('Separately review recorded external delivery, CI, backup/rollback and public checks before activation.');

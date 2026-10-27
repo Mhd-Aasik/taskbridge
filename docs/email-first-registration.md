@@ -25,8 +25,13 @@ completion can win. It hashes the password, records verified ownership, consumes
 the token and redirects to login without signing in. Passwords require 12+
 characters, upper/lowercase, numbers and symbols, at most 72 bytes.
 
-Existing users retain passwords/ownership/history. Enforced unverified accounts
-have only verification/resend/logout access. HTTP, Livewire, upload/preview,
+Existing users retain passwords/ownership/history. When enforcement is enabled,
+unverified accounts cannot establish a normal authenticated session, including
+remember-me and direct guard login. They use a public, throttled email-verification
+request page without signing in. A separate hashed, expiring, single-use token binds
+the existing user ID, current email and access version. GET only renders a form;
+CSRF POST consumes the token and verifies email without changing the password or
+logging in. Email or password changes, suspension and replay invalidate completion. HTTP, Livewire, upload/preview,
 download, actions and policies enforce this alongside suspension/access-version
 and stale-session safeguards. Email changes clear verification and revoke old
 sessions/remember tokens. No production backfill or demo setup is provided.
@@ -54,13 +59,12 @@ execution; uncertain outcomes must be inspected, never automatically repeated.
 SMTP acceptance is not inbox delivery. Receive the genuine verification message,
 follow it while signed in as Admin, then confirm the saved verification timestamp.
 
-The new release resumes a valid canonical signed verification link after login
-only when it belongs to that same account and current email. Other destinations,
-expired/altered links and foreign hosts are discarded. Login itself never marks
-email verified. The old live release requires reopening the email link after login.
-An observed live rejection was caused by a copied closing parenthesis appended to
-the signature; strict rejection is retained. Use the original email button or the
-exact unmodified link, and never share the link in chat.
+Verification must finish before login succeeds. Setup completion never logs in.
+The previous follow-up that resumed verification after login is superseded: legacy
+signed verification GET routes now only redirect to the public request page and
+never verify an account. Normal login discards all old intended destinations and
+uses the role dashboard only for verified accounts. The already-verified production
+Admin remains unchanged. No replacement Admin email is sent.
 
 Future private settings (not applied):
 
@@ -116,10 +120,9 @@ Actual conclusions belong in `email-first-registration-verification.md`.
    Production defaults false if absent; local/tests default true. This staging
    switch preserves access during review; it is not mandatory enforcement.
 5. Run only the additive migration against the confirmed production database:
-   `php artisan migrate --path=database/migrations/2026_10_27_000001_create_pending_registrations_table.php --force`.
-   Record migrate status; never fresh/reset/demo/seed. It adds the pending table
-   and indexes without updating users. Prune expired pending records daily with
-   `php artisan model:prune --model='App\Models\PendingRegistration'` (expiry plus
+   `php artisan migrate --path=database/migrations/2026_10_27_000001_create_pending_registrations_table.php --path=database/migrations/2026_10_27_000002_create_email_verification_tokens_table.php --force`.
+   Record migrate status; never fresh/reset/demo/seed. Both migrations add token tables/indexes without updating users or backfilling verification. Prune expired pending records daily with
+   `php artisan model:prune --model='App\Models\PendingRegistration' --model='App\Models\EmailVerificationToken'` (expiry plus
    one-day retention); this never deletes completed user accounts.
 6. Configure SMTP privately/cache the new release, then run the read-only gate:
    `php artisan taskbridge:verification-readiness --admin-email=<confirmed-address>`.
@@ -129,8 +132,9 @@ Actual conclusions belong in `email-first-registration-verification.md`.
 7. Obtain explicit enforcement/activation approval, then set the flag true,
    recache and rerun the gate with `--enforced`. Switch `current` atomically using
    the existing Free site/public root; preserve unrelated host resources.
-8. Check HTTPS/redirect/assets/health, passwordless registration, restricted
-   verification, real Admin login/role/session/CSRF, blocked private paths and
+8. Check HTTPS/redirect/assets/health, passwordless registration, guest-only
+   verification/resend, rejection of normal login before verification, real verified
+   Admin login/role/session/CSRF, blocked private paths and
    sanitized logs. Do not create demo data. External new-user end-to-end mail
    requires additional recipient/send authorization beyond the two approved mails.
 
@@ -140,7 +144,7 @@ On critical failure enter maintenance first and preserve evidence/data. Restore
 the prior `current` symlink, site configuration and cache. If mandatory verification
 was enabled, keep public access in maintenance until an approved fix preserves
 that policy: the previous release cannot enforce it. Never silently reopen
-unverified access. Keep the additive table and newly completed users during code
+unverified access. Keep both additive token tables and newly completed users during code
 rollback. Dropping the table invalidates pending links and requires data review.
 Database restore is only for confirmed data damage under its guarded procedure;
 never restore an older database merely to roll back code. Preserve APP_KEY,

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\EmailVerificationToken;
 use App\Models\PendingRegistration;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
@@ -9,12 +10,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
 
 class RegistrationConcurrencyTest extends TestCase
 {
-    public function test_two_independent_connections_cannot_complete_the_same_registration_twice(): void
+    #[DataProvider('flows')]
+    public function test_two_independent_connections_cannot_complete_the_same_registration_twice(string $flow): void
     {
         $directory = storage_path('framework/testing/registration-race-'.bin2hex(random_bytes(8)));
         File::makeDirectory($directory, 0700, true);
@@ -34,8 +37,14 @@ class RegistrationConcurrencyTest extends TestCase
             DB::purge('race');
             Artisan::call('migrate', ['--force' => true]);
             $token = Str::random(64);
-            $pending = PendingRegistration::create(['id' => (string) Str::uuid(), 'name' => 'Race Identity', 'email' => 'race@taskbridge.test', 'role' => 'freelancer', 'token_hash' => hash('sha256', $token), 'expires_at' => now()->addMinutes(10)]);
-            file_put_contents($directory.'/input.json', json_encode(['id' => $pending->id, 'token' => $token, 'connection' => $connection], JSON_THROW_ON_ERROR));
+            if ($flow === 'registration') {
+                $pending = PendingRegistration::create(['id' => (string) Str::uuid(), 'name' => 'Race Identity', 'email' => 'race@taskbridge.test', 'role' => 'freelancer', 'token_hash' => hash('sha256', $token), 'expires_at' => now()->addMinutes(10)]);
+            } else {
+                $existing = new User;
+                $existing->forceFill(['name' => 'Race Identity', 'email' => 'race@taskbridge.test', 'role' => 'freelancer', 'password' => Hash::make('ExistingPassword123!'), 'email_verified_at' => null])->saveOrFail();
+                $pending = EmailVerificationToken::create(['id' => (string) Str::uuid(), 'user_id' => $existing->id, 'email' => $existing->email, 'access_version' => $existing->access_version, 'token_hash' => hash('sha256', $token), 'expires_at' => now()->addMinutes(10)]);
+            }
+            file_put_contents($directory.'/input.json', json_encode(['id' => $pending->id, 'token' => $token, 'connection' => $connection, 'flow' => $flow], JSON_THROW_ON_ERROR));
             foreach ([1, 2] as $number) {
                 $process = new Process([PHP_BINARY, base_path('tests/Support/registration-race.php'), $directory, (string) $number], base_path(), ['APP_ENV' => 'testing']);
                 $process->setTimeout(120)->start();
@@ -60,7 +69,7 @@ class RegistrationConcurrencyTest extends TestCase
             $this->assertSame('freelancer', $user->role);
             $this->assertNotNull($user->email_verified_at);
             $winner = array_search('created', $results, true);
-            $this->assertTrue(Hash::check('ConcurrentPassword'.$winner.'!', $user->password));
+            $this->assertTrue(Hash::check($flow === 'registration' ? 'ConcurrentPassword'.$winner.'!' : 'ExistingPassword123!', $user->password));
             $this->assertNotNull($pending->fresh()->consumed_at);
         } finally {
             foreach ($processes as $process) {
@@ -75,5 +84,10 @@ class RegistrationConcurrencyTest extends TestCase
             config(['database.default' => $original]);
             File::deleteDirectory($directory);
         }
+    }
+
+    public static function flows(): array
+    {
+        return [['registration'], ['existing-verification']];
     }
 }
