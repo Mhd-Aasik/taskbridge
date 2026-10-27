@@ -15,9 +15,12 @@ class ActiveUserProvider extends EloquentUserProvider
             return false;
         }
         // A status explanation is safe only after the password has been verified.
-        $current = $this->retrieveById($user->getAuthIdentifier());
+        $current = parent::retrieveById($user->getAuthIdentifier());
         if (! $current || ! $current->isActive()) {
             throw ValidationException::withMessages(['email' => AccountAccess::UNAVAILABLE]);
+        }
+        if (config('auth.require_verified_email') && ! $current->hasVerifiedEmail()) {
+            throw ValidationException::withMessages(['email' => AccountAccess::VERIFICATION_REQUIRED]);
         }
 
         return true;
@@ -27,6 +30,13 @@ class ActiveUserProvider extends EloquentUserProvider
     {
         $user = parent::retrieveByToken($identifier, $token);
 
-        return $user?->isActive() ? $user : null;
+        return $user?->isActive() && (! config('auth.require_verified_email') || $user->hasVerifiedEmail()) ? $user : null;
+    }
+
+    public function retrieveById($identifier)
+    {
+        $user = parent::retrieveById($identifier);
+
+        return $user && (! config('auth.require_verified_email') || $user->hasVerifiedEmail()) ? $user : null;
     }
 }

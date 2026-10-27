@@ -3,12 +3,13 @@
 namespace Tests\Feature\Auth;
 
 use App\Actions\Accounts\ChangeAccountPassword;
+use App\Models\EmailVerificationToken;
 use App\Models\Project;
 use App\Models\User;
+use App\Notifications\VerifyExistingEmail;
 use App\Services\AccountSessions;
 use App\Support\AccountAccess;
 use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -34,15 +35,21 @@ class WorkflowRecoveryTest extends TestCase
     }
 
     #[DataProvider('roles')]
-    public function test_required_verification_mail_to_signed_link_consumes_another_roles_intended_destination(string $role): void
+    public function test_guest_verification_post_precedes_login_and_discards_another_roles_intended_destination(string $role): void
     {
         $user = User::factory()->unverified()->create(['role' => $role]);
-        $this->actingAs($user)->withSession(['url.intended' => route($role === 'client' ? 'freelancer.projects.index' : 'client.projects.index')]);
-        Volt::test('auth.verify-email')->call('sendVerification')->assertHasNoErrors();
-        $notifications = Notification::sent($user, VerifyEmail::class);
+        $this->withSession(['url.intended' => route($role === 'client' ? 'freelancer.projects.index' : 'client.projects.index')]);
+        $this->post(route('verification.send'), ['email' => $user->email])->assertRedirectToRoute('verification.notice');
+        $notifications = Notification::sent($user, VerifyExistingEmail::class);
         $this->assertCount(1, $notifications);
-        $url = $notifications->first()->toMail($user)->actionUrl;
-        $this->get($url)->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+        $url = $notifications->first()->verificationLink;
+        parse_str(parse_url($url, PHP_URL_FRAGMENT), $params);
+        $record = EmailVerificationToken::sole();
+        $this->get(explode('#', $url)[0])->assertOk();
+        $this->assertNull($user->fresh()->email_verified_at);
+        $this->post(route('verification.complete', $record->id), ['email' => $user->email, 'token' => $params['token']])->assertRedirectToRoute('login');
+        $this->assertGuest();
+        Volt::test('auth.login')->set('email', $user->email)->set('password', 'password')->call('login')->assertHasNoErrors();
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
         $this->assertFalse(session()->has('url.intended'));
         $this->get(route('dashboard'))->assertRedirectToRoute($role.'.dashboard');

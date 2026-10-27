@@ -13,6 +13,8 @@ class AccountAccess
 
     public const EXPIRED = 'Your session has ended. Please log in again.';
 
+    public const VERIFICATION_REQUIRED = 'Verify your email before signing in. Request a verification email.';
+
     /** No global User scope: suspended authors must remain available in history. */
     public static function allows(User $actor, bool $fresh = false, bool $requireVerification = true): bool
     {

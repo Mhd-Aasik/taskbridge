@@ -3,9 +3,10 @@
 namespace Tests\Feature\Auth;
 
 use App\Actions\Accounts\SendAccountEmail;
+use App\Models\EmailVerificationToken;
 use App\Models\User;
+use App\Notifications\VerifyExistingEmail;
 use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Contracts\Notifications\Dispatcher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -47,41 +48,50 @@ class AccountEmailTest extends TestCase
 
     public function test_verification_resend_throttle_is_shared_by_both_pages(): void
     {
-        // During the explicitly staged production transition both legacy pages exist.
         config(['auth.require_verified_email' => false]);
         Notification::fake();
         $user = User::factory()->unverified()->create();
         $this->actingAs($user);
         Volt::test('auth.verify-email')->call('sendVerification')->assertHasNoErrors();
-        Volt::test('settings.profile')->call('resendVerificationNotification')->assertHasErrors('verification');
-        Notification::assertSentToTimes($user, VerifyEmail::class, 1);
+        $hash = EmailVerificationToken::sole()->token_hash;
+        Volt::test('settings.profile')->call('resendVerificationNotification')->assertHasNoErrors();
+        Notification::assertSentToTimes($user, VerifyExistingEmail::class, 1);
+        $this->assertSame($hash, EmailVerificationToken::sole()->token_hash);
         $this->travel(61)->seconds();
         Volt::test('settings.profile')->call('resendVerificationNotification')->assertHasNoErrors();
-        Notification::assertSentToTimes($user, VerifyEmail::class, 2);
+        Notification::assertSentToTimes($user, VerifyExistingEmail::class, 2);
+        $this->assertNotSame($hash, EmailVerificationToken::sole()->token_hash);
     }
 
     public function test_urls_ignore_request_host_and_verification_expiry_tampering_reuse_and_email_changes_are_safe(): void
     {
+        Notification::fake();
         config(['app.url' => 'https://trusted.taskbridge.test']);
         URL::setRequest(Request::create('https://attacker.invalid'));
         $user = User::factory()->unverified()->create(['role' => 'client']);
-        $this->actingAs($user);
         $reset = (new ResetPassword('test-token'))->toMail($user);
-        $url = (new VerifyEmail)->toMail($user)->actionUrl;
-        $this->assertSame('trusted.taskbridge.test', parse_url($reset->actionUrl, PHP_URL_HOST));
+        app(\App\Actions\Accounts\VerifyExistingEmail::class)->request($user->email, '192.0.2.61');
+        $url = Notification::sent($user, VerifyExistingEmail::class)->sole()->verificationLink;
         $this->assertSame('trusted.taskbridge.test', parse_url($url, PHP_URL_HOST));
-        $this->get($url.'&tampered=1')->assertForbidden();
+        $this->assertSame('trusted.taskbridge.test', parse_url($reset->actionUrl, PHP_URL_HOST));
+        parse_str(parse_url($url, PHP_URL_FRAGMENT), $params);
+        $record = EmailVerificationToken::sole();
+        $input = ['email' => $user->email, 'token' => $params['token']];
+        $this->post(route('verification.complete', $record->id), array_replace($input, ['token' => str_repeat('x', 64)]))->assertStatus(422);
         $this->travel(61)->minutes();
-        $this->get($url)->assertForbidden();
+        $this->post(route('verification.complete', $record->id), $input)->assertStatus(422);
         $this->travelBack();
-        $this->get($url)->assertRedirect();
+        $this->post(route('verification.complete', $record->id), $input)->assertRedirectToRoute('login');
+        $this->assertGuest();
         $verified = $user->fresh()->getRawOriginal('email_verified_at');
-        $this->get($url)->assertRedirect();
+        $this->post(route('verification.complete', $record->id), $input)->assertStatus(422);
         $this->assertSame($verified, $user->fresh()->getRawOriginal('email_verified_at'));
+        $this->actingAs($user->fresh());
         Volt::test('settings.profile')->set('name', $user->name)->set('email', 'changed@taskbridge.test')->call('updateProfileInformation')->assertHasNoErrors();
+        $this->assertGuest();
         $this->assertNull($user->fresh()->email_verified_at);
-        $this->get($url)->assertForbidden();
-        $this->get(route('client.dashboard'))->assertRedirectToRoute('verification.notice');
+        $this->post(route('verification.complete', $record->id), $input)->assertStatus(422);
+        $this->get(route('client.dashboard'))->assertRedirectToRoute('login');
     }
 
     public function test_tampered_reset_token_cannot_change_account_state(): void
@@ -96,11 +106,14 @@ class AccountEmailTest extends TestCase
 
     public function test_a_stale_authenticated_user_cannot_verify_an_address_changed_after_link_authorization(): void
     {
+        Notification::fake();
         $user = User::factory()->unverified()->create();
-        $url = (new VerifyEmail)->toMail($user)->actionUrl;
-        $this->actingAs($user);
+        app(\App\Actions\Accounts\VerifyExistingEmail::class)->request($user->email, '192.0.2.62');
+        $url = Notification::sent($user, VerifyExistingEmail::class)->sole()->verificationLink;
+        parse_str(parse_url($url, PHP_URL_FRAGMENT), $params);
+        $record = EmailVerificationToken::sole();
         User::whereKey($user->id)->update(['email' => 'new-current@taskbridge.test']);
-        $this->get($url)->assertForbidden();
+        $this->post(route('verification.complete', $record->id), ['email' => $user->email, 'token' => $params['token']])->assertStatus(422);
         $this->assertNull($user->fresh()->email_verified_at);
     }
 
@@ -109,8 +122,8 @@ class AccountEmailTest extends TestCase
         $user = User::factory()->unverified()->create();
         $this->mock(Dispatcher::class)->shouldReceive('send')->andThrow(new TransportException('sensitive transport details'));
         Volt::test('auth.forgot-password')->set('email', $user->email)->call('sendPasswordResetLink')->assertHasNoErrors()->assertSee(SendAccountEmail::RESET_STATUS)->assertDontSee('sensitive transport details');
-        $this->actingAs($user);
-        Volt::test('auth.verify-email')->call('sendVerification')->assertHasErrors('verification')->assertDontSee('sensitive transport details');
+        $this->post(route('verification.send'), ['email' => $user->email])->assertRedirectToRoute('verification.notice');
+        $this->assertDatabaseCount('email_verification_tokens', 0);
         $this->assertNull($user->fresh()->email_verified_at);
         $this->assertSame(0, $user->fresh()->access_version);
     }

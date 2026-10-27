@@ -6,7 +6,6 @@ use App\Support\AccountAccess;
 use App\Support\AccountEmailTransport;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class SendAccountEmail
@@ -32,16 +31,6 @@ class SendAccountEmail
     public function verification(): void
     {
         $user = AccountAccess::verificationAccount();
-        $key = 'account-verification:'.$user->id;
-        if (RateLimiter::tooManyAttempts($key, 1)) {
-            throw ValidationException::withMessages(['verification' => 'Please wait a minute before requesting another verification email.']);
-        }
-        RateLimiter::hit($key, 60);
-        try {
-            AccountEmailTransport::ensureSafe();
-            $user->sendEmailVerificationNotification();
-        } catch (Throwable) {
-            throw ValidationException::withMessages(['verification' => 'The verification email could not be sent. Please try again shortly.']);
-        }
+        app(VerifyExistingEmail::class)->request($user->email, (string) request()->ip());
     }
 }

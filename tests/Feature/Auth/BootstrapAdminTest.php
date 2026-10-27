@@ -4,11 +4,13 @@ namespace Tests\Feature\Auth;
 
 use App\Actions\Accounts\BootstrapAdmin;
 use App\Console\Commands\BootstrapAdminCommand;
+use App\Models\EmailVerificationToken;
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
+use App\Notifications\VerifyExistingEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 use Livewire\Volt\Volt;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -61,11 +63,17 @@ class BootstrapAdminTest extends TestCase
         $this->assertSame(0, $admin->access_version);
         $this->assertSame($before, [$client->fresh()->getAttributes(), $freelancer->fresh()->getAttributes()]);
         $this->assertDatabaseCount('users', 3);
-        Volt::test('auth.login')->set('email', $admin->email)->set('password', self::PASSWORD)->call('login')->assertHasNoErrors()->assertRedirect(route('verification.notice', absolute: false));
-        $this->get(route('admin.dashboard'))->assertRedirectToRoute('verification.notice');
-        // This synthetic Admin must follow its genuine signed verification route.
-        $url = (new VerifyEmail)->toMail($admin)->actionUrl;
-        $this->get($url)->assertRedirect();
+        Volt::test('auth.login')->set('email', $admin->email)->set('password', self::PASSWORD)->call('login')->assertHasErrors('email');
+        $this->assertGuest();
+        $this->get(route('admin.dashboard'))->assertRedirectToRoute('login');
+        Notification::fake();
+        app(\App\Actions\Accounts\VerifyExistingEmail::class)->request($admin->email, '192.0.2.80');
+        $mail = Notification::sent($admin, VerifyExistingEmail::class)->sole();
+        parse_str(parse_url($mail->verificationLink, PHP_URL_FRAGMENT), $params);
+        $record = EmailVerificationToken::sole();
+        $this->post(route('verification.complete', $record->id), ['email' => $admin->email, 'token' => $params['token']])->assertRedirectToRoute('login');
+        $this->assertGuest();
+        Volt::test('auth.login')->set('email', $admin->email)->set('password', self::PASSWORD)->call('login')->assertHasNoErrors();
         $this->get(route('dashboard'))->assertRedirectToRoute('admin.dashboard');
         $this->get(route('admin.dashboard'))->assertOk();
         $this->get(route('client.dashboard'))->assertForbidden();

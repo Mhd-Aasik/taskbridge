@@ -58,9 +58,9 @@ new class extends Component {
 
         if ($user->wasChanged('email') && config('auth.require_verified_email')) {
             // Preserve the current user's restricted session while revoking stale ones.
-            Auth::login($user);
-            session()->regenerate();
-            session()->forget('url.intended');
+            Auth::guard('web')->logoutCurrentDevice();
+            session()->invalidate();
+            session()->regenerateToken();
             $this->redirectRoute('verification.notice');
 
             return;

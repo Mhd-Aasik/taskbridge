@@ -1,5 +1,11 @@
 # TaskBridge account emails
 
+The email-first release supersedes historical optional-verification behavior below.
+See [the current release review](email-first-registration.md): new users finish
+password setup and verification before login; existing unverified users use a
+guest-only token/CSRF POST flow. No signed GET may verify an account.
+
+
 For the 25 October university hosting preparation, see the
 [Alwaysdata SMTP plan](alwaysdata-free.md#zero-cost-smtp-preparation): included
 host SMTP with an authorized owned mailbox, or an explicitly confirmed personal

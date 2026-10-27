@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\Accounts\VerifyExistingEmail;
 use App\Services\AccountPhotos;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -198,6 +199,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isClient(): bool
     {
         return $this->role === self::ROLE_CLIENT;
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $current = static::find($this->id);
+        if ($current && $current->email === $this->email) {
+            app(VerifyExistingEmail::class)->request($current->email, (string) (request()->ip() ?? 'console'));
+        }
     }
 
     public function isActive(): bool

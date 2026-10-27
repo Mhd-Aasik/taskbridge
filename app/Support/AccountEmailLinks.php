@@ -2,8 +2,8 @@
 
 namespace App\Support;
 
+use App\Models\EmailVerificationToken;
 use App\Models\PendingRegistration;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Routing\UrlGenerator;
@@ -38,36 +38,14 @@ class AccountEmailLinks
         return $this->generator()->route('registration.setup', ['registration' => $registration->id]).'#'.http_build_query(['token' => $token]);
     }
 
+    public function existingVerification(EmailVerificationToken $verification, #[\SensitiveParameter] string $token): string
+    {
+        return $this->generator()->route('verification.confirm', ['verification' => $verification->id]).'#'.http_build_query(['token' => $token]);
+    }
+
     public function verify($user): string
     {
         return $this->generator()->temporarySignedRoute('verification.verify', now()->addMinutes(config('auth.verification.expire', 60)), ['id' => $user->getKey(), 'hash' => sha1($user->getEmailForVerification())]);
-    }
-
-    public function verificationAfterLogin(User $user, #[\SensitiveParameter] mixed $intended): ?string
-    {
-        if (! is_string($intended) || strlen($intended) > 4096) {
-            return null;
-        }
-        $generator = $this->generator();
-        $expected = $generator->route('verification.verify', ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]);
-        // Only this user's exact canonical verification route may survive login.
-        // Other intended destinations, hosts and identities remain discarded.
-        if (! hash_equals($expected, explode('?', $intended, 2)[0]) || parse_url($intended, PHP_URL_FRAGMENT) !== null) {
-            return null;
-        }
-        try {
-            $request = Request::create($intended);
-            $keys = array_keys($request->query());
-            sort($keys);
-            $signature = $request->query('signature');
-            $expires = $request->query('expires');
-
-            return $keys === ['expires', 'signature'] && is_string($expires) && ctype_digit($expires)
-                && is_string($signature) && preg_match('/^[a-f0-9]{64}$/D', $signature) === 1
-                && $generator->hasValidSignature($request) ? $intended : null;
-        } catch (\Throwable) {
-            return null;
-        }
     }
 
     public function message(string $type, #[\SensitiveParameter] string $url): MailMessage

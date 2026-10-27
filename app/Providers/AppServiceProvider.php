@@ -45,7 +45,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::before(fn (User $user) => AccountAccess::allows($user) ? null : false);
         Event::listen(Login::class, function (Login $event): void {
             $current = User::query()->find($event->user->getAuthIdentifier());
-            if (! $current || ! $current->isActive() || (int) $event->user->access_version !== $current->access_version) {
+            if (! $current || ! $current->isActive() || (int) $event->user->access_version !== $current->access_version
+                || (config('auth.require_verified_email') && ! $current->hasVerifiedEmail())) {
                 Auth::guard($event->guard)->logoutCurrentDevice();
                 session()->invalidate();
                 session()->regenerateToken();

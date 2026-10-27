@@ -49,14 +49,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
         Session::regenerate();
 
         $account = Auth::user()->fresh();
-        $verification = app(\App\Support\AccountEmailLinks::class)->verificationAfterLogin($account, Session::pull('url.intended'));
-        if ($verification !== null) {
-            // Resume only a valid, canonical signed link bound to this account.
-            // Opening that authenticated route still performs all verification checks.
-            $this->redirect($verification);
-            return;
-        }
-        // Discard every other captured destination and resolve the saved role afresh.
+        // Verification is completed as a guest before login; never preserve a prior link.
+        Session::pull('url.intended');
         $destination = config('auth.require_verified_email') && ! $account->hasVerifiedEmail()
             ? 'verification.notice' : 'dashboard';
         $this->redirect(route($destination, absolute: false), navigate: true);
@@ -97,6 +91,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
+    <x-text-link href="{{ route('verification.notice') }}">Need to verify your email? Request a verification link</x-text-link>
 
     <form wire:submit="login" class="flex flex-col gap-6">
         <!-- Email Address -->
