@@ -1,5 +1,10 @@
 # Final review checklist
 
+Current live status is recorded in [deployment completion](deployment-completion.md):
+revision `67c9ab660811` is deployed with verified SMTP, mandatory verification before
+login, preserved Admin/data and a passed-and-cleaned genuine signup test. Dated
+pending statements below retain their original historical scope.
+
 The 25 October [hosting-readiness follow-up](free-hosting-verification.md) records
 successful current audits, the Livewire patch and later photo-memory regression
 checks. Hosted MariaDB/HTTPS and external delivery remain pending; earlier browser
@@ -185,9 +190,9 @@ Still pending targeted MySQL coverage includes feedback, category edits/activati
 
 The earlier non-browser checklist reconciliation reused unchanged code/build/audit results and found no application defect at that stage. The later screenshot-confirmed Alpine defect and its new verification are recorded above. No schema change, seed, bootstrap creation or disposable service restart is needed for the photo-control fix. Broader concurrency/load/crash coverage stays explicitly pending.
 
-## Pending deployment verification (separate from UI review)
+## Historical pre-deployment checklist (separate from UI review)
 
-- **External SMTP:** provider credentials, authorized sender/SPF/DKIM/DMARC, authentication/TLS, trusted public HTTPS links, external delivery/inbox placement and email-client HTML/plain-text/action/fallback rendering. Local log/loopback capture does not prove these. Verification stays optional; no new queue worker.
+- **External SMTP:** provider credentials, authorized sender/SPF/DKIM/DMARC, authentication/TLS, trusted public HTTPS links, external delivery/inbox placement and email-client HTML/plain-text/action/fallback rendering. Local log/loopback capture does not prove these. The optional-verification statement belongs to the earlier checkpoint; the approved deployed policy now requires verification before login. No queue worker was added.
 - **Hosting:** public-only web root, private-volume persistence/protection, writable directories, APP_URL, HTTPS/proxy/cookies/CSRF/sessions, actual web/proxy upload limits and any malware policy. See [hosting](hosting.md).
 - **Production recovery:** encrypted/off-host retention, real-key recovery, consistent live backups, protected restore/cutover and recovery objectives. Disposable synthetic restoration is not production recovery. See [backup/recovery](backup-recovery.md).
 

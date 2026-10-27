@@ -114,7 +114,7 @@ Check the database identity before running this command. It prompts for name, a 
 
 The command refuses if **any** Admin already exists, including an unavailable one. It does not promote/replace accounts, reset credentials, bypass suspension or provide Admin recovery. `--no-interaction` and piped/non-terminal execution fail without prompting or creating an account. Competing attempts are serialized on MySQL; only one first account can succeed. SQLite is also supported with a write transaction; other database drivers are refused. See [implementation and verification](admin-bootstrap.md).
 
-The account remains unverified (verification is optional), active and at access version zero; sign in through `/login` to reach the existing Admin dashboard. No default credentials, demonstration records or notification/email are created. `/register` still permits only Client and Freelancer and reference seeders still create no accounts. Existing installations with an Admin should not run bootstrap as an update step. No real account was created/modified during automated verification.
+The account remains unverified, active and at access version zero. When enforcement is enabled, complete the guest `/verify-email` flow before normal `/login` access to the Admin dashboard. Bootstrap never bypasses that policy. No default credentials, demonstration records or notification/email are created. `/register` still permits only Client and Freelancer and reference seeders still create no accounts. Existing installations with an Admin should not run bootstrap as an update step. No real account was created/modified during automated verification.
 
 ## Updating an existing installation
 
@@ -153,6 +153,16 @@ git diff --check
 Close this terminal afterward so test overrides do not leak into server/deployment commands. Fake storage stays within the disposable checkout. Run suites sequentially; shared fake-storage directories are not safe for overlapping runs. `AccountSmtpTest` starts a temporary loopback sink for `.test` addresses only; it has no relay and cleans up. Ordinary tests do not depend on a MySQL service. Real concurrency tests are separately opt-in; follow [their guarded harness](mysql-verification.md), never point them at the application database.
 
 The [handoff record](handoff-verification.md) and [latest local verification](final-completion.md) distinguish exercised commands, current automated/browser evidence and reused checkpoint results.
+
+## Verification before first normal login
+
+A freshly bootstrapped Admin is unverified; bootstrap does not prove email ownership.
+When verification enforcement is enabled, configure the owned SMTP sender and use
+`/verify-email` as a guest to complete its email-link CSRF POST before normal login.
+Do not bulk-verify accounts or rerun bootstrap on updates. The existing deployed
+Admin is already verified and must be preserved. See
+[email-first registration](email-first-registration.md) and
+[actual deployment completion](deployment-completion.md).
 
 ## Optional local demonstration
 

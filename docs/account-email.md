@@ -1,5 +1,10 @@
 # TaskBridge account emails
 
+Current live status is recorded in [deployment completion](deployment-completion.md):
+revision `67c9ab660811` is deployed with verified SMTP, mandatory verification before
+login, preserved Admin/data and a passed-and-cleaned genuine signup test. Dated
+pending statements below retain their original historical scope.
+
 The email-first release supersedes historical optional-verification behavior below.
 See [the current release review](email-first-registration.md): new users finish
 password setup and verification before login; existing unverified users use a

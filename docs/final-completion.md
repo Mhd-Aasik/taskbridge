@@ -1,5 +1,10 @@
 # Final local completion — 24 October 2026
 
+Current live status is recorded in [deployment completion](deployment-completion.md):
+revision `67c9ab660811` is deployed with verified SMTP, mandatory verification before
+login, preserved Admin/data and a passed-and-cleaned genuine signup test. Dated
+pending statements below retain their original historical scope.
+
 Later deployment-readiness work on 25 October is recorded separately in
 [free-hosting verification](free-hosting-verification.md): npm and Composer audits
 now succeeded, the lockfile/release have Livewire 4.4.8 and a low-memory photo-processing guard

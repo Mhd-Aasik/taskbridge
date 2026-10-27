@@ -1,10 +1,15 @@
 # First-Admin bootstrap
 
+The approved deployed Admin is already verified and must not be recreated. For the
+current rollout and actual environment evidence, see
+[deployment completion](deployment-completion.md). Earlier test checkpoints below
+retain their recorded policy/scope.
+
 Run `php artisan taskbridge:bootstrap-admin` only from a trusted interactive terminal after migrations and a database-identity check. The command accepts no account/password arguments or options. `--no-interaction` and non-terminal input fail before querying accounts or prompting. Hidden password input has **no visible fallback**; an unsupported terminal fails safely. There is no web route or dependency/schema addition.
 
-The command trims the name, lowercases/trims the email, validates a meaningful name without terminal control characters (maximum 255), a valid unique email (maximum 255, including case-insensitive historical matches), and confirmed password. The password requires 12 characters, upper/lowercase letters, numbers and symbols, with a 72-byte maximum for bcrypt. It uses local validation, not an external password-checking service. Name/email/role and optional verification state appear before an explicit default-No confirmation. Passwords/hashes and exception payloads are never printed or logged by bootstrap.
+The command trims the name, lowercases/trims the email, validates a meaningful name without terminal control characters (maximum 255), a valid unique email (maximum 255, including case-insensitive historical matches), and confirmed password. The password requires 12 characters, upper/lowercase letters, numbers and symbols, with a 72-byte maximum for bcrypt. It uses local validation, not an external password-checking service. Name/email/role and verification state appear before an explicit default-No confirmation. Passwords/hashes and exception payloads are never printed or logged by bootstrap.
 
-Any existing Admin blocks both the prompt flow and the transactional action, regardless of availability. An existing Client/Freelancer email is refused; bootstrap never promotes, edits, replaces or deletes anyone. A new User gets Admin role, an explicitly hashed password, no verification time, no avatar/remember token/suspension, and access version zero, all assigned server-side. No Registered event, external email, audit actor fabrication or project record is produced. The operator signs in normally; verification stays optional and existing session/suspension protection applies.
+Any existing Admin blocks both the prompt flow and the transactional action, regardless of availability. An existing Client/Freelancer email is refused; bootstrap never promotes, edits, replaces or deletes anyone. A new User gets Admin role, an explicitly hashed password, no verification time, no avatar/remember token/suspension, and access version zero, all assigned server-side. No Registered event, external email, audit actor fabrication or project record is produced. With verification enforcement enabled, the operator first completes the public `/verify-email` token/CSRF flow, then signs in normally. Bootstrap does not verify ownership or bypass suspension/session protection.
 
 ## Serialization and transactions
 

@@ -1,11 +1,13 @@
 # Documentation index
 
-Start with the [project README](../README.md). No documentation index existed in the inspected checkout; this index collects the existing feature documents and new operational guides.
+Start with the [project README](../README.md). Use the current deployment record for live status; dated historical evidence retains its checkpoint scope.
 
 ## Setup and operation
 
 | Guide | Purpose |
 | --- | --- |
+| [Deployment completion](deployment-completion.md) | Current live revision, actual delivery/authentication checks, preservation, recovery and operational limits |
+| [Email-first registration](email-first-registration.md) | Verification before normal login, guest setup/resend, token and transition security |
 | [Installation](installation.md) | Fresh Windows setup, existing-install updates, isolated checks, first-Admin setup |
 | [Admin bootstrap](admin-bootstrap.md) | Console-only first account, validation, serialization and recovery limits |
 | [Local demonstration](demonstration-data.md) | Explicit guarded setup, managed history, original covers and rerun limits |
@@ -14,7 +16,7 @@ Start with the [project README](../README.md). No documentation index existed in
 | [Hosting](hosting.md) | Deployment configuration, persistence, permissions, mail and runtime requirements |
 | [Alwaysdata Free](alwaysdata-free.md) | University demo limits, isolated release build, persistent storage, HTTPS and owned-sender SMTP preparation |
 | [Free-hosting verification](free-hosting-verification.md) | Actual audits, release/resource measurements and remaining host-side verification gates |
-| [Account email](account-email.md) | SMTP variables, trusted links, expiry, optional verification and delivery limits |
+| [Account email](account-email.md) | SMTP variables and historical mail checkpoints; current policy is in the email-first guide |
 | [Handoff verification](handoff-verification.md) | Current commands actually exercised, cleanup, preservation and setup gaps |
 | [Manual review](manual-review.md) | Deferred browser/device/accessibility/environment checklist |
 | [Final local completion](final-completion.md) | Latest full suite, authorized demo changes, backup preservation and actual browser evidence |

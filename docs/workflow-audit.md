@@ -1,5 +1,10 @@
 # Workflow audit and hardening
 
+Current live status is recorded in [deployment completion](deployment-completion.md):
+revision `67c9ab660811` is deployed with verified SMTP, mandatory verification before
+login, preserved Admin/data and a passed-and-cleaned genuine signup test. Dated
+pending statements below retain their original historical scope.
+
 This is the historical hardening audit. Later [final local completion](final-completion.md)
 supersedes its suite totals, starter-home/preload findings, local demo preservation
 baseline and browser status only where new evidence is explicitly recorded.
@@ -92,7 +97,7 @@ The configured password-token repository and User use the primary database, allo
 
 Password-confirmation scaffolding remains available and is covered by `Auth/PasswordConfirmationTest`; no current feature route uses the `password.confirm` middleware. Its standard intended continuation is retained for that purpose. This audit does not introduce a new password-confirmation or verification restriction on existing users.
 
-Remaining functional/configuration work, in priority order:
+Historical functional/configuration findings (superseded where the current deployment record provides later evidence):
 
 1. **Real recovery-mail delivery is not configured locally.** The `log` transport writes mail rather than delivering it. Delivery, public HTTPS URL/signatures, provider setup and abuse handling need environment verification before deployment. Fake-mail tests confirm composition, token/expiry behavior and signed-link authorization, not delivery.
 2. **Email verification is optional today.** `User` does not implement `MustVerifyEmail`; therefore `verified` middleware does not enforce it and the registration listener does not automatically send verification mail. Explicit notice/resend/signed-link behavior works. Enabling mandatory verification is a separate policy decision with an existing-account rollout; this audit does not impose a new restriction.
