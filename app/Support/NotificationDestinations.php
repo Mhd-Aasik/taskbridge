@@ -31,6 +31,7 @@ class NotificationDestinations
 
     public static function forEvent(User $user, NotificationEvent $event, int $id): ?string
     {
+        // Re-resolve the target and authorize it so stale notifications cannot bypass access rules.
         $record = $event->modelClass()::on($user->getConnectionName())->find($id);
         if (! $record) {
             return null;

@@ -39,6 +39,7 @@ class PaymentRules
 
     public static function agreedAmount(ProjectAssignment $assignment, string $paidOn): string
     {
+        // Payment dates follow the assignment and current day in the app's Colombo calendar.
         $validated = Validator::make(['agreed_amount' => (string) $assignment->getRawOriginal('agreed_budget'), 'paid_on' => $paidOn], [
             'agreed_amount' => ['bail', 'required', 'string', 'max:13', new LkrBudget],
             'paid_on' => ['after_or_equal:'.$assignment->assigned_at->setTimezone('Asia/Colombo')->toDateString(), 'before_or_equal:'.CarbonImmutable::today('Asia/Colombo')->toDateString()],

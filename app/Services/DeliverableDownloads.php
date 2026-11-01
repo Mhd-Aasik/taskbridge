@@ -16,6 +16,7 @@ class DeliverableDownloads
         abort_unless($disk->exists($version->storage_path), 404);
         $extension = strtolower(pathinfo($version->storage_path, PATHINFO_EXTENSION));
 
+        // Keep private uploads out of shared caches and prevent MIME sniffing in the browser.
         return $disk->download($version->storage_path, $files->safeDownloadName($version->original_filename, $extension), [
             'Content-Type' => $version->mime_type,
             'Cache-Control' => 'private, no-store, max-age=0',

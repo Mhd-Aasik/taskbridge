@@ -59,6 +59,7 @@ class FreelancerDiscovery
 
     public static function literalPattern(string $value): string
     {
+        // Escape SQL LIKE metacharacters so a search term is matched literally.
         return '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $value).'%';
     }
 }
