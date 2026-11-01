@@ -6,7 +6,7 @@ The checked-in locks currently resolve Laravel **12.70.0**, Livewire **4.4.8**, 
 
 ## Start here
 
-- [Current deployment completion](docs/deployment-completion.md): verified live revision, email-first flow, real delivery/login checks, backup/rollback and remaining coverage limits.
+- [Current deployment completion](docs/deployment-completion.md): verified live revision, email-first flow, real delivery/login checks, backup/rollback and remaining coverage limits..
 
 - [Installation and safe updates](docs/installation.md): Windows PowerShell, locked dependencies, MySQL, reference seeders, tests and supported first-Admin bootstrap.
 - [Local demonstration](docs/demonstration-data.md): explicit, guarded setup using existing participants, original covers and normal workflows.
