@@ -15,6 +15,23 @@ TaskBridge supports a complete client/freelancer project workflow:
 - **Feedback and disputes** preserve participant feedback and case history. Authorized Admins manage categories and accounts and handle disputes, with access limited to the documented case context.
 
 Projects and work records keep their history. Publishing, accepting an offer, approving deliverables, recording completion or payment, sending messages, submitting feedback and making dispute decisions are deliberate actions; many are permanent. Access to project data follows role and ownership checks. See the [user guide](docs/user-guide.md) for the complete workflows and restrictions.
+
+## Run locally
+
+For a new local environment, follow the [fresh-install guide](docs/installation.md#fresh-installation-only) first. It covers the required PHP/Node/MySQL setup, a new database, environment configuration, migrations and asset build. Do not run fresh-install steps against an existing installation or database; use the guide's update section instead.
+
+After setup, start the Laravel server from the repository root:
+
+```powershell
+php artisan serve --host=127.0.0.1 --port=8000
+```
+
+For frontend hot reload, open a second terminal in the repository root and run:
+
+```powershell
+npm.cmd run dev
+```
+
 ## Start here
 
 - [Current deployment completion](docs/deployment-completion.md): verified live revision, email-first flow, real delivery/login checks, backup/rollback and remaining coverage limits.
