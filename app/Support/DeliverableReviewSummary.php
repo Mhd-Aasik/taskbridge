@@ -10,6 +10,7 @@ class DeliverableReviewSummary
     /** @return array{total: int, approved: int, awaiting_review: int, changes_requested: int} */
     public static function forAssignment(ProjectAssignment $assignment): array
     {
+        // Count each deliverable's latest version so superseded reviews do not affect readiness.
         $counts = DeliverableVersion::query()
             ->whereHas('deliverable', fn ($query) => $query->where('project_assignment_id', $assignment->id))
             ->where('version_number', function ($query) {

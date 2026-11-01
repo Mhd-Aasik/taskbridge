@@ -32,6 +32,7 @@ class ProjectTaskRules
             }
         }
         $details['description'] = ($details['description'] ?? '') === '' ? null : $details['description'];
+        // Task dates use the assignment's local calendar bounds and, when linked, the milestone bound.
         $dateRules = ['bail', 'required', 'string', 'date_format:Y-m-d',
             'after_or_equal:'.$assignment->assigned_at->setTimezone('Asia/Colombo')->toDateString(),
             'before_or_equal:'.$assignment->agreed_deadline->toDateString()];
