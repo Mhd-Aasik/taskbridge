@@ -13,6 +13,7 @@ class ProposalSubmissionRules
 {
     public const FIELDS = ['cover_letter', 'proposed_budget', 'proposed_deadline'];
 
+    // Project deadlines are calendar dates, so proposal dates use the same Colombo calendar.
     public static function earliestDeadline(): string
     {
         return CarbonImmutable::today('Asia/Colombo')->addDay()->toDateString();
@@ -49,6 +50,7 @@ class ProposalSubmissionRules
             'proposed_deadline.before_or_equal' => 'Your completion date must be no later than the project deadline.',
         ])->validate();
 
+        // Keep money as a normalized decimal string instead of introducing float rounding.
         [$whole, $fraction] = array_pad(explode('.', $details['proposed_budget'], 2), 2, '');
         $details['proposed_budget'] = (ltrim($whole, '0') ?: '0').'.'.str_pad($fraction, 2, '0');
 
