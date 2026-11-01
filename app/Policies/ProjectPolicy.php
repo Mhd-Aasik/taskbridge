@@ -58,6 +58,7 @@ class ProjectPolicy
         if (! $user->isFreelancer()) {
             return false;
         }
+        // A published cover is visible only while the project remains eligible for discovery.
         if ($project->newQuery()->whereKey($project->id)->discoverable()->exists()) {
             return true;
         }

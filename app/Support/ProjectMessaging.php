@@ -49,6 +49,7 @@ class ProjectMessaging
     {
         Gate::forUser($user)->authorize('viewAny', ProjectMessage::class);
 
+        // Keep completed and cancelled workspaces in the inbox so participants retain authorized history.
         return ProjectAssignment::query()->whereHas('project', function ($projects) use ($user) {
             $projects->whereIn('status', [ProjectStatus::InProgress, ProjectStatus::Completed, ProjectStatus::Cancelled]);
             if ($user->isClient()) {
