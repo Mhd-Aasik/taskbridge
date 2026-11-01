@@ -21,6 +21,7 @@ class AccountEmailLinks
         if (app()->environment('production') && $parts['scheme'] !== 'https') {
             throw new InvalidArgumentException('Production account emails require a trusted HTTPS APP_URL.');
         }
+        // Build account links from configured APP_URL, not the host header of the triggering request.
         $url = new UrlGenerator(app('router')->getRoutes(), Request::create($origin));
         $url->forceRootUrl($origin);
         $url->setKeyResolver(fn () => config('app.key'));

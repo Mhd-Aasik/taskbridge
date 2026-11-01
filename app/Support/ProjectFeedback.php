@@ -50,6 +50,7 @@ class ProjectFeedback
     {
         $start = $project->status === ProjectStatus::Completed && $project->completed_by === $project->client_id ? $project->completed_at : null;
         $end = $start?->addDays(14);
+        // The feedback window is an exact 14-day UTC interval, independent of display timezone.
         $now = ($at ?? CarbonImmutable::now('UTC'))->utc();
 
         return ['start' => $start, 'end' => $end, 'open' => $start && $now->greaterThanOrEqualTo($start) && $now->lessThan($end), 'ended' => $end && $now->greaterThanOrEqualTo($end)];

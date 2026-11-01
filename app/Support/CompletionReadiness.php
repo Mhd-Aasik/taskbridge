@@ -15,6 +15,7 @@ class CompletionReadiness
             'tasks',
             'tasks as completed_tasks_count' => fn ($query) => $query->where('status', ProjectTaskStatus::Done->value),
             'deliverables',
+            // Readiness follows the current version; approving an older upload is insufficient.
             'deliverables as approved_deliverables_count' => fn ($query) => $query->whereHas('latestVersion.review', fn ($reviews) => $reviews->where('decision', DeliverableReviewDecision::Approved->value)),
         ];
     }
@@ -46,6 +47,7 @@ class CompletionReadiness
     {
         $milestones = $assignment->milestones()->count();
         $incomplete = $assignment->milestones()->whereNull('completed_at')->count();
+        // Assignment tasks include ungrouped tasks, which also block project completion.
         $tasks = $assignment->tasks()->count();
         $pending = $assignment->tasks()->where('status', '!=', ProjectTaskStatus::Done->value)->count();
         $reviews = DeliverableReviewSummary::forAssignment($assignment);

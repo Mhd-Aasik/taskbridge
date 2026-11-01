@@ -33,6 +33,7 @@ class CompletionRules
 
     public static function assertRetry(Model $record, int $userId, ?string $note): void
     {
+        // An identical retry is safe, but changed details cannot rewrite the completion record.
         if ($record->completed_by !== $userId || $record->completion_note !== $note) {
             throw ValidationException::withMessages(['completion' => 'Completion is already recorded. Its actor, time and note cannot be changed.']);
         }
