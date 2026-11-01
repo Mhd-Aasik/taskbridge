@@ -4,9 +4,20 @@ TaskBridge is a private Client/Freelancer workspace with project discovery, prop
 
 The checked-in locks currently resolve Laravel **12.70.0**, Livewire **4.4.8**, Volt **1.11.2**, free Flux **2.20.1**, Tailwind **4** and Vite **6.4.4**. PHP **8.2+** and MySQL **8.0.16+** are required for the verified local setup; actual isolated verification used PHP 8.2.12, Node 22.14.0 and MySQL 8.0.43. The actual Alwaysdata qualification passed on MariaDB 11.8.9 with PHP 8.4.27; this is separate from the local MySQL evidence. Use current patched server versions when deploying.
 
+## What TaskBridge includes
+
+TaskBridge supports a complete client/freelancer project workflow:
+
+- **Clients** publish project briefs with a category, fixed LKR budget and deadline, compare proposals, and accept one offer to create an assignment.
+- **Freelancers** create a professional profile, browse eligible projects, submit offers and manage assigned work.
+- **Both participants** plan milestones and tasks, exchange private messages, submit and review deliverables, track project activity and notifications, and record completion.
+- **Payment tracking** records a Client-reported external payment and the Freelancer's separate receipt acknowledgment. TaskBridge does not process, hold or transfer funds.
+- **Feedback and disputes** preserve participant feedback and case history. Authorized Admins manage categories and accounts and handle disputes, with access limited to the documented case context.
+
+Projects and work records keep their history. Publishing, accepting an offer, approving deliverables, recording completion or payment, sending messages, submitting feedback and making dispute decisions are deliberate actions; many are permanent. Access to project data follows role and ownership checks. See the [user guide](docs/user-guide.md) for the complete workflows and restrictions.
 ## Start here
 
-- [Current deployment completion](docs/deployment-completion.md): verified live revision, email-first flow, real delivery/login checks, backup/rollback and remaining coverage limits..
+- [Current deployment completion](docs/deployment-completion.md): verified live revision, email-first flow, real delivery/login checks, backup/rollback and remaining coverage limits.
 
 - [Installation and safe updates](docs/installation.md): Windows PowerShell, locked dependencies, MySQL, reference seeders, tests and supported first-Admin bootstrap.
 - [Local demonstration](docs/demonstration-data.md): explicit, guarded setup using existing participants, original covers and normal workflows.
